@@ -1,0 +1,27 @@
+{
+  "name": "musicbot.remake.v.1",
+  "version": "1.0.0",
+  "description": "Discord Music Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Yamami",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/voice": "^0.14.0",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "play-dl": "^1.9.6",
+    "ytdl-core": "^4.11.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.30.0",
+    "nodemon": "^2.0.20"
+  }
+}
