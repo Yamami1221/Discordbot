@@ -8,6 +8,7 @@ module.exports = {
 		const command = interaction.client.commands.get(interaction.commandName);
 
 		if (!command) {
+			interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 			console.error(`No command matching ${interaction.commandName} was found.`);
 			return;
 		}
@@ -15,6 +16,7 @@ module.exports = {
 		try {
 			await command.execute(interaction);
 		} catch (error) {
+			interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 			console.error(`Error executing ${interaction.commandName}`);
 			console.error(error);
 		}
