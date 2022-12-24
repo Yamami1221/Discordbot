@@ -20,6 +20,7 @@ module.exports = {
             min = max;
             max = temp;
         }
-		await interaction.reply(`The random number between ${min} and ${max} is ${Math.floor(Math.random() * max) + min}!`);
+        var random = Math.floor(Math.random() * max) + min;
+		await interaction.reply(`The random number between ${min} and ${max} is ${random}!`);
 	},
 };
