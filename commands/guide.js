@@ -25,4 +25,7 @@ module.exports = {
 			filtered.map(choice => ({ name: choice, value: choice })),
 		);
 	},
+    async execute(interaction) {
+        await interaction.reply({ content: 'This command is not available', ephemeral: true });
+    },
 };
