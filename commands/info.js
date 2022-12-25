@@ -29,7 +29,7 @@ module.exports = {
             }
         } else if (subcommand === 'server') {
             var servertimedata = convert(interaction.guild.id);
-            await interaction.reply({ content: `Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}\nBuild on:${servertimedata[0]}\nServer time zone:${servertimedata[1]}\nSince created:${servertimedata[2]}`, ephemeral: true});
+            await interaction.reply({ content: `Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}\nBuild on:${servertimedata[0]}\nServer time zone:${servertimedata[1]}\nCreated ${servertimedata[2]}`, ephemeral: true});
         } else {
             await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
@@ -50,6 +50,6 @@ function convertIDtoUnix(id) {
 function convert(id) {
     var unix = convertIDtoUnix(id.toString());
     var timestamp = moment.unix(unix/1000);
-    var data = [timestamp.format('HH:mm:ss, DD-MM-YYYY'), moment.tz.guess(), timestamp.fromNow()];
+    var data = [timestamp.format('HH:mm:ss, DD-MM-YYYY'), 'Asia/Bangkok', timestamp.fromNow()];
     return data;
 }
