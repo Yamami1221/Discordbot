@@ -22,7 +22,6 @@ module.exports = {
             const user = interaction.options.getUser('target');
             if (!user) {
                 await interaction.reply({ content: `This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.\nYour tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`, ephemeral: true });
-                return;
             } else {
                 await interaction.reply({ content: `Username:${user.username}.\n${user.username} tag: ${user.tag}\n${user.username} id: ${user.id}`, ephemeral: true });
             }
