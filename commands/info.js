@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const moment = require('moment');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,6 +18,7 @@ module.exports = {
                 .setDescription('Info about the server')),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
+        console.log(subcommand);
         if (subcommand === 'user') {
             const user = interaction.options.getUser('target');
             if (!user) {
@@ -26,9 +28,28 @@ module.exports = {
                 await interaction.reply({ content: `${user.username} joined on ${user.member.joinedAt}.\n${user.username} tag: ${user.tag}\n${user.username} id: ${user.id}`, ephemeral: true });
             }
         } else if (subcommand === 'server') {
-            await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
+            var servertimedata = convert(interaction.guild.id);
+            await interaction.reply({ content: `Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}\nBuild on:${servertimedata[0]}\nServer time zone:${servertimedata[1]}\nSince created:${servertimedata[2]}`, ephemeral: true});
         } else {
             await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     },
 };
+
+function convertIDtoUnix(id) {
+    /* Note: id has to be str */
+    var bin = (+id).toString(2);
+    var unixbin = '';
+    var unix = '';
+    var m = 64 - bin.length;
+    unixbin = bin.substring(0, 42-m);
+    unix = parseInt(unixbin, 2) + 1420070400000;
+    return unix;
+}
+
+function convert(id) {
+    var unix = convertIDtoUnix(id.toString());
+    var timestamp = moment.unix(unix/1000);
+    var data = [timestamp.format('HH:mm:ss, DD-MM-YYYY'), moment.tz.guess(), timestamp.fromNow()];
+    return data;
+}
