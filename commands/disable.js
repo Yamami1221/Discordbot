@@ -13,7 +13,7 @@ module.exports = {
             const channel = interaction.options.getChannel('channel');
             if (channel) {
                 await interaction.reply({ content: `Disabled ${channel}`, ephemeral: true });
-                
+                interaction.reply({ content: 'This command is not available', ephemeral: true });
             } else {
                 await interaction.reply({ content: 'Please provide a channel', ephemeral: true });
             }

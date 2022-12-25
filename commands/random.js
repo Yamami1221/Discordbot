@@ -4,11 +4,11 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('random')
 		.setDescription('Random number generator')
-        .addIntergerOption(option =>
+        .addIntegerOption(option =>
             option.setName('min')
                 .setDescription('The minimum number')
                 .setRequired(true))
-        .addIntergerOption(option =>
+        .addIntegerOption(option =>
             option.setName('max')
                 .setDescription('The maximum number')
                 .setRequired(true)),
