@@ -12,11 +12,8 @@ module.exports = {
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const channel = interaction.options.getChannel('channel');
             if (channel) {
-                channel.updateOverwrite(interaction.guild.roles.everyone, {
-                    SEND_MESSAGES: true,
-                });
                 await interaction.reply({ content: `Enabled ${channel}`, ephemeral: true });
-                
+
             } else {
                 await interaction.reply({ content: 'Please provide a channel', ephemeral: true });
             }

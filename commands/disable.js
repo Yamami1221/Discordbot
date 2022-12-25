@@ -12,9 +12,6 @@ module.exports = {
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const channel = interaction.options.getChannel('channel');
             if (channel) {
-                channel.updateOverwrite(interaction.guild.roles.everyone, {
-                    SEND_MESSAGES: false,
-                });
                 await interaction.reply({ content: `Disabled ${channel}`, ephemeral: true });
                 
             } else {
