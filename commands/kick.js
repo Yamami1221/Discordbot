@@ -9,7 +9,8 @@ module.exports = {
                 .setName('target')
                 .setDescription('The member to kick')
                 .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const target = interaction.options.getUser('target');
 
