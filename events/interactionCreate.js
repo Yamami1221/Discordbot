@@ -33,7 +33,7 @@ module.exports = {
 				console.error(error);
 			}
 		} else if (interaction.isButton()) {
-			console.log(interaction);
+			return;
 		} else if (!interaction.isCommand()) {
 			return;
 		}
