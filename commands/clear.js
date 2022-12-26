@@ -12,9 +12,10 @@ module.exports = {
                     .setRequired(true)),
 	async execute(interaction) {
         await interaction.deferReply();
-        const amount = interaction.options.getInteger('amount');
-        const messages = await interaction.channel.messages.fetch({ limit: amount });
+        var amount = interaction.options.getInteger('amount');
+        var messages = await interaction.channel.messages.fetch({ limit: amount });
+        console.log(messages);
         await interaction.channel.bulkDelete(messages);
-        await interaction.editReply(`Deleted ${amount} messages!`);
+        await interaction.channel.send(`Deleted ${amount} messages!`);
 	},
 };
