@@ -10,7 +10,7 @@ module.exports = {
                 new ButtonBuilder()
                     .setCustomId('primary')
                     .setLabel('Click me!')
-                    .setStyle(ButtonStyle.PRIMARY),
+                    .setStyle(ButtonStyle.Primary),
             );
         await interaction.reply({ content: 'I think you should,', components: [row] });
     }
