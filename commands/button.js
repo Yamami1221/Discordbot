@@ -5,14 +5,14 @@ module.exports = {
         .setName('button')
         .setDescription('button test'),
     async execute(interaction) {
-        const row = new ActionRowBuilder()
+        const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('primary')
                     .setLabel('Click me!')
                     .setStyle(ButtonStyle.Primary),
             );
-        await interaction.reply({ content: 'I think you should,', components: [row] });
+        await interaction.reply({ content: 'I think you should,', components: [button] });
         const filter = i => i.customId === 'primary';
 
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
@@ -21,7 +21,7 @@ module.exports = {
             const link = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setURL('https://discord.gg/invite/invite')
+                    .setURL('https://youtu.be/dQw4w9WgXcQ')
                     .setLabel('Click me!')
                     .setStyle(ButtonStyle.Link),
             );
