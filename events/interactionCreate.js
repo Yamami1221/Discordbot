@@ -34,7 +34,6 @@ module.exports = {
 			}
 		} else if (interaction.isButton()) {
 			console.log(interaction);
-			
 		} else if (!interaction.isCommand()) {
 			return;
 		}
