@@ -18,7 +18,14 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
         collector.on('collect', async i => {
-            await i.update({ content: 'A button was clicked!', components: [] });
+            const link = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setURL('https://discord.gg/invite/invite')
+                    .setLabel('Click me!')
+                    .setStyle(ButtonStyle.Link),
+            );
+            await i.update({ content: 'A button was clicked!', components: [link] });
         });
 
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
