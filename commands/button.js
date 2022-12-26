@@ -13,5 +13,14 @@ module.exports = {
                     .setStyle(ButtonStyle.Primary),
             );
         await interaction.reply({ content: 'I think you should,', components: [row] });
+        const filter = i => i.customId === 'primary';
+
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+
+        collector.on('collect', async i => {
+            await i.update({ content: 'A button was clicked!', components: [] });
+        });
+
+        collector.on('end', collected => console.log(`Collected ${collected.size} items`));
     }
 };
