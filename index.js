@@ -31,6 +31,6 @@ for (const file of commandFiles) {
 	}
 }
 
-exports.globalqueue = globalqueue;
+module.exports.globalqueue = globalqueue;
 
 client.login(process.env.TOKEN);
