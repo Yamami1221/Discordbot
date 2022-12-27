@@ -15,6 +15,6 @@ module.exports = {
 		console.log(link);
 		await interaction.reply({ content: 'This command is not available', ephemeral: true });
 	},
-	exports: globalqueue
 };
 
+exports.globalqueue = globalqueue;
