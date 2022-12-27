@@ -8,7 +8,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "deploycommands": "node deploy-commands.js",
-    "deletecommands": "node delete-commands.js"
+    "deletecommands": "node delete-commands.js",
+    "lint": "eslint .",
+    "deploy": "node deploy-commands.js && node index.js"
   },
   "author": "Yamami",
   "license": "ISC",
