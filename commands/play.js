@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-var globalqueue = new Map();
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('play')
@@ -16,5 +14,3 @@ module.exports = {
 		await interaction.reply({ content: 'This command is not available', ephemeral: true });
 	},
 };
-
-exports.globalqueue = globalqueue;
