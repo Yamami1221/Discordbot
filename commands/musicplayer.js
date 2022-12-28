@@ -5,6 +5,7 @@ const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 
 const globalqueue = new Map();
+const globalresource = new Map();
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -234,9 +235,11 @@ async function playSong(interaction, song) {
 	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
 	console.log(songstream.stream);
 	console.log(songstream);
-	const resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
+	const sresource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
+	globalresource.set(interaction.guild.id, sresource);
 	const player = createAudioPlayer();
-	player.play(resource);
+	const useresource = globalresource.get(interaction.guild.id);
+	player.play(useresource);
 	serverqueue.connection.subscribe(player);
 	player.on(AudioPlayerStatus.Idle, () => {
 		serverqueue.songs.shift();
@@ -318,11 +321,12 @@ async function remove(interaction) {
 
 async function volume(interaction) {
 	const serverqueue = globalqueue.get(interaction.guild.id);
+	const useresource = globalresource.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could change the volume of!', ephemeral: true });
 	const volumes = interaction.options.getInteger('volume');
 	if (volumes > 200 || volumes < 0) return interaction.editReply({ content: 'The volume must be between 0 and 200!', ephemeral: true });
 	serverqueue.volume = volumes;
-	serverqueue.connection.setVolume(volumes / 100);
+	useresource.volume.setVolume(volumes / 100);
 	await interaction.editReply({ content: `Set the volume to ${volumes}!` });
 }
 
