@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
 const { stream, video_basic_info, yt_validate } = require('play-dl');
+const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 
 const globalqueue = new Map();
@@ -185,12 +186,12 @@ async function play(interaction) {
 	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
 		return interaction.editReply({ content: 'I need the permissions to join and speak in your voice channel!' });
 	}
-	const songinfo = await video_basic_info(link);
+	const songinfo1 = await video_basic_info(link);
+	const songinfo2 = await ytdl.getBasicInfo(link);
 	const song = {
-		title: songinfo.video_details.title,
-		url: songinfo.video_details.video_url,
+		title: songinfo1.video_details.title,
+		url: songinfo2.videoDetails.video_url,
 	};
-	console.log(song);
 	if (!serverqueue) {
 		const queueconstruct = {
 			textchannel: interaction.channel,
@@ -202,6 +203,7 @@ async function play(interaction) {
 		};
 		globalqueue.set(interaction.guild.id, queueconstruct);
 		queueconstruct.songs.push(song);
+		interaction.editReply({ content: `**${song.title}** has been added to the queue!` });
 		try {
 			const connection = joinVoiceChannel({
 				channelId: voicechannel.id,
@@ -225,13 +227,11 @@ async function play(interaction) {
 async function playSong(interaction, song) {
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!song) {
-		serverqueue.voicechannel.leave();
+		serverqueue.connection.destroy();
 		globalqueue.delete(interaction.guild.id);
 		return;
 	}
-	console.log(song.url);
 	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
-	console.log('marked');
 	console.log(songstream.stream);
 	console.log(songstream);
 	const resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
@@ -242,7 +242,7 @@ async function playSong(interaction, song) {
 		serverqueue.songs.shift();
 		playSong(interaction, serverqueue.songs[0]);
 	});
-	await interaction.send({ content: `Now playing **${song.title}**` });
+	await interaction.channel.send({ content: `Now playing **${song.title}**` });
 }
 
 async function stop(interaction) {
