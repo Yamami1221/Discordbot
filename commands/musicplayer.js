@@ -82,7 +82,7 @@ module.exports = {
 				.setName('search')
 				.setDescription('Search for a song')
 				.addStringOption(option =>
-					option.setName('song name')
+					option.setName('songtitle')
 						.setDescription('Name of the song to search')
 						.setRequired(true)))
 		.addSubcommand(subcommand =>
@@ -394,7 +394,7 @@ function lyricsFinder(url) {
 
 async function search(interaction) {
 	await interaction.deferReply();
-	const songname = interaction.options.getString('song name');
+	const songname = interaction.options.getString('songtitle');
 	const song = await ytsr(songname, { limit: 1 });
 	if (!song.items[0]) return interaction.editReply({ content: 'I could not find that song!', ephemeral: true });
 	const songurl = song.items[0].url;
