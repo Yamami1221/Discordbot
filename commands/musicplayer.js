@@ -233,8 +233,6 @@ async function playSong(interaction, song) {
 		return;
 	}
 	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
-	console.log(songstream.stream);
-	console.log(songstream);
 	const sresource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
 	globalresource.set(interaction.guild.id, sresource);
 	const player = createAudioPlayer();
