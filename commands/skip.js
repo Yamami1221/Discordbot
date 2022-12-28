@@ -8,4 +8,3 @@ module.exports = {
         await interaction.reply({ content: 'This command is not available', ephemeral: true });
     },
 };
-
