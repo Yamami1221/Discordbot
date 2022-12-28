@@ -67,7 +67,7 @@ module.exports = {
 					option.setName('volume')
 						.setDescription('Volume to set')
 						.setMinValue(0)
-						.setMaxValue(100)
+						.setMaxValue(200)
 						.setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
@@ -82,7 +82,7 @@ module.exports = {
 				.setName('search')
 				.setDescription('Search for a song')
 				.addStringOption(option =>
-					option.setName('name')
+					option.setName('song name')
 						.setDescription('Name of the song to search')
 						.setRequired(true)))
 		.addSubcommand(subcommand =>
@@ -99,8 +99,6 @@ module.exports = {
 						.setRequired(true))),
 	async execute(interaction) {
 		const subcommand = interaction.options.getSubcommand();
-		interaction.deferReply();
-
 
 		if (subcommand === 'play') {
 			// playtest(interaction);
@@ -176,6 +174,7 @@ async function isValidURL(url) {
 // }
 
 async function play(interaction) {
+	interaction.deferReply();
 	const link = interaction.options.getString('link');
 	if (!isValidYoutubeUrl(link) && isValidURL(link)) {
 		return interaction.editReply({ content: 'Please enter a valid link', ephemeral: true });
@@ -199,7 +198,7 @@ async function play(interaction) {
 			voicechannel: voicechannel,
 			connection: null,
 			songs: [],
-			volume: 100,
+			volume: 50,
 			playing: true,
 		};
 		globalqueue.set(interaction.guild.id, queueconstruct);
@@ -233,7 +232,8 @@ async function playSong(interaction, song) {
 		return;
 	}
 	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
-	const sresource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
+	const sresource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
+	sresource.volume.setVolume(serverqueue.volume / 100);
 	globalresource.set(interaction.guild.id, sresource);
 	const player = createAudioPlayer();
 	const useresource = globalresource.get(interaction.guild.id);
@@ -247,6 +247,7 @@ async function playSong(interaction, song) {
 }
 
 async function stop(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could stop!', ephemeral: true });
 	serverqueue.songs = [];
@@ -256,6 +257,7 @@ async function stop(interaction) {
 }
 
 async function skip(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could skip!', ephemeral: true });
 	serverqueue.connection.destroy();
@@ -263,6 +265,7 @@ async function skip(interaction) {
 }
 
 async function queue(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song in the queue!', ephemeral: true });
 	const queueembed = new EmbedBuilder()
@@ -273,6 +276,7 @@ async function queue(interaction) {
 }
 
 async function pause(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could pause!', ephemeral: true });
 	serverqueue.connection.pause();
@@ -280,6 +284,7 @@ async function pause(interaction) {
 }
 
 async function resume(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could resume!', ephemeral: true });
 	serverqueue.connection.unpause();
@@ -287,6 +292,7 @@ async function resume(interaction) {
 }
 
 async function loop(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could loop!', ephemeral: true });
 	serverqueue.connection.loop(true);
@@ -294,6 +300,7 @@ async function loop(interaction) {
 }
 
 async function shuffle(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could shuffle!', ephemeral: true });
 	serverqueue.songs = shuffleArray(serverqueue.songs);
@@ -309,6 +316,7 @@ function shuffleArray(array) {
 }
 
 async function remove(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could remove!', ephemeral: true });
 	const index = interaction.options.getInteger('position');
@@ -318,17 +326,19 @@ async function remove(interaction) {
 }
 
 async function volume(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
-	const useresource = globalresource.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could change the volume of!', ephemeral: true });
+	const useresource = globalresource.get(interaction.guild.id);
 	const volumes = interaction.options.getInteger('volume');
 	if (volumes > 200 || volumes < 0) return interaction.editReply({ content: 'The volume must be between 0 and 200!', ephemeral: true });
 	serverqueue.volume = volumes;
-	useresource.volume.setVolume(volumes / 100);
+	await useresource.volume.setVolume(serverqueue.volume / 100);
 	await interaction.editReply({ content: `Set the volume to ${volumes}!` });
 }
 
 async function nowplaying(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could show!', ephemeral: true });
 	const songembed = new EmbedBuilder()
@@ -339,6 +349,7 @@ async function nowplaying(interaction) {
 }
 
 async function seek(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could seek!', ephemeral: true });
 	const seektime = interaction.options.getInteger('time');
@@ -348,6 +359,7 @@ async function seek(interaction) {
 }
 
 async function jump(interaction) {
+	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could jump to!', ephemeral: true });
 	const jumpto = interaction.options.getInteger('position');
@@ -358,6 +370,7 @@ async function jump(interaction) {
 }
 
 async function lyrics(interaction) {
+	await interaction.deferReply();
 	const songname = interaction.options.getString('song');
 	const song = await ytsr(songname, { limit: 1 });
 	if (!song.items[0]) return interaction.editReply({ content: 'I could not find that song!', ephemeral: true });
@@ -380,7 +393,8 @@ function lyricsFinder(url) {
 }
 
 async function search(interaction) {
-	const songname = interaction.options.getString('song');
+	await interaction.deferReply();
+	const songname = interaction.options.getString('song name');
 	const song = await ytsr(songname, { limit: 1 });
 	if (!song.items[0]) return interaction.editReply({ content: 'I could not find that song!', ephemeral: true });
 	const songurl = song.items[0].url;
