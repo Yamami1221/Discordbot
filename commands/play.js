@@ -8,7 +8,7 @@ module.exports = {
 			option.setName('link')
 				.setDescription('The song you want to play')
 				.setRequired(true)),
-	async execute() {
-		
+	async execute(interaction) {
+		interaction.deferReply();
 	},
 };
