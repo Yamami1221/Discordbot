@@ -1,19 +1,15 @@
-const { SlashCommandBuilder, MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Help command'),
     async execute(interaction) {
-        const embed = new MessageEmbed()
-            .setTitle('Help(not done yet))')
-            .setDescription('This is a help command')
-            .setColor('RANDOM')
-            .setFooter('This is a footer')
-            .setTimestamp()
-            .addFields(
-                { name: 'Help', value: 'This is a help command' },
-            );
+        const embed = new EmbedBuilder()
+            .setTitle('Help')
+            .setDescription('This is the help command')
+            .setColor('#FF0000')
+            .setTimestamp();
         await interaction.reply({ embeds: [embed] });
     },
 };
