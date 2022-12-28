@@ -8,7 +8,7 @@ module.exports = {
 			option.setName('link')
 				.setDescription('The song you want to play')
 				.setRequired(true)),
-	async execute(interaction) {
-		await interaction.reply({ content: 'This command is not available', ephemeral: true });
+	async execute() {
+		
 	},
 };
