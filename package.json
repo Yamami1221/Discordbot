@@ -8,8 +8,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "deploycommands": "node deploy-commands.js",
-    "deploy": "node deploy-commands.js && node index.js",
-    "deletecommands": "node delete-commands.js"
+    "deletecommands": "node delete-commands.js",
+    "deploy": "node deploy-commands.js && node index.js"
   },
   "author": "Yamami",
   "license": "ISC",
