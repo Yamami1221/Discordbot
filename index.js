@@ -1,18 +1,31 @@
 require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const client = new Client({
-	intents: [GatewayIntentBits.Guilds,
+	partials: [
+		Partials.Channel,
+		Partials.GuildMember,
+		Partials.Message,
+		Partials.Reaction,
+		Partials.User,
+	],
+	intents: [
+		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildBans,
 		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildIntegrations,
+		GatewayIntentBits.GuildWebhooks,
+		GatewayIntentBits.GuildInvites,
 		GatewayIntentBits.GuildMessageReactions,
 		GatewayIntentBits.GuildMessageTyping,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildVoiceStates,
 		GatewayIntentBits.GuildPresences,
-		GatewayIntentBits.GuildMessageReactions] });
+		GatewayIntentBits.GuildMessageReactions,
+	],
+});
 
 client.commands = new Collection();
 const eventsPath = path.join(__dirname, 'events');
