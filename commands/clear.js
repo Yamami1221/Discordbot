@@ -14,7 +14,6 @@ module.exports = {
         await interaction.deferReply();
         var amount = interaction.options.getInteger('amount');
         var messages = await interaction.channel.messages.fetch({ limit: amount });
-        console.log(messages);
         await interaction.channel.bulkDelete(messages);
         await interaction.channel.send(`Deleted ${amount} messages!`);
 	},
