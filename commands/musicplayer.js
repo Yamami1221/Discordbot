@@ -1,12 +1,12 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, entersState, StreamType, VoiceConnectionStatus } = require('@discordjs/voice');
-const ytdl = require('ytdl-core');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
+const { stream, video_basic_info } = require('play-dl');
 const ytsr = require('ytsr');
 
 const globalqueue = new Map();
 
 module.exports = {
-	data: SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('musicplayer')
 		.setDescription('Music Player')
 		.addSubcommand(subcommand =>
@@ -80,213 +80,263 @@ module.exports = {
 				.setName('search')
 				.setDescription('Search for a song')
 				.addStringOption(option =>
-					option.setName('song name')
-						.setDescription('Name of the song to search for')
+					option.setName('name')
+						.setDescription('Name of the song to search')
+						.setRequired(true)))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('lyrics')
+				.setDescription('Show the lyrics of the current song'))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('jump')
+				.setDescription('Jump to a specific song in the queue')
+				.addIntegerOption(option =>
+					option.setName('position')
+						.setDescription('Position of the song in the queue')
 						.setRequired(true))),
 	async execute(interaction) {
 		const subcommand = interaction.options.getSubcommand();
+		const link = interaction.options.getString('link');
+
 		if (subcommand === 'play') {
-			const link = interaction.options.getString('link');
-			addSongToQueue(link, interaction);
+			interaction.deferReply();
+			await play(interaction, link);
 		} else if (subcommand === 'stop') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.songs = [];
-			serverQueue.connection.destroy();
-			globalqueue.delete(interaction.guildId);
-			return interaction.reply({ content: 'The music has been stopped!', ephemeral: false });
+			stop(interaction);
 		} else if (subcommand === 'skip') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.connection.destroy();
-			return interaction.reply({ content: 'The song has been skipped!', ephemeral: false });
+			skip(interaction);
 		} else if (subcommand === 'queue') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			let queue = '';
-			for (let i = 0; i < serverQueue.songs.length; i++) {
-				queue += `${i + 1}. ${serverQueue.songs[i].title}\n`;
-			}
-			return interaction.reply({ content: queue, ephemeral: false });
+			queue(interaction);
 		} else if (subcommand === 'pause') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.connection.pause();
-			return interaction.reply({ content: 'The music has been paused!', ephemeral: false });
+			pause(interaction);
 		} else if (subcommand === 'resume') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.connection.unpause();
-			return interaction.reply({ content: 'The music has been resumed!', ephemeral: false });
+			resume(interaction);
 		} else if (subcommand === 'loop') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.loop = !serverQueue.loop;
-			return interaction.reply({ content: `Loop is now ${serverQueue.loop ? 'on' : 'off'}`, ephemeral: false });
+			loop(interaction);
 		} else if (subcommand === 'shuffle') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			serverQueue.shuffle = !serverQueue.shuffle;
-			return interaction.reply({ content: `Shuffle is now ${serverQueue.shuffle ? 'on' : 'off'}`, ephemeral: false });
+			shuffle(interaction);
 		} else if (subcommand === 'remove') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			const position = interaction.options.getInteger('position');
-			if (position > serverQueue.songs.length) {
-				return interaction.reply({ content: 'There is no song at that position!', ephemeral: true });
-			}
-			serverQueue.songs.splice(position - 1, 1);
-			return interaction.reply({ content: `Song at position ${position} has been removed!`, ephemeral: false });
+			remove(interaction);
 		} else if (subcommand === 'nowplaying') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			return interaction.reply({ content: `Now playing: ${serverQueue.songs[0].title}`, ephemeral: false });
+			nowplaying(interaction);
 		} else if (subcommand === 'volume') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			const volume = interaction.options.getInteger('volume');
-			serverQueue.volume = volume;
-			serverQueue.connection.setVolumeLogarithmic(volume / 100);
-			return interaction.reply({ content: `Volume has been set to ${volume}`, ephemeral: false });
-		} else if (subcommand === 'search') {
-			const songName = interaction.options.getString('song name');
-			await searchSong(songName, interaction);
+			volume(interaction);
 		} else if (subcommand === 'seek') {
-			const serverQueue = globalqueue.get(interaction.guildId);
-			if (!serverQueue) {
-				return interaction.reply({ content: 'There is nothing playing!', ephemeral: true });
-			}
-			const time = interaction.options.getString('time');
-			const timeArray = time.split(':');
-			let seconds = 0;
-			if (timeArray.length === 3) {
-				seconds += parseInt(timeArray[0]) * 3600;
-				seconds += parseInt(timeArray[1]) * 60;
-				seconds += parseInt(timeArray[2]);
-			} else if (timeArray.length === 2) {
-				seconds += parseInt(timeArray[0]) * 60;
-				seconds += parseInt(timeArray[1]);
-			} else if (timeArray.length === 1) {
-				seconds += parseInt(timeArray[0]);
-			}
-			serverQueue.connection.seek(seconds * 1000);
-			return interaction.reply({ content: `Seeked to ${time}`, ephemeral: false });
+			seek(interaction);
+		} else if (subcommand === 'search') {
+			search(interaction);
+		} else if (subcommand === 'lyrics') {
+			lyrics(interaction);
+		} else if (subcommand === 'jump') {
+			jump(interaction);
 		}
 	},
 };
 
-async function addSongToQueue(link, interaction) {
-	const serverQueue = globalqueue.get(interaction.guildId);
-	const songInfo = await ytdl.getInfo(link);
+async function play(interaction, link) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	const voicechannel = interaction.member.voice.channel;
+	if (!voicechannel) return interaction.editReply({ content: 'You need to be in a voice channel to play music!' });
+	const permissions = voicechannel.permissionsFor(interaction.client.user);
+	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
+		return interaction.editReply({ content: 'I need the permissions to join and speak in your voice channel!' });
+	}
+	const songinfo = await video_basic_info(link);
 	const song = {
-		title: songInfo.videoDetails.title,
-		url: songInfo.videoDetails.video_url,
+		title: songinfo.video_details.title,
+		url: songinfo.video_details.video_url,
 	};
-	if (!serverQueue) {
-		const queueConstruct = {
-			textChannel: interaction.channel,
-			voiceChannel: interaction.member.voice.channel,
+	if (!serverqueue) {
+		const queueconstruct = {
+			textchannel: interaction.channel,
+			voicechannel: voicechannel,
 			connection: null,
 			songs: [],
 			volume: 100,
 			playing: true,
-			loop: false,
-			shuffle: false,
 		};
-		globalqueue.set(interaction.guildId, queueConstruct);
-		queueConstruct.songs.push(song);
+		globalqueue.set(interaction.guild.id, queueconstruct);
+		queueconstruct.songs.push(song);
 		try {
 			const connection = joinVoiceChannel({
-				channelId: interaction.member.voice.channel.id,
-				guildId: interaction.guildId,
-				adapterCreator: interaction.guild.voiceAdapterCreator,
+				channelId: voicechannel.id,
+				guildId: voicechannel.guild.id,
+				adapterCreator: voicechannel.guild.voiceAdapterCreator,
 			});
-			queueConstruct.connection = connection;
-			await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
-			await interaction.reply({ content: `${song.title} has been added to the queue!`, ephemeral: false });
-			play(interaction.guild, queueConstruct.songs[0]);
-		} catch (err) {
-			console.log(err);
-			globalqueue.delete(interaction.guildId);
-			return interaction.reply({ content: 'There was an error connecting!', ephemeral: true });
+			queueconstruct.connection = connection;
+			playSong(interaction, queueconstruct.songs[0]);
+		}
+		catch (error) {
+			console.error(error);
+			globalqueue.delete(interaction.guild.id);
+			return interaction.editReply({ content: `There was an error connecting: ${error}`, ephemeral: true });
 		}
 	} else {
-		serverQueue.songs.push(song);
-		return interaction.reply({ content: `${song.title} has been added to the queue!`, ephemeral: false });
+		serverqueue.songs.push(song);
+		return interaction.editReply({ content: `**${song.title}** has been added to the queue!` });
 	}
 }
 
-async function play(guild, song) {
-	const serverQueue = globalqueue.get(guild.id);
+async function playSong(interaction, song) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!song) {
-		serverQueue.voiceChannel.leave();
-		globalqueue.delete(guild.id);
+		serverqueue.voicechannel.leave();
+		globalqueue.delete(interaction.guild.id);
 		return;
 	}
-	const audioPlayer = createAudioPlayer();
-	const audioResource = createAudioResource(ytdl(song.url, { filter: 'audioonly', highWaterMark: 1 << 25 }), { inputType: StreamType.Arbitrary });
-	audioPlayer.play(audioResource);
-	audioPlayer.on(AudioPlayerStatus.Idle, () => {
-		if (serverQueue.loop) {
-			play(guild, serverQueue.songs[0]);
-		} else if (serverQueue.shuffle) {
-			serverQueue.songs.push(serverQueue.songs.shift());
-			play(guild, serverQueue.songs[0]);
-		} else {
-			serverQueue.songs.shift();
-			play(guild, serverQueue.songs[0]);
-		}
+	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
+	const resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary });
+	const player = createAudioPlayer();
+	player.play(resource);
+	serverqueue.connection.subscribe(player);
+	player.on(AudioPlayerStatus.Idle, () => {
+		serverqueue.songs.shift();
+		playSong(interaction, serverqueue.songs[0]);
 	});
-	audioPlayer.on('error', error => {
-		console.error(error);
-	});
-	serverQueue.connection.subscribe(audioPlayer);
+	await interaction.editReply({ content: `Now playing **${song.title}**` });
 }
 
-async function searchSong(songName, interaction) {
-	const searchResults = await ytsr(songName, { limit: 5 });
-	const searchEmbed = new EmbedBuilder()
-		.setTitle('Search Results')
-		.setColor('#ff0000')
-		.setDescription('Choose a song to play');
-	for (let i = 0; i < searchResults.items.length; i++) {
-		searchEmbed.addField(`${i + 1}. ${searchResults.items[i].title}`, searchResults.items[i].url);
+async function stop(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could stop!', ephemeral: true });
+	serverqueue.songs = [];
+	serverqueue.connection.destroy();
+	globalqueue.delete(interaction.guild.id);
+	await interaction.reply({ content: 'Stopped the music!' });
+}
+
+async function skip(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could skip!', ephemeral: true });
+	serverqueue.connection.destroy();
+	await interaction.reply({ content: 'Skipped the song!' });
+}
+
+async function queue(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song in the queue!', ephemeral: true });
+	const queueembed = new EmbedBuilder()
+		.setTitle('Server Queue')
+		.setDescription(serverqueue.songs.map(song => `**-** ${song.title}`).join('\n'))
+		.setColor('#ff8400');
+	await interaction.reply({ embeds: [queueembed] });
+}
+
+async function pause(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could pause!', ephemeral: true });
+	serverqueue.connection.pause();
+	await interaction.reply({ content: 'Paused the music!' });
+}
+
+async function resume(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could resume!', ephemeral: true });
+	serverqueue.connection.unpause();
+	await interaction.reply({ content: 'Resumed the music!' });
+}
+
+async function loop(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could loop!', ephemeral: true });
+	serverqueue.connection.loop(true);
+	await interaction.reply({ content: 'Looped the music!' });
+}
+
+async function shuffle(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could shuffle!', ephemeral: true });
+	serverqueue.songs = shuffleArray(serverqueue.songs);
+	await interaction.reply({ content: 'Shuffled the queue!' });
+}
+
+function shuffleArray(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
 	}
-	const searchMessage = await interaction.reply({ embeds: [searchEmbed], fetchReply: true });
-	const filter = m => m.author.id === interaction.user.id;
-	const collector = searchMessage.channel.createMessageCollector({ filter, time: 15000 });
-	collector.on('collect', async m => {
-		if (m.content > 0 && m.content <= searchResults.items.length) {
-			collector.stop();
-			await interaction.editReply({ content: 'Searching...', embeds: [] });
-			addSongToQueue(searchResults.items[m.content - 1].url, interaction);
-		} else {
-			await interaction.editReply({ content: 'Invalid number!', embeds: [] });
-		}
+	return array;
+}
+
+async function remove(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could remove!', ephemeral: true });
+	const index = interaction.options.getInteger('position');
+	if (index > serverqueue.songs.length) return interaction.reply({ content: 'There is no song at that index!', ephemeral: true });
+	serverqueue.songs.splice(index - 1, 1);
+	await interaction.reply({ content: `Removed the song at index ${index}!` });
+}
+
+async function volume(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could change the volume of!', ephemeral: true });
+	const volumes = interaction.options.getInteger('volume');
+	if (volumes > 200 || volumes < 0) return interaction.reply({ content: 'The volume must be between 0 and 200!', ephemeral: true });
+	serverqueue.volume = volumes;
+	serverqueue.connection.setVolume(volumes / 100);
+	await interaction.reply({ content: `Set the volume to ${volumes}!` });
+}
+
+async function nowplaying(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could show!', ephemeral: true });
+	const songembed = new EmbedBuilder()
+		.setTitle('Now Playing')
+		.setDescription(`**${serverqueue.songs[0].title}**`)
+		.setColor('#ff8400');
+	await interaction.reply({ embeds: [songembed] });
+}
+
+async function seek(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could seek!', ephemeral: true });
+	const seektime = interaction.options.getInteger('time');
+	if (seektime > serverqueue.songs[0].duration) return interaction.reply({ content: 'You cannot seek past the end of the song!', ephemeral: true });
+	serverqueue.connection.seek(seektime * 1000);
+	await interaction.reply({ content: `Seeked to ${seektime} seconds!` });
+}
+
+async function jump(interaction) {
+	const serverqueue = globalqueue.get(interaction.guild.id);
+	if (!serverqueue) return interaction.reply({ content: 'There is no song that I could jump to!', ephemeral: true });
+	const jumpto = interaction.options.getInteger('position');
+	if (jumpto > serverqueue.songs.length) return interaction.reply({ content: 'There is no song at that index!', ephemeral: true });
+	serverqueue.songs = serverqueue.songs.slice(jumpto - 1);
+	serverqueue.connection.destroy();
+	await interaction.reply({ content: `Jumped to the song at index ${jumpto}!` });
+}
+
+async function lyrics(interaction) {
+	const songname = interaction.options.getString('song');
+	const song = await ytsr(songname, { limit: 1 });
+	if (!song.items[0]) return interaction.reply({ content: 'I could not find that song!', ephemeral: true });
+	const songurl = song.items[0].url;
+	const songlyrics = await lyricsFinder(songurl);
+	if (!songlyrics) return interaction.reply({ content: 'I could not find the lyrics for that song!', ephemeral: true });
+	const lyricsembed = new EmbedBuilder()
+		.setTitle(`Lyrics for ${songname}`)
+		.setDescription(songlyrics)
+		.setColor('#ff8400');
+	await interaction.reply({ embeds: [lyricsembed] });
+}
+
+function lyricsFinder(url) {
+	return new Promise((resolve, reject) => {
+		const lyricss = lyricsFinder(url, '');
+		if (!lyricss) reject('No lyrics found');
+		resolve(lyricss);
 	});
-	collector.on('end', collected => {
-		if (collected.size === 0) {
-			interaction.editReply({ content: 'Timed out!', embeds: [] });
-		}
-	});
+}
+
+async function search(interaction) {
+	const songname = interaction.options.getString('song');
+	const song = await ytsr(songname, { limit: 1 });
+	if (!song.items[0]) return interaction.reply({ content: 'I could not find that song!', ephemeral: true });
+	const songurl = song.items[0].url;
+	const songembed = new EmbedBuilder()
+		.setTitle(`Search results for ${songname}`)
+		.setDescription(`[Click here to play ${songname}](${songurl})`)
+		.setColor('#ff8400');
+	await interaction.reply({ embeds: [songembed] });
 }
