@@ -7,7 +7,7 @@ module.exports = {
 			const command = interaction.client.commands.get(interaction.commandName);
 
 			if (!command) {
-				interaction.reply({ content: `No command matching ${interaction.commandName} was found.` , ephemeral: true });
+				interaction.reply({ content: `No command matching ${interaction.commandName} was found.`, ephemeral: true });
 				console.error(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
@@ -37,7 +37,5 @@ module.exports = {
 		} else if (!interaction.isCommand()) {
 			return;
 		}
-
-		
 	},
 };
