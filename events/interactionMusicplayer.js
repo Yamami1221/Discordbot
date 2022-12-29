@@ -145,7 +145,6 @@ async function playSong(interaction, song) {
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	if (!song) {
 		serverqueue.connection.destroy();
-		globalqueue.delete(interaction.guild.id);
 		return;
 	}
 	const songstream = await stream(song.url, { discordPlayerCompatibility : true });
