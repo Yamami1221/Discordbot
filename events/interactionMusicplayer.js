@@ -16,8 +16,6 @@ module.exports = {
 			if (command === 'play') {
 				// playtest(interaction);
 				play(interaction);
-			} else if (command === 'search') {
-				search(interaction);
 			} else if (command === 'pause') {
 				pause(interaction);
 			} else if (command === 'resume') {
@@ -91,9 +89,12 @@ async function isValidURL(url) {
 
 async function play(interaction) {
 	interaction.deferReply();
-	const link = interaction.options.getString('link');
+	let link = interaction.options.getString('query');
 	if (!isValidYoutubeUrl(link) && isValidURL(link)) {
-		return interaction.editReply({ content: 'Please enter a valid link', ephemeral: true });
+		link = search(interaction);
+		if (!link) {
+			return;
+		}
 	}
 	const serverqueue = globalqueue.get(interaction.guild.id);
 	const voicechannel = interaction.member.voice.channel;
@@ -163,31 +164,28 @@ async function playSong(interaction, song) {
 }
 
 async function search(interaction) {
-	await interaction.deferReply();
-	const songname = interaction.options.getString('songtitle');
+	const songname = interaction.options.getString('query');
 	const song = await ytsr(songname, { limit: 1 });
 	if (!song.items[0]) return interaction.editReply({ content: 'I could not find that song!', ephemeral: true });
 	const songurl = song.items[0].url;
-	const songembed = new EmbedBuilder()
-		.setTitle(`Search results for ${songname}`)
-		.setDescription(`[Click here to play ${songname}](${songurl})`)
-		.setColor('#ff8400');
-	await interaction.editReply({ embeds: [songembed] });
+	return songurl;
 }
 
 async function pause(interaction) {
 	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
+	const useresource = globalresource.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could pause!', ephemeral: true });
-	serverqueue.connection.pause();
+	useresource.pause();
 	await interaction.editReply({ content: 'Paused the music!' });
 }
 
 async function resume(interaction) {
 	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
+	const useresource = globalresource.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could resume!', ephemeral: true });
-	serverqueue.connection.unpause();
+	useresource.unpause();
 	await interaction.editReply({ content: 'Resumed the music!' });
 }
 
@@ -223,10 +221,11 @@ async function skip(interaction) {
 async function stop(interaction) {
 	await interaction.deferReply();
 	const serverqueue = globalqueue.get(interaction.guild.id);
+	const useresource = globalresource.get(interaction.guild.id);
 	if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could stop!', ephemeral: true });
 	serverqueue.songs = [];
 	serverqueue.connection.destroy();
-	globalqueue.delete(interaction.guild.id);
+	useresource.stop();
 	await interaction.editReply({ content: 'Stopped the music!' });
 }
 
