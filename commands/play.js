@@ -16,6 +16,7 @@ module.exports = {
 				.setDescription('The link or search query')
 				.setRequired(true)),
 	async execute(interaction) {
+		// playtest(interaction);
 		play(interaction);
 	},
 };
@@ -87,7 +88,10 @@ async function play(interaction) {
 			connection: null,
 			songs: [],
 			volume: 50,
+			player: null,
 			playing: true,
+			loop: false,
+			shuffle: false,
 		};
 		globalqueue.set(interaction.guild.id, queueconstruct);
 		queueconstruct.songs.push(song);
@@ -103,7 +107,7 @@ async function play(interaction) {
 		}
 		catch (error) {
 			console.error(error);
-			globalqueue.delete(interaction.guild.id);
+			queueconstruct.songs = [];
 			return interaction.editReply({ content: `There was an error connecting: ${error}`, ephemeral: true });
 		}
 	} else {
