@@ -1,4 +1,19 @@
-const globalqueue = new Map();
-const globalresource = new Map();
+const fs = require('fs');
 
-module.exports = { globalqueue, globalresource };
+const data = fs.readFileSync('./data.json');
+
+try {
+    const globalqueue = JSON.parse(data, reviver);
+    module.exports = { globalqueue };
+} catch (err) {
+    console.error(err);
+}
+
+function reviver(key, value) {
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value);
+        }
+    }
+    return value;
+}
