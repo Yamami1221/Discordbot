@@ -55,7 +55,6 @@ function replacer(key, value) {
     if (value instanceof Map) {
         return {
             dataType: 'Map',
-            // eslint-disable-next-line no-inline-comments
             value: Array.from(value.entries()), // or with spread: value: [...value]
         };
     } else {
