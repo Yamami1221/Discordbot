@@ -7,18 +7,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('enable')
         .setDescription('enable text channel')
-        .addChannelOption(option =>
-            option.setName('channel')
-                .setDescription('The channel to enable')
-                .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: false });
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
-            const channel = interaction.options.getChannel('channel');
             const serverqueue = globalqueue?.get(interaction.guild.id);
-            console.log(globalqueue);
             if (!serverqueue) {
                 const queueconstruct = {
                     textchannel: interaction.channel,
@@ -41,13 +35,13 @@ module.exports = {
                         return;
                     }
                 });
-                await interaction.editReply({ content: `Enabled ${channel} for music commands` });
+                await interaction.editReply({ content: `Enabled ${interaction.channel.name} for music commands` });
             } else {
-                if (serverqueue.textchannel.id == channel.id) {
+                if (serverqueue.textchannel.id == interaction.channel.id) {
                     await interaction.editReply({ content: 'This channel is already enabled' });
                     return;
                 } else {
-                    await interaction.editReply({ content: `This channel is already enabled for ${serverqueue.textchannel.name}` });
+                    await interaction.editReply({ content: `The music commands is already enabled for <#${serverqueue.textchannel.id}>` });
                     return;
                 }
             }
