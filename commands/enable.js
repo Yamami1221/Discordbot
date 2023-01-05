@@ -18,6 +18,7 @@ module.exports = {
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const channel = interaction.options.getChannel('channel');
             const serverqueue = globalqueue?.get(interaction.guild.id);
+            console.log(globalqueue);
             if (!serverqueue) {
                 const queueconstruct = {
                     textchannel: interaction.channel,
@@ -32,20 +33,23 @@ module.exports = {
                     shuffle: false,
                 };
                 globalqueue.set(interaction.guild.id, queueconstruct);
-                console.log(globalqueue);
                 const data = JSON.stringify(globalqueue, replacer);
-                console.log(data);
                 fs.writeFile('../data.json', data, function(err) {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
                         return;
                     }
-                    console.log('Configuration saved successfully.');
                 });
                 await interaction.editReply({ content: `Enabled ${channel} for music commands` });
             } else {
-                await interaction.editReply({ content: 'This channel is already enabled' });
+                if (serverqueue.textchannel.id == channel.id) {
+                    await interaction.editReply({ content: 'This channel is already enabled' });
+                    return;
+                } else {
+                    await interaction.editReply({ content: `This channel is already enabled for ${serverqueue.textchannel.name}` });
+                    return;
+                }
             }
         } else {
             await interaction.editReply({ content: 'You do not have permission to use this command', ephemeral: true });
