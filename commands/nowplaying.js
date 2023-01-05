@@ -14,7 +14,7 @@ module.exports = {
 async function nowplaying(interaction) {
     await interaction.deferReply();
     const serverqueue = globalqueue.get(interaction.guild.id);
-    const title = serverqueue.songs[0].title;
+    const title = serverqueue?.songs[0]?.title;
     const connection = interaction.member.voice.channel;
     if (!connection) return interaction.editReply({ content: 'You need to be in a voice channel to use this command!', ephemeral: true });
     if (!title) return interaction.editReply({ content: 'There is no song that I could show!', ephemeral: true });
