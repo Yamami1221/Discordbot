@@ -8,7 +8,7 @@ module.exports = {
             option.setName('channel')
                 .setDescription('The channel to disable')
                 .setRequired(true))
-        .setDefaultMemberPermission(PermissionFlagsBits.ManageChannels)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
