@@ -14,7 +14,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: false });
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const channel = interaction.options.getChannel('channel');
             const serverqueue = globalqueue?.get(interaction.guild.id);
