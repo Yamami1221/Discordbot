@@ -6,7 +6,7 @@ const { globalqueue } = require('../global.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('enable')
-        .setDescription('enable text channel')
+        .setDescription('enable text channel for music commands')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
@@ -15,34 +15,48 @@ module.exports = {
             const serverqueue = globalqueue?.get(interaction.guild.id);
             if (!serverqueue) {
                 const queueconstruct = {
-                    textchannel: interaction.channel,
+                    textchannel: [],
                     voicechannel: null,
                     connection: null,
                     songs: [],
                     volume: 50,
                     player: null,
                     resource: null,
-                    playing: true,
+                    playing: false,
                     loop: false,
                     shuffle: false,
                 };
+                queueconstruct.textchannel.push(interaction.channel);
                 globalqueue.set(interaction.guild.id, queueconstruct);
+                await interaction.editReply({ content: `Enabled ${interaction.guild.name} for music commands` });
+                await interaction.followUp({ content: `Added <#${interaction.channel.id}> for music commands enabled list` });
                 const data = JSON.stringify(globalqueue, replacer);
                 fs.writeFile('../data.json', data, function(err) {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
+                        interaction.followUp({ content: 'There has been an error saving your configuration data.' });
                         return;
                     }
                 });
-                await interaction.editReply({ content: `Enabled ${interaction.channel.name} for music commands` });
             } else {
-                if (serverqueue.textchannel.id == interaction.channel.id) {
-                    await interaction.editReply({ content: 'This channel is already enabled' });
+                if (serverqueue.textchannel.includes(interaction.channel)) {
+                    await interaction.editReply({ content: `<#${interaction.channel.id}> is already enabled` });
                     return;
                 } else {
-                    await interaction.editReply({ content: `The music commands is already enabled for <#${serverqueue.textchannel.id}>` });
-                    return;
+                    serverqueue.textchannel.push(interaction.channel);
+                    const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
+                    const textchannelforshow = serverqueue.textchannel[textchannelforshowloc].id;
+                    await interaction.editReply({ content: `Added <#${textchannelforshow}> for music commands enabled list` });
+                    const data = JSON.stringify(globalqueue, replacer);
+                    fs.writeFile('../data.json', data, function(err) {
+                        if (err) {
+                            console.log('There has been an error saving your configuration data.');
+                            console.log(err.message);
+                            interaction.followUp({ content: 'There has been an error saving your configuration data.' });
+                            return;
+                        }
+                    });
                 }
             }
         } else {

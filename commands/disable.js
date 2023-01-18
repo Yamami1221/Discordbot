@@ -1,27 +1,53 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const fs = require('fs');
+
+const { globalqueue } = require('../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('disable')
-        .setDescription('disable text channel')
-        .addChannelOption(option =>
-            option.setName('channel')
-                .setDescription('The channel to disable')
-                .setRequired(true))
+        .setDescription('disable text channel for music commands')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
+        await interaction.deferReply({ ephemeral: false });
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
-            const channel = interaction.options.getChannel('channel');
-            if (channel) {
-                await interaction.reply({ content: `Disabled ${channel}`, ephemeral: true });
-                interaction.reply({ content: 'This command is not available', ephemeral: true });
+            const serverqueue = globalqueue?.get(interaction.guild.id);
+            if (!serverqueue) {
+                await interaction.editReply({ content: `${interaction.guild.name} in not enabled for music commands`, ephemeral: true });
+                return;
             } else {
-                await interaction.reply({ content: 'Please provide a channel', ephemeral: true });
+                if (serverqueue.textchannel.includes(interaction.channel)) {
+                    const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
+                    serverqueue.textchannel.splice(textchannelforshowloc, 1);
+                    await interaction.editReply({ content: `Disabled <#${interaction.channel.id}> for music commands` });
+                    const data = JSON.stringify(globalqueue, replacer);
+                    fs.writeFile('../data.json', data, function(err) {
+                        if (err) {
+                            console.log('There has been an error saving your configuration data.');
+                            console.log(err.message);
+                            interaction.followUp({ content: 'There has been an error saving your configuration data.' });
+                            return;
+                        }
+                    });
+                } else {
+                    await interaction.editReply({ content: `<#${interaction.channel.id}> is already disabled`, ephemeral: true });
+                    return;
+                }
             }
         } else {
-            await interaction.reply({ content: 'You do not have permission to use this command', ephemeral: true });
+            await interaction.editReply({ content: 'You do not have permission to use this command', ephemeral: true });
         }
-        await interaction.reply({ content: 'This command is not available', ephemeral: true });
     },
 };
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
