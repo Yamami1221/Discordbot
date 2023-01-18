@@ -18,6 +18,8 @@ module.exports = {
 
 async function lyrics(interaction) {
     await interaction.deferReply();
+    const voicechannel = interaction.member.voice.channel;
+    if (!voicechannel) return interaction.editReply({ content: 'You need to be in a voice channel to use this command' });
     const songname = globalqueue.get(interaction.guild.id).songs[0].title;
     if (!songname) return interaction.editReply({ content: 'There is no song in queue right now', ephemeral: true });
     const artistname = interaction.options.getString('artist') ?? '';
