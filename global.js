@@ -4,6 +4,7 @@ const data = fs.readFileSync('./data.json');
 
 try {
     const globalqueue = JSON.parse(data, reviver);
+    // const globalqueue = new Map();
     module.exports = { globalqueue };
 } catch (err) {
     console.error(err);

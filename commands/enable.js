@@ -31,7 +31,7 @@ module.exports = {
                 await interaction.editReply({ content: `Enabled ${interaction.guild.name} for music commands` });
                 await interaction.followUp({ content: `Added <#${interaction.channel.id}> for music commands enabled list` });
                 const data = JSON.stringify(globalqueue, replacer);
-                fs.writeFile('../data.json', data, function(err) {
+                fs.writeFile('./data.json', data, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
@@ -40,16 +40,21 @@ module.exports = {
                     }
                 });
             } else {
-                if (serverqueue.textchannel.includes(interaction.channel)) {
-                    await interaction.editReply({ content: `<#${interaction.channel.id}> is already enabled` });
-                    return;
-                } else {
+                let enabled = false;
+                for (let i = 0; i < serverqueue.textchannel.length; i++) {
+                    if (serverqueue.textchannel[i].id === interaction.channel.id) {
+                        await interaction.editReply({ content: `<#${interaction.channel.id}> is already enabled` });
+                        enabled = true;
+                        return;
+                    }
+                }
+                if (enabled === false) {
                     serverqueue.textchannel.push(interaction.channel);
                     const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
                     const textchannelforshow = serverqueue.textchannel[textchannelforshowloc].id;
                     await interaction.editReply({ content: `Added <#${textchannelforshow}> for music commands enabled list` });
                     const data = JSON.stringify(globalqueue, replacer);
-                    fs.writeFile('../data.json', data, function(err) {
+                    fs.writeFile('./data.json', data, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
