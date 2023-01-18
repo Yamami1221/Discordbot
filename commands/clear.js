@@ -18,7 +18,7 @@ module.exports = {
             await interaction.channel.bulkDelete(messages);
             await interaction.channel.send(`Deleted ${amount} messages!`);
         } catch (error) {
-            await interaction.editReply({ content: `${error}`, ephemeral: true });
+            await interaction.editReply({ content: 'You can not delete messages that over 14 days old.', ephemeral: true });
         }
     },
 };
