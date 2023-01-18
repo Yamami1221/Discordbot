@@ -26,6 +26,6 @@ module.exports = {
         );
     },
     async execute(interaction) {
-        await interaction.reply({ content: 'This command is not available', ephemeral: true });
+        await interaction.reply({ content: 'This command is not available(dev don\'t even know why we have this.)', ephemeral: true });
     },
 };
