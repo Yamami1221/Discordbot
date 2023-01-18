@@ -17,12 +17,18 @@ module.exports = {
                 await interaction.editReply({ content: `${interaction.guild.name} in not enabled for music commands`, ephemeral: true });
                 return;
             } else {
-                if (serverqueue.textchannel.includes(interaction.channel)) {
+                let enabled = false;
+                for (let i = 0; i < serverqueue.textchannel.length; i++) {
+                    if (serverqueue.textchannel[i].id === interaction.channel.id) {
+                        enabled = true;
+                    }
+                }
+                if (enabled === true) {
                     const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
                     serverqueue.textchannel.splice(textchannelforshowloc, 1);
                     await interaction.editReply({ content: `Disabled <#${interaction.channel.id}> for music commands` });
                     const data = JSON.stringify(globalqueue, replacer);
-                    fs.writeFile('../data.json', data, function(err) {
+                    fs.writeFile('./data.json', data, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
