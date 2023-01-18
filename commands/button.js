@@ -25,7 +25,7 @@ module.exports = {
                         .setLabel('Click me!')
                         .setStyle(ButtonStyle.Link),
                 );
-            await i.update({ content: 'A button was clicked!', components: [link] });
+            await i.update({ content: 'Hmmm you should click me again', components: [link] });
         });
 
         collector.on('end', collected => console.log(`Collected ${collected.size} items`));
