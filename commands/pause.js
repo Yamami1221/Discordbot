@@ -13,7 +13,6 @@ module.exports = {
 
 async function pauses(interaction) {
     await interaction.deferReply();
-    serverqueue.playing = false;
     const serverqueue = globalqueue.get(interaction.guild.id);
     let embed = new EmbedBuilder()
         .setTitle('Pause')
@@ -33,6 +32,7 @@ async function pauses(interaction) {
         .setDescription('The music is already paused!');
     if (serverqueue.playing == false) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.resource.pause();
+    serverqueue.playing = false;
     embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('Paused the music!');
