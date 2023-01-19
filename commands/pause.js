@@ -40,7 +40,6 @@ async function pauses(interaction) {
         .setDescription('The music is already paused!');
     if (serverqueue.playing == false) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.resource.pause();
-    serverqueue.playing = false;
     embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('Paused the music!');

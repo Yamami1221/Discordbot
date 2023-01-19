@@ -34,6 +34,7 @@ async function stop(interaction) {
     serverqueue.songs = [];
     serverqueue.player.stop();
     serverqueue.connection.destroy();
+    serverqueue.playing = false;
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('Stopped the music!');
