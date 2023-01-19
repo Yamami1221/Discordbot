@@ -150,8 +150,12 @@ async function playSong(interaction, song) {
     serverqueue.player.play(serverqueue.resource);
     serverqueue.connection.subscribe(serverqueue.player);
     serverqueue.player.on(AudioPlayerStatus.Idle, () => {
-        serverqueue.songs.shift();
-        playSong(interaction, serverqueue.songs[0]);
+        if (serverqueue.loop) {
+            playSong(interaction, serverqueue.songs[0]);
+        } else {
+            serverqueue.songs.shift();
+            playSong(interaction, serverqueue.songs[0]);
+        }
     });
     await interaction.channel.send({ content: `Now playing **${song.title}**` });
 }
