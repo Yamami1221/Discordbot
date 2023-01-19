@@ -26,6 +26,7 @@
     "moment": "^2.29.4",
     "play-dl": "^1.9.6",
     "sodium-native": "^3.4.1",
+    "speech-synthesis": "^0.3.2",
     "ytdl-core": "^4.11.2",
     "ytsr": "^3.8.0"
   },
