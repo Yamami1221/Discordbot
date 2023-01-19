@@ -5,6 +5,7 @@ module.exports = {
         .setName('button')
         .setDescription('button test'),
     async execute(interaction) {
+        await interaction.deferReply();
         const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -12,7 +13,7 @@ module.exports = {
                     .setLabel('Click me!')
                     .setStyle(ButtonStyle.Primary),
             );
-        await interaction.reply({ content: 'I think you should,', components: [button] });
+        await interaction.editReply({ content: 'I think you should,', components: [button] });
         const filter = i => i.customId === 'primary';
 
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
@@ -28,6 +29,9 @@ module.exports = {
             await i.update({ content: 'Hmmm you should click me again', components: [link] });
         });
 
-        collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+        collector.on('end', async collected => {
+            console.log(`Collected ${collected.size} items`);
+            await interaction.editReply({ content: 'You did not click me in time', components: [] });
+        });
     },
 };
