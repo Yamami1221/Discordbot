@@ -9,6 +9,7 @@ module.exports = {
                 .setDescription('The Youtube link to convert')
                 .setRequired(true)),
     async execute(interaction) {
+        await interaction.deferReply();
         const link = interaction.options.getString('link');
         let laibahtLink;
 
@@ -17,9 +18,9 @@ module.exports = {
         } else if (link.startsWith('https://youtu.be/')) {
             laibahtLink = link.replace('youtu.be/', 'play.laibaht.ovh/watch?v=');
         } else {
-            await interaction.reply({ content: 'Please provide a valid Youtube link', ephemeral: true });
+            await interaction.editReply({ content: 'Please provide a valid Youtube link', ephemeral: true });
         }
 
-        await interaction.reply({ content: `${laibahtLink}`, ephemeral: false });
+        await interaction.editReply({ content: `${laibahtLink}`, ephemeral: false });
     },
 };
