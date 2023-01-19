@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear')
@@ -20,11 +22,17 @@ module.exports = {
                 .setTitle('Clear')
                 .setDescription(`Deleted ${amount} messages!`);
             await interaction.channel.send({ embeds: [embed] });
+            const notimess = await interaction.channel.messages.fetch({ limit: 1 });
+            await delay(3000);
+            await interaction.channel.Delete(notimess);
         } catch (error) {
             const embed = new EmbedBuilder()
                 .setTitle('Clear')
                 .setDescription('You can not delete messages that over 14 days old.');
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            await interaction.channel.send({ embeds: [embed], ephemeral: true });
+            const notimess = await interaction.channel.messages.fetch({ limit: 1 });
+            await delay(3000);
+            await interaction.channel.Delete(notimess);
         }
     },
 };
