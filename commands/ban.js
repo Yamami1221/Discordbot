@@ -21,10 +21,10 @@ module.exports = {
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
 
         if (interaction.member.permissions.has('BAN_MEMBERS') === false) {
-            return interaction.editReply('You do not have permission to use this command.');
+            return interaction.editReply({ content: 'You do not have permission to use this command.', ephemeral: true });
         }
         if (target.id === interaction.user.id) {
-            return interaction.editReply('You cannot ban yourself.');
+            return interaction.editReply({ content: 'You cannot ban yourself.', ephemeral: true });
         }
         const embed = new EmbedBuilder()
             .setTitle('Ban')
