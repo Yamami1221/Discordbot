@@ -45,10 +45,9 @@ async function jump(interaction) {
     const jumpto = interaction.options.getInteger('position');
     if (jumpto > serverqueue.songs.length) return interaction.editReply({ content: 'There is no song at that position!', ephemeral: true });
     serverqueue.songs = serverqueue.songs.slice(jumpto - 1);
-    serverqueue.player.stopTrack();
+    serverqueue.player.stop();
     const song = serverqueue.songs[0];
     serverqueue.loop = false;
-    serverqueue.player.play(song.url);
     embed = new EmbedBuilder()
         .setTitle('Jump')
         .setDescription(`Jumped to **${song.title}**`);

@@ -38,6 +38,6 @@ async function skip(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Skip')
         .setDescription('Skipped the song!');
-    serverqueue.player.stopTrack();
+    serverqueue.player.stop();
     await interaction.editReply({ embeds: [embed] });
 }

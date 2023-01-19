@@ -14,12 +14,12 @@ module.exports = {
 async function pauses(interaction) {
     await interaction.deferReply();
     const connection = interaction.member.voice.channel;
-    embed = new EmbedBuilder()
+    let embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const serverqueue = globalqueue.get(interaction.guild.id);
-    let embed = new EmbedBuilder()
+    embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('This server is not enabled for music commands!');
     if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });

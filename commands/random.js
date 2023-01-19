@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,7 +21,10 @@ module.exports = {
             max = temp;
         }
         const random = getRndInteger(min, max);
-        await interaction.reply(`The random number between ${min} and ${max} is ${random}!`);
+        const embed = new EmbedBuilder()
+            .setTitle('Random Number Generator')
+            .setDescription(`The random number between ${min} and ${max} is **${random}**!`);
+        await interaction.reply({ embeds: [embed] });
     },
 };
 

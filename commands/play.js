@@ -167,7 +167,7 @@ async function playSong(interaction, song) {
 async function search(interaction) {
     const songname = interaction.options.getString('query');
     const song = await ytsr(songname, { limit: 1 });
-    if (!song.items[0]) return interaction.editReply({ content: 'I could not find that song!', ephemeral: true });
+    if (!song.items[0]) return false;
     const songurl = song.items[0].url;
     return songurl;
 }
