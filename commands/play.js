@@ -60,10 +60,10 @@ async function isValidURL(url) {
 // }
 
 async function play(interaction) {
-    interaction.deferReply();
+    await interaction.deferReply();
     let link = interaction.options.getString('query');
-    if (!isValidYoutubeUrl(link) && !isValidURL(link)) {
-        link = search(interaction);
+    if (!await isValidYoutubeUrl(link) && !await isValidURL(link)) {
+        link = await search(interaction);
         if (!link) {
             const embed = new EmbedBuilder()
                 .setTitle('Play')
@@ -158,7 +158,10 @@ async function playSong(interaction, song) {
             playSong(interaction, serverqueue.songs[0]);
         }
     });
-    await interaction.channel.send({ content: `Now playing **${song.title}**` });
+    const embed = new EmbedBuilder()
+        .setTitle('Play')
+        .setDescription(`Now playing **${song.title}**`);
+    await interaction.channel.send({ embeds: [embed] });
 }
 
 async function search(interaction) {
