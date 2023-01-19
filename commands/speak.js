@@ -71,7 +71,7 @@ async function generateVoice(input) {
     try {
         const guess = await language.guess(
             input,
-            ['en', 'es', 'pl', 'pt', 'ru', 'ja', 'ko', 'zh-cn', 'zh-tw', 'ar', 'hi', 'id', 'ms', 'th'],
+            ['en', 'ru', 'ja', 'ko', 'zh-cn', 'zh-tw', 'th'],
         );
         const lang = guess[0].alpha2;
         // get base64 audio

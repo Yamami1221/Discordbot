@@ -32,7 +32,10 @@ async function volume(interaction) {
     if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
     for (let i = 0; i < serverqueue.songs.length; i++) {
-        if (serverqueue.textchannel[i].id === interaction.channel.id) enabled = true;
+        if (serverqueue.textchannel[i].id === interaction.channel.id) {
+            enabled = true;
+            break;
+        }
     }
     embed = new EmbedBuilder()
         .setTitle('Volume')
