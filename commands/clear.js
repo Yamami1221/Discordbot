@@ -21,7 +21,10 @@ module.exports = {
                 .setDescription(`Deleted ${amount} messages!`);
             await interaction.channel.send({ embeds: [embed] });
         } catch (error) {
-            await interaction.editReply({ content: 'You can not delete messages that over 14 days old.', ephemeral: true });
+            const embed = new EmbedBuilder()
+                .setTitle('Clear')
+                .setDescription('You can not delete messages that over 14 days old.');
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     },
 };
