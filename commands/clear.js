@@ -22,6 +22,7 @@ module.exports = {
                 .setTitle('Clear')
                 .setDescription(`Deleted ${amount} messages!`);
             await interaction.channel.send({ embeds: [embed] });
+            await delay(1000);
             const notimess = await interaction.channel.messages.fetch({ limit: 1 });
             await delay(3000);
             await interaction.channel.Delete(notimess);
@@ -30,6 +31,7 @@ module.exports = {
                 .setTitle('Clear')
                 .setDescription('You can not delete messages that over 14 days old.');
             await interaction.channel.send({ embeds: [embed], ephemeral: true });
+            await delay(1000);
             const notimess = await interaction.channel.messages.fetch({ limit: 1 });
             await delay(3000);
             await interaction.channel.Delete(notimess);
