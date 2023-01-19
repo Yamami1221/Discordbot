@@ -15,6 +15,7 @@ module.exports = {
         .addStringOption(option =>
             option.setName('input')
                 .setDescription('The input to say')
+                .max_length(200)
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
@@ -69,6 +70,7 @@ module.exports = {
 
 async function generateVoice(input) {
     try {
+        if (input.length > 200) input = input.substring(0, 200);
         const guess = await language.guess(
             input,
             ['en', 'ru', 'ja', 'ko', 'zh-cn', 'zh-tw', 'th'],
