@@ -9,7 +9,6 @@ module.exports = {
             .setTitle('Help')
             .setDescription('This is the help command')
             .setDescription('work in progress')
-            .setColor('#FF0000')
             .setTimestamp();
         await interaction.reply({ embeds: [embed] });
     },
