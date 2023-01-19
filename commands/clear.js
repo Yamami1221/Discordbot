@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +16,10 @@ module.exports = {
             const amount = interaction.options.getInteger('amount');
             const messages = await interaction.channel.messages.fetch({ limit: amount });
             await interaction.channel.bulkDelete(messages);
-            await interaction.channel.send(`Deleted ${amount} messages!`);
+            const embed = new EmbedBuilder()
+                .setTitle('Clear')
+                .setDescription(`Deleted ${amount} messages!`);
+            await interaction.channel.send({ embeds: [embed] });
         } catch (error) {
             await interaction.editReply({ content: 'You can not delete messages that over 14 days old.', ephemeral: true });
         }
