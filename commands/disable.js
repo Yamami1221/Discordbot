@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
 const { globalqueue } = require('../global.js');
@@ -14,7 +14,10 @@ module.exports = {
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const serverqueue = globalqueue?.get(interaction.guild.id);
             if (!serverqueue) {
-                await interaction.editReply({ content: `${interaction.guild.name} in not enabled for music commands`, ephemeral: true });
+                const embed = new EmbedBuilder()
+                    .setTitle('Disable')
+                    .setDescription(`${interaction.guild.name} in not enabled for music commands`);
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
                 return;
             } else {
                 let enabled = false;
@@ -26,23 +29,35 @@ module.exports = {
                 if (enabled === true) {
                     const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
                     serverqueue.textchannel.splice(textchannelforshowloc, 1);
-                    await interaction.editReply({ content: `Disabled <#${interaction.channel.id}> for music commands` });
+                    let embed = new EmbedBuilder()
+                        .setTitle('Disable')
+                        .setDescription(`Disabled <#${interaction.channel.id}> for music commands`);
+                    await interaction.editReply({ embeds: [embed] });
                     const data = JSON.stringify(globalqueue, replacer);
                     fs.writeFile('./data.json', data, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
-                            interaction.followUp({ content: 'There has been an error saving your configuration data.' });
+                            embed = new EmbedBuilder()
+                                .setTitle('Disable')
+                                .setDescription('There has been an error saving your configuration data.');
+                            interaction.editReply({ embeds: [embed] });
                             return;
                         }
                     });
                 } else {
-                    await interaction.editReply({ content: `<#${interaction.channel.id}> is already disabled`, ephemeral: true });
+                    const embed = new EmbedBuilder()
+                        .setTitle('Disable')
+                        .setDescription(`<#${interaction.channel.id}> is already disabled`);
+                    await interaction.editReply({ embeds: [embed], ephemeral: true });
                     return;
                 }
             }
         } else {
-            await interaction.editReply({ content: 'You do not have permission to use this command', ephemeral: true });
+            const embed = new EmbedBuilder()
+                .setTitle('Disable')
+                .setDescription('You do not have permission to use this command');
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     },
 };
