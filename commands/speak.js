@@ -17,7 +17,7 @@ module.exports = {
                 .setDescription('The input to say')
                 .setRequired(true)),
     async execute(interaction) {
-        await interaction.defferReply();
+        await interaction.deferReply();
         const input = interaction.options.getString('input');
         const voiceChannel = interaction.member.voice.channel;
         let embed = new EmbedBuilder()
@@ -51,7 +51,7 @@ module.exports = {
         });
         serverqueue.connection = connection;
         serverqueue.playing = true;
-        serverqueue.resource = createAudioResource('./temp/temp.mp3', { inputType: StreamType.Arbitrary });
+        serverqueue.resource = createAudioResource('temp.mp3', { inputType: StreamType.Arbitrary, inlineVolume: true });
         serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
         serverqueue.player = createAudioPlayer();
         serverqueue.player.play(serverqueue.resource);
@@ -59,13 +59,20 @@ module.exports = {
         serverqueue.player.on(AudioPlayerStatus.Idle, () => {
             serverqueue.playing = false;
             serverqueue.connection.destroy();
+            interaction.deleteReply();
+            if (fs.existsSync('temp.mp3')) {
+                fs.unlinkSync('temp.mp3');
+            }
         });
     },
 };
 
 async function generateVoice(input) {
     try {
-        const guess = language.guess(input);
+        const guess = await language.guess(
+            input,
+            ['en', 'es', 'pl', 'pt', 'ru', 'ja', 'ko', 'zh-cn', 'zh-tw', 'ar', 'hi', 'id', 'ms', 'th'],
+        );
         const lang = guess[0].alpha2;
         // get base64 audio
         const data = await googleTTS.getAudioBase64(input, {
@@ -76,7 +83,7 @@ async function generateVoice(input) {
         });
         // get audio file
         const buffer = Buffer.from(data, 'base64');
-        fs.writeFileSync('./temp/temp.mp3', buffer, { encoding: 'base64' });
+        fs.writeFileSync('temp.mp3', buffer, { encoding: 'base64' });
     } catch (err) {
         console.error(err.stack);
     }
