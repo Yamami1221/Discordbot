@@ -19,16 +19,24 @@ module.exports = {
 async function lyrics(interaction) {
     await interaction.deferReply();
     const voicechannel = interaction.member.voice.channel;
-    if (!voicechannel) return interaction.editReply({ content: 'You need to be in a voice channel to use this command' });
+    let embed = new EmbedBuilder()
+        .setTitle('Lyrics')
+        .setDescription('You need to be in a voice channel to use this command!');
+    if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const songname = globalqueue.get(interaction.guild.id).songs[0].title;
-    if (!songname) return interaction.editReply({ content: 'There is no song in queue right now', ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Lyrics')
+        .setDescription('There is no song in queue right now');
+    if (!songname) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const artistname = interaction.options.getString('artist') ?? '';
     const songlyrics = await lyricsFinders(songname, artistname);
-    if (!songlyrics) return interaction.editReply({ content: 'I could not find the lyrics for that song!', ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Lyrics')
+        .setDescription('I could not find the lyrics for that song!');
+    if (!songlyrics) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const lyricsembed = new EmbedBuilder()
         .setTitle(`Lyrics for ${songname}`)
-        .setDescription(songlyrics)
-        .setColor('#ff8400');
+        .setDescription(songlyrics);
     await interaction.editReply({ embeds: [lyricsembed] });
 }
 
