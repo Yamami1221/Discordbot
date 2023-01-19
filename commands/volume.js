@@ -31,7 +31,7 @@ async function volume(interaction) {
         .setDescription('This server is not enabled for music commands!');
     if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.songs.length; i++) {
+    for (let i = 0; i < serverqueue.textchannel.length; i++) {
         if (serverqueue.textchannel[i].id === interaction.channel.id) {
             enabled = true;
             break;
