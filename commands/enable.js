@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
 const { globalqueue } = require('../global.js');
@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply();
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
             const serverqueue = globalqueue?.get(interaction.guild.id);
             if (!serverqueue) {
@@ -28,14 +28,23 @@ module.exports = {
                 };
                 queueconstruct.textchannel.push(interaction.channel);
                 globalqueue.set(interaction.guild.id, queueconstruct);
-                await interaction.editReply({ content: `Enabled ${interaction.guild.name} for music commands` });
-                await interaction.followUp({ content: `Added <#${interaction.channel.id}> for music commands enabled list` });
+                let embed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription(`Enabled ${interaction.guild.name} for music commands`);
+                await interaction.editReply({ embeds: [embed] });
+                embed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
+                await interaction.followUp({ embeds: [embed] });
                 const data = JSON.stringify(globalqueue, replacer);
                 fs.writeFile('./data.json', data, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
-                        interaction.followUp({ content: 'There has been an error saving your configuration data.' });
+                        embed = new EmbedBuilder()
+                            .setTitle('Enable')
+                            .setDescription('There has been an error saving your configuration data.');
+                        interaction.editReply({ embeds: [embed] });
                         return;
                     }
                 });
@@ -43,7 +52,10 @@ module.exports = {
                 let enabled = false;
                 for (let i = 0; i < serverqueue.textchannel.length; i++) {
                     if (serverqueue.textchannel[i].id === interaction.channel.id) {
-                        await interaction.editReply({ content: `<#${interaction.channel.id}> is already enabled` });
+                        const embed = new EmbedBuilder()
+                            .setTitle('Enable')
+                            .setDescription(`<#${interaction.channel.id}> is already enabled`);
+                        await interaction.editReply({ embeds: [embed], ephemeral: true });
                         enabled = true;
                         return;
                     }
@@ -52,20 +64,29 @@ module.exports = {
                     serverqueue.textchannel.push(interaction.channel);
                     const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
                     const textchannelforshow = serverqueue.textchannel[textchannelforshowloc].id;
-                    await interaction.editReply({ content: `Added <#${textchannelforshow}> for music commands enabled list` });
+                    let embed = new EmbedBuilder()
+                        .setTitle('Enable')
+                        .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
+                    await interaction.editReply({ embeds: [embed] });
                     const data = JSON.stringify(globalqueue, replacer);
                     fs.writeFile('./data.json', data, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
-                            interaction.followUp({ content: 'There has been an error saving your configuration data.' });
+                            embed = new EmbedBuilder()
+                                .setTitle('Enable')
+                                .setDescription('There has been an error saving your configuration data.');
+                            interaction.editReply({ embeds: [embed] });
                             return;
                         }
                     });
                 }
             }
         } else {
-            await interaction.editReply({ content: 'You do not have permission to use this command', ephemeral: true });
+            const embed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('You do not have permission to use this command');
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     },
 };
