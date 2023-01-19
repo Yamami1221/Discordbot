@@ -29,7 +29,7 @@ async function remove(interaction) {
     if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
     for (let i = 0; i < serverqueue.textchannels.length; i++) {
-        if (serverqueue.textchannels[i] == interaction.channel.id) {
+        if (serverqueue.textchannels[i].id == interaction.channel.id) {
             enabled = true;
             break;
         }

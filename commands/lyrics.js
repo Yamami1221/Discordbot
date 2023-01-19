@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const lyricsFinder = require('lyrics-finder');
+
 const { globalqueue } = require('../global.js');
 
 module.exports = {
@@ -23,6 +24,19 @@ async function lyrics(interaction) {
         .setTitle('Lyrics')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    embed = new EmbedBuilder()
+        .setTitle('Lyrics')
+        .setDescription('This server is not enabled for music commands!');
+    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    let enabled = false;
+    for (let i = 0; i < serverqueue.textchannel.length; i++) {
+        if (serverqueue.textchannel[i].id == interaction.channel.id) enabled = true;
+    }
+    embed = new EmbedBuilder()
+        .setTitle('Lyrics')
+        .setDescription('This channel is not enabled for music commands!');
+    if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const songname = globalqueue.get(interaction.guild.id).songs[0].title;
     embed = new EmbedBuilder()
         .setTitle('Lyrics')
