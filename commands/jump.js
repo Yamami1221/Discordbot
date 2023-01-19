@@ -38,6 +38,10 @@ async function jump(interaction) {
         .setTitle('Jump')
         .setDescription('This channel is not enabled for music commands');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Jump')
+        .setDescription('There is no song in queue right now');
+    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const jumpto = interaction.options.getInteger('position');
     if (jumpto > serverqueue.songs.length) return interaction.editReply({ content: 'There is no song at that position!', ephemeral: true });
     serverqueue.songs = serverqueue.songs.slice(jumpto - 1);
