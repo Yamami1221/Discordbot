@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { globalqueue } = require('../global.js');
 
@@ -14,7 +14,27 @@ module.exports = {
 async function resume(interaction) {
     await interaction.deferReply();
     const serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue) return interaction.editReply({ content: 'There is no song that I could resume!', ephemeral: true });
+    let embed = new EmbedBuilder()
+        .setTitle('Resume')
+        .setDescription('This server is not enabled for music commands!');
+    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    const connection = interaction.member.voice.channel;
+    embed = new EmbedBuilder()
+        .setTitle('Resume')
+        .setDescription('You need to be in a voice channel to use this command!');
+    if (!connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Resume')
+        .setDescription('There is no song in queue right now');
+    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Resume')
+        .setDescription('The music is already playing!');
+    if (serverqueue.playing == true) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.resource.unpause();
-    await interaction.editReply({ content: 'Resumed the music!' });
+    serverqueue.playing = true;
+    embed = new EmbedBuilder()
+        .setTitle('Resume')
+        .setDescription('Resumed the music!');
+    await interaction.editReply({ embeds: [embed] });
 }
