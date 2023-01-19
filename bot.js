@@ -9,6 +9,7 @@ const client = new Client({
         Partials.Message,
         Partials.Reaction,
         Partials.User,
+        Partials.ThreadMember,
     ],
     intents: [
         GatewayIntentBits.Guilds,
@@ -24,6 +25,7 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.DirectMessages,
     ],
 });
 
