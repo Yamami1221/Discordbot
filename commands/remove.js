@@ -47,6 +47,9 @@ async function remove(interaction) {
         .setTitle('Remove')
         .setDescription('You need to provide a valid position!');
     if (index > serverqueue.songs.length) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    await interaction.editReply({ content: `Removed the song name: ${serverqueue.songs[index - 1].title}!` });
+    embed = new EmbedBuilder()
+        .setTitle('Remove')
+        .setDescription(`Removed the song name: ${serverqueue.songs[index - 1].title}!`);
+    await interaction.editReply({ embeds: [embed] });
     serverqueue.songs.splice(index - 1, 1);
 }
