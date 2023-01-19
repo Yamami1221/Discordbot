@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -25,7 +25,10 @@ module.exports = {
         if (target.id === interaction.user.id) {
             return interaction.reply('You cannot ban yourself.');
         }
-        await interaction.reply(`Banning ${target.username} for reason: ${reason}`);
+        const embed = new EmbedBuilder()
+            .setTitle('Ban')
+            .setDescription(`${target.username} have been banned from ${interaction.guild.name} for reason: ${reason}`);
+        await interaction.reply({ embeds: [embed] });
         await interaction.guild.members.ban(target);
     },
 };
