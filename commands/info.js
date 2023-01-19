@@ -26,8 +26,10 @@ module.exports = {
                 await interaction.reply({ content: `Username:${user.username}.\n${user.username} tag: ${user.tag}\n${user.username} id: ${user.id}`, ephemeral: true });
             }
         } else if (subcommand === 'server') {
+            const fetchedMembers = interaction.guild.members.fetch({ withPresences: true });
+            const totalOnline = fetchedMembers.filter(member => member.presence?.status === 'online');
             const servertimedata = convert(interaction.guild.id);
-            await interaction.reply({ content: `Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}\nBuild on:${servertimedata[0]}\nServer time zone:${servertimedata[1]}\nCreated ${servertimedata[2]}`, ephemeral: true });
+            await interaction.reply({ content: `Server name: ${interaction.guild.name}\nThere are currently ${totalOnline.size} members online in this guild!\nTotal members: ${interaction.guild.memberCount}\nBuild on:${servertimedata[0]}\nServer time zone:${servertimedata[1]}\nCreated ${servertimedata[2]}`, ephemeral: true });
         } else {
             await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
