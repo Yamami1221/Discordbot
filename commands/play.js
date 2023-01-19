@@ -141,6 +141,7 @@ async function playSong(interaction, song) {
     serverqueue.playing = true;
     if (!song) {
         serverqueue.connection.destroy();
+        serverqueue.playing = false;
         return;
     }
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });
