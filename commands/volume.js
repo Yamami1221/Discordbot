@@ -47,7 +47,9 @@ async function volume(interaction) {
         .setDescription('The volume must be between 0 and 200!');
     if (volumes > 200 || volumes < 0) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.volume = volumes;
-    await serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
+    if (serverqueue.playing) {
+        await serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
+    }
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
