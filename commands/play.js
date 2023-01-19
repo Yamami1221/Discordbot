@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
 const { yt_validate, video_basic_info, stream } = require('play-dl');
 const ytdl = require('ytdl-core');
@@ -30,7 +30,7 @@ async function isValidYoutubeUrl(url) {
 }
 
 async function isValidURL(url) {
-    if (yt_validate(url) === 'video' || yt_validate(url) === 'playlist') {
+    if (yt_validate(url) === 'video') {
         return true;
     } else {
         return false;
@@ -62,41 +62,55 @@ async function isValidURL(url) {
 async function play(interaction) {
     interaction.deferReply();
     let link = interaction.options.getString('query');
-    if (!isValidYoutubeUrl(link) && isValidURL(link)) {
+    if (!isValidYoutubeUrl(link) && !isValidURL(link)) {
         link = search(interaction);
         if (!link) {
-            return;
+            const embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription('No results found!');
+            return interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
     const voicechannel = interaction.member.voice.channel;
-    if (!voicechannel) return interaction.editReply({ content: 'You need to be in a voice channel to play music!' });
+    let embed = new EmbedBuilder()
+        .setTitle('Play')
+        .setDescription('You need to be in a voice channel to use this command!');
+    if (!voicechannel) return interaction.editReply({ embeds: [embed] });
     const permissions = voicechannel.permissionsFor(interaction.client.user);
     if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-        return interaction.editReply({ content: 'I need the permissions to join and speak in your voice channel!' });
+        const permissionsembed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('I need the permissions to join and speak in your voice channel!');
+        return interaction.editReply({ embeds: [permissionsembed] });
     }
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    embed = new EmbedBuilder()
+        .setTitle('Play')
+        .setDescription('This server is not enabled for music commands!');
+    if (!serverqueue) return interaction.editReply({ embeds: [embed] });
+    let enabled = false;
+    for (let i = 0; i < serverqueue.textchannel.length; i++) {
+        if (serverqueue.textchannel[i].id === interaction.channel.id) {
+            enabled = true;
+            break;
+        }
+    }
+    embed = new EmbedBuilder()
+        .setTitle('Play')
+        .setDescription('this channel is not enabled for music commands!');
+    if (!enabled) return interaction.editReply({ embeds: [embed] });
     const songinfo1 = await video_basic_info(link);
     const songinfo2 = await ytdl.getBasicInfo(link);
     const song = {
         title: songinfo1.video_details.title,
         url: songinfo2.videoDetails.video_url,
     };
-    if (!serverqueue) {
-        const queueconstruct = {
-            textchannel: interaction.channel,
-            voicechannel: voicechannel,
-            connection: null,
-            songs: [],
-            volume: 50,
-            player: null,
-            resource: null,
-            playing: true,
-            loop: false,
-            shuffle: false,
-        };
-        queueconstruct.songs.push(song);
-        globalqueue.set(interaction.guild.id, queueconstruct);
-        interaction.editReply({ content: `**${song.title}** has been added to the queue!` });
+    if (!serverqueue.songs[0]) {
+        serverqueue.songs.push(song);
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription(`**${song.title}** has been added to the queue!`);
+        interaction.editReply({ embeds: [embed] });
         try {
             const connection = joinVoiceChannel({
                 channelId: voicechannel.id,
@@ -105,20 +119,26 @@ async function play(interaction) {
             });
             serverqueue.connection = connection;
             await playSong(interaction, serverqueue.songs[0]);
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
             serverqueue.song = [];
-            return interaction.editReply({ content: `There was an error: ${error}`, ephemeral: true });
+            const errorembed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription(`There was an error: ${error}`);
+            return interaction.editReply({ embeds: [errorembed] });
         }
     } else {
         serverqueue.songs.push(song);
-        return interaction.editReply({ content: `**${song.title}** has been added to the queue!` });
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription(`**${song.title}** has been added to the queue!`);
+        interaction.editReply({ embeds: [embed] });
     }
 }
 
 async function playSong(interaction, song) {
     const serverqueue = globalqueue.get(interaction.guild.id);
+    serverqueue.playing = true;
     if (!song) {
         serverqueue.connection.destroy();
         return;
@@ -126,10 +146,10 @@ async function playSong(interaction, song) {
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });
     serverqueue.resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
     serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
-    const player = createAudioPlayer();
-    player.play(serverqueue.resource);
-    serverqueue.connection.subscribe(player);
-    player.on(AudioPlayerStatus.Idle, () => {
+    serverqueue.player = createAudioPlayer();
+    serverqueue.player.play(serverqueue.resource);
+    serverqueue.connection.subscribe(serverqueue.player);
+    serverqueue.player.on(AudioPlayerStatus.Idle, () => {
         serverqueue.songs.shift();
         playSong(interaction, serverqueue.songs[0]);
     });
