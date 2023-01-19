@@ -15,7 +15,7 @@ module.exports = {
         .addStringOption(option =>
             option.setName('input')
                 .setDescription('The input to say')
-                .max_length(200)
+                .setMaxLength(200)
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
