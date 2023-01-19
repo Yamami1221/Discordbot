@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-const { globalqueue, globalresource } = require('../global.js');
+const { globalqueue } = require('../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,22 +20,32 @@ module.exports = {
 async function volume(interaction) {
     await interaction.deferReply();
     const voicechannel = interaction.member.voice.channel;
-    if (!voicechannel) return interaction.editReply({ content: 'You are not in a voice channel!', ephemeral: true });
+    let embed = new EmbedBuilder()
+        .setTitle('Volume')
+        .setDescription('You need to be in a voice channel to use this command!');
+    if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue) return interaction.editReply({ content: 'This server is not enabled for music commands', ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Volume')
+        .setDescription('This server is not enabled for music commands!');
+    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
     for (let i = 0; i < serverqueue.songs.length; i++) {
-        if (serverqueue.textchannel[i].id === interaction.channel.id) {
-            enabled = true;
-        }
+        if (serverqueue.textchannel[i].id === interaction.channel.id) enabled = true;
     }
-    if (enabled === false) return interaction.editReply({ content: 'This channel is not enabled for music commands', ephemeral: true });
-    const song = serverqueue.songs[0];
-    if (!song) return interaction.editReply({ content: 'There is no song that I could change the volume of!', ephemeral: true });
-    const useresource = globalresource.get(interaction.guild.id);
+    embed = new EmbedBuilder()
+        .setTitle('Volume')
+        .setDescription('This channel is not enabled for music commands!');
+    if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const volumes = interaction.options.getInteger('volume');
-    if (volumes > 200 || volumes < 0) return interaction.editReply({ content: 'The volume must be between 0 and 200!', ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Volume')
+        .setDescription('The volume must be between 0 and 200!');
+    if (volumes > 200 || volumes < 0) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.volume = volumes;
-    await useresource.volume.setVolume(serverqueue.volume / 100);
-    await interaction.editReply({ content: `Set the volume to ${volumes}!` });
+    await serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
+    embed = new EmbedBuilder()
+        .setTitle('Volume')
+        .setDescription(`Set the volume to ${volumes}!`);
+    await interaction.editReply({ embeds: [embed] });
 }

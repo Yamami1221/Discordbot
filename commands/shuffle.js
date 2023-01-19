@@ -31,8 +31,15 @@ async function shuffle(interaction) {
         .setTitle('Shuffle')
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Shuffle')
+        .setDescription('There are not enough songs in the queue to shuffle!');
+    if (serverqueue.songs.length < 2) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverqueue.songs = shuffleArray(serverqueue.songs);
-    await interaction.editReply({ content: 'Shuffled the queue!' });
+    embed = new EmbedBuilder()
+        .setTitle('Shuffle')
+        .setDescription('Shuffled the queue!');
+    await interaction.editReply({ embeds: [embed] });
 }
 
 function shuffleArray(array) {
