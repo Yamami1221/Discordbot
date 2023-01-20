@@ -37,6 +37,7 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isUserContextMenuCommand()) {
+            console.log(interaction.client);
             const command = interaction.client.contextMenus.get(interaction.commandName);
 
             if (!command) {
