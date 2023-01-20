@@ -9,6 +9,7 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('position')
                 .setDescription('The position of the song in the queue')
+                .setMinValue(2)
                 .setRequired(true)),
     async execute(interaction) {
         jump(interaction);
