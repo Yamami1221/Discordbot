@@ -3,8 +3,7 @@ const { ContextMenuCommandBuilder, EmbedBuilder, ApplicationCommandType } = requ
 module.exports = {
     data: new ContextMenuCommandBuilder()
         .setName('avatar')
-        .setType(ApplicationCommandType.User)
-        .setDMPermission(false),
+        .setType(ApplicationCommandType.User),
     async execute(interaction) {
         await interaction.deferReply();
         const user = interaction.targetUser;
