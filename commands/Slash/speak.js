@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const language = new Language();
 
-const { globalqueue } = require('../global.js');
+const { globalqueue } = require('../../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const lyricsFinder = require('lyrics-finder');
 
-const { globalqueue } = require('../global.js');
+const { globalqueue } = require('../../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

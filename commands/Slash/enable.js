@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globalqueue } = require('../../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -37,7 +37,7 @@ module.exports = {
                     .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
                 await interaction.followUp({ embeds: [embed] });
                 const data = JSON.stringify(globalqueue, replacer);
-                fs.writeFile('./data.json', data, err => {
+                fs.writeFile('../../data.json', data, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
@@ -69,7 +69,7 @@ module.exports = {
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
                     await interaction.editReply({ embeds: [embed] });
                     const data = JSON.stringify(globalqueue, replacer);
-                    fs.writeFile('./data.json', data, err => {
+                    fs.writeFile('../../data.json', data, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);

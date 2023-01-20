@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globalqueue } = require('../../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,7 +54,7 @@ async function volume(interaction) {
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
     const data = JSON.stringify(globalqueue, replacer);
-    fs.writeFile('./data.json', data, err => {
+    fs.writeFile('../../data.json', data, err => {
         if (err) {
             console.log('There has been an error saving your configuration data.');
             console.log(err.message);
