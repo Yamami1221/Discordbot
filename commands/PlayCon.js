@@ -176,7 +176,8 @@ async function playSong(interaction, song) {
 }
 
 async function search(interaction) {
-    const songname = interaction.options.getString('query');
+    const msg = await interaction.channel.messages.fetch(interaction.targetId);
+    const songname = msg.content;
     const song = await ytsr(songname, { limit: 1 });
     if (!song.items[0]) return false;
     const songurl = song.items[0].url;
