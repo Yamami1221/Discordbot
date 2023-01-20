@@ -6,10 +6,12 @@ module.exports = {
         .setType(ApplicationCommandType.User),
     async execute(interaction) {
         await interaction.deferReply();
-        const user = interaction.targetUser;
+        const user = interaction.guild.members.cache.get(interaction.targetId) || interaction.user;
+
         const embed = new EmbedBuilder()
-            .setTitle(`**${user.username}'s Avatar**`)
-            .setImage(user.displayAvatarURL({ dynamic: true, size: 4096 }));
+            .setTitle(`**${user.user.username}'s Avatar**`)
+            .setImage(user.displayAvatarURL({ size: 2048 }));
+
         await interaction.editReply({ embeds: [embed] });
     },
 };
