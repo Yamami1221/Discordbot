@@ -25,6 +25,11 @@ module.exports = {
                     playing: false,
                     loop: false,
                     shuffle: false,
+                    autoplay: false,
+                    sound8d: false,
+                    bassboost: false,
+                    nightcore: false,
+                    veriRole: null,
                 };
                 queueconstruct.textchannel.push(interaction.channel);
                 globalqueue.set(interaction.guild.id, queueconstruct);
