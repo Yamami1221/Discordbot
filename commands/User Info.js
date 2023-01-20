@@ -37,6 +37,6 @@ module.exports = {
                     inline: false,
                 },
             );
-        await interaction.editReply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
     },
 };

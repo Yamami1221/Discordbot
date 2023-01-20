@@ -52,7 +52,9 @@ module.exports = {
                             value: member.roles.cache.size ? member.roles.cache.map(roles => `**${roles}**`).slice(0, -1).join(' ') : 'None',
                             inline: false,
                         },
-                    );
+                    )
+                    .setFooter(`Requested by ${interaction.user.username}#${interaction.user.discriminator}`, interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .setTimestamp();
                 await interaction.editReply({ embeds: [embed], ephemeral: true });
             } else {
                 const member = interaction.guild.members.cache.get(user.id) || user;
@@ -84,24 +86,28 @@ module.exports = {
                             value: member.roles.cache.size ? member.roles.cache.map(roles => `**${roles}**`).slice(0, -1).join(' ') : 'None',
                             inline: false,
                         },
-                    );
+                    )
+                    .setFooter(`Requested by ${interaction.user.username}`, interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .setTimestamp();
                 await interaction.editReply({ embeds: [embed], ephemeral: true });
             }
         } else if (subcommand === 'server') {
-            const fetchedMembers = interaction.guild.members.fetch({ withPresences: true });
+            const fetchedMembers = await interaction.guild.members.fetch({ withPresences: true });
             const totalOnline = fetchedMembers.filter(member => member.presence?.status === 'online');
             const servertimedata = convert(interaction.guild.id);
             const embed = new EmbedBuilder()
                 .setTitle('Info')
                 .setDescription('Info about the server')
-                .addField('Server name', interaction.guild.name)
-                .addField('Total members', interaction.guild.memberCount)
-                .addField('Members online', totalOnline.size)
-                .addField('Build on', servertimedata[0])
-                .addField('Server time zone', servertimedata[1])
-                .addField('Created', servertimedata[2])
+                .addFields({ name:'Server name', value:interaction.guild.name })
+                .addFields({ name:'Server ID', value:interaction.guild.id })
+                .addFields({ name:'Server owner', value:`${interaction.guild.members.cache.get(interaction.guild.ownerId).user.username}#${interaction.guild.members.cache.get(interaction.guild.ownerId).user.discriminator}` })
+                .addFields({ name:'Total members', value:`${interaction.guild.memberCount}` })
+                .addFields({ name:'Members online', value:`${totalOnline.size}` })
+                .addFields({ name:'Build on', value:servertimedata[0] })
+                .addFields({ name:'Server time zone', value:servertimedata[1] })
+                .addFields({ name:'Created', value:servertimedata[2] })
                 .setTimestamp();
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     },
 };

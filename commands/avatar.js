@@ -10,7 +10,9 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle(`**${user.user.username}'s Avatar**`)
-            .setImage(user.displayAvatarURL({ size: 2048 }));
+            .setImage(user.displayAvatarURL({ size: 2048 }))
+            .setFooter(`Requested by ${interaction.user.username}`, interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+            .setTimestamp();
 
         await interaction.editReply({ embeds: [embed] });
     },
