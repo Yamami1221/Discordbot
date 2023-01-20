@@ -24,8 +24,8 @@ async function leave(interaction) {
         .setDescription('This server is not enabled for music commands!');
     if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.channel.length; i++) {
-        if (serverqueue.channel[i].id == interaction.channel.id) enabled = true;
+    for (let i = 0; i < serverqueue.textchannel.length; i++) {
+        if (serverqueue.textchannel[i].id == interaction.channel.id) enabled = true;
     }
     embed = new EmbedBuilder()
         .setTitle('Leave')

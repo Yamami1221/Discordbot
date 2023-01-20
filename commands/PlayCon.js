@@ -137,8 +137,9 @@ async function playSong(interaction, song) {
     const serverqueue = globalqueue.get(interaction.guild.id);
     serverqueue.playing = true;
     if (!song) {
-        serverqueue.connection.destroy();
+        await serverqueue.connection.destroy();
         serverqueue.connection = null;
+        serverqueue.resource = null;
         serverqueue.player = null;
         serverqueue.playing = false;
         const datatowrite = JSON.stringify(globalqueue, replacer);
