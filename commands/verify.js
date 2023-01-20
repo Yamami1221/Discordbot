@@ -75,6 +75,12 @@ async function setup(interaction) {
         }
     }
     const role = interaction.options.getRole('role');
+    if (serverqueue.veriRole) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify')
+            .setDescription('There is already a verify role!');
+        await interaction.editReply({ embeds: [embed] });
+    }
     serverqueue.veriRole = role;
     const embed = new EmbedBuilder()
         .setTitle('Verify')
@@ -118,6 +124,12 @@ async function remove(interaction) {
                 }
             });
         }
+    }
+    if (!serverqueue.veriRole) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify')
+            .setDescription('There is no verify role!');
+        await interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = null;
     const embed = new EmbedBuilder()
@@ -164,6 +176,12 @@ async function verify(interaction) {
         }
     }
     const verirole = serverqueue.veriRole;
+    if (!verirole) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify')
+            .setDescription('There is no verify role!\nPlease set one up with /verify setup <role>');
+        return interaction.editReply({ embeds: [embed], ephemeral: true });
+    }
     const member = interaction.member;
     if (member.roles.cache.has(verirole.id)) {
         const embed = new EmbedBuilder()
