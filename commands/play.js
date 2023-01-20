@@ -3,6 +3,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerSta
 const { yt_validate, video_basic_info, stream } = require('play-dl');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
+const fs = require('fs');
 
 const { globalqueue } = require('../global.js');
 
@@ -140,7 +141,21 @@ async function playSong(interaction, song) {
     serverqueue.playing = true;
     if (!song) {
         serverqueue.connection.destroy();
+        serverqueue.connection = null;
+        serverqueue.player = null;
         serverqueue.playing = false;
+        const datatowrite = JSON.stringify(globalqueue, replacer);
+        fs.writeFile('./data.json', datatowrite, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const embed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [embed] });
+                return;
+            }
+        });
         return;
     }
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });
@@ -169,4 +184,15 @@ async function search(interaction) {
     if (!song.items[0]) return false;
     const songurl = song.items[0].url;
     return songurl;
+}
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
 }

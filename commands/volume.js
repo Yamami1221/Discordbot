@@ -53,18 +53,21 @@ async function volume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
+    console.log(globalqueue);
     const data = JSON.stringify(globalqueue, replacer);
-    fs.writeFile('./data.json', data, err => {
-        if (err) {
-            console.log('There has been an error saving your configuration data.');
-            console.log(err.message);
-            embed = new EmbedBuilder()
-                .setTitle('Enable')
-                .setDescription('There has been an error saving your configuration data.');
-            interaction.editReply({ embeds: [embed] });
-            return;
-        }
-    });
+    if (!serverqueue.playing) {
+        fs.writeFile('./data.json', data, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                embed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [embed] });
+                return;
+            }
+        });
+    }
     await interaction.editReply({ embeds: [embed] });
 }
 
