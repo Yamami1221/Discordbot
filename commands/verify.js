@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
 const { globalqueue } = require('../global.js');
@@ -14,12 +14,10 @@ module.exports = {
                 .addRoleOption(option =>
                     option.setName('role')
                         .setDescription('The role to give to verified users')
-                        .setRequired(true))
-                .setDefaultmemberpermissions(PermissionFlagsBits.ManageRoles))
+                        .setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand.setName('remove')
-                .setDescription('Remove the verify command')
-                .setDefaultmemberpermissions(PermissionFlagsBits.ManageRoles))
+                .setDescription('Remove the verify command'))
         .addSubcommand(subcommand =>
             subcommand.setName('verify')
                 .setDescription('Verify yourself')),
@@ -39,6 +37,13 @@ module.exports = {
 
 async function setup(interaction) {
     await interaction.deferReply();
+    if (interaction.member.permissions.has('ADMINISTRATOR') === false || interaction.member.permissions.has('MANAGE_GUILD') === false || interaction.member.permissions.has('MANAGE_ROLES') === false) {
+        const embed = new EmbedBuilder()
+            .setTitle('Enable')
+            .setDescription('You do not have permission to use this command.');
+        await interaction.editReply({ embeds: [embed] });
+        return;
+    }
     const serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
         const queueconstruct = {
@@ -90,6 +95,13 @@ async function setup(interaction) {
 
 async function remove(interaction) {
     await interaction.deferReply();
+    if (interaction.member.permissions.has('ADMINISTRATOR') === false || interaction.member.permissions.has('MANAGE_GUILD') === false || interaction.member.permissions.has('MANAGE_ROLES') === false) {
+        const embed = new EmbedBuilder()
+            .setTitle('Enable')
+            .setDescription('You do not have permission to use this command.');
+        await interaction.editReply({ embeds: [embed] });
+        return;
+    }
     const serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
         const queueconstruct = {
