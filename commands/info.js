@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { stripIndents } = require('common-tags');
 const moment = require('moment');
 
 module.exports = {
@@ -17,28 +18,74 @@ module.exports = {
                 .setName('server')
                 .setDescription('Info about the server')),
     async execute(interaction) {
+        await interaction.deferReply();
         const subcommand = interaction.options.getSubcommand();
         if (subcommand === 'user') {
             const user = interaction.options.getUser('target');
             if (!user) {
+                const member = interaction.guild.members.cache.get(interaction.user.id) || interaction.user;
+
                 const embed = new EmbedBuilder()
-                    .setTitle('Info')
-                    .setDescription('Info about a user')
-                    .addField('Username', interaction.user.username)
-                    .addField('Tag', interaction.user.tag)
-                    .addField('ID', interaction.user.id)
-                    .addField('Joined at', moment(interaction.member.joinedAt).format('MMMM Do YYYY, h:mm:ss a'))
-                    .setTimestamp();
-                await interaction.reply({ embeds: [embed], ephemeral: true });
+                    .setTitle(`**${member.user.username}#${member.user.discriminator}**`)
+                    .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .addFields(
+                        {
+                            name: '👤 Account Info',
+                            value: stripIndents`
+                    **ID:** ${member.user.id}
+                    **Bot:** ${member.user.bot ? 'Yes' : 'No'}
+                    **Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:d>
+                    `,
+                            inline: true,
+                        },
+                        {
+                            name: '📋 Member Info',
+                            value: stripIndents`
+                    **Joined Server:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>
+                    **Nickname:** ${member.nickname || 'None'}
+                    **Hoist Role:** ${member.roles.hoist ? member.roles.hoist.name : 'None'}
+                    `,
+                            inline: true,
+                        },
+                        {
+                            name: `📝 Roles [${member.roles.cache.size - 1}]`,
+                            value: member.roles.cache.size ? member.roles.cache.map(roles => `**${roles}**`).slice(0, -1).join(' ') : 'None',
+                            inline: false,
+                        },
+                    );
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
             } else {
+                const member = interaction.guild.members.cache.get(user.id) || user;
+
                 const embed = new EmbedBuilder()
-                    .setTitle('Info')
-                    .setDescription('Info about a user')
-                    .addField('Username', user.username)
-                    .addField('Tag', user.tag)
-                    .addField('ID', user.id)
-                    .setTimestamp();
-                await interaction.reply({ embeds: [embed], ephemeral: true });
+                    .setTitle(`**${member.user.username}#${member.user.discriminator}**`)
+                    .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .addFields(
+                        {
+                            name: '👤 Account Info',
+                            value: stripIndents`
+                    **ID:** ${member.user.id}
+                    **Bot:** ${member.user.bot ? 'Yes' : 'No'}
+                    **Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:d>
+                    `,
+                            inline: true,
+                        },
+                        {
+                            name: '📋 Member Info',
+                            value: stripIndents`
+                    **Joined Server:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>
+                    **Nickname:** ${member.nickname || 'None'}
+                    **Hoist Role:** ${member.roles.hoist ? member.roles.hoist.name : 'None'}
+                    `,
+                            inline: true,
+                        },
+                        {
+                            name: `📝 Roles [${member.roles.cache.size - 1}]`,
+                            value: member.roles.cache.size ? member.roles.cache.map(roles => `**${roles}**`).slice(0, -1).join(' ') : 'None',
+                            inline: false,
+                        },
+                    );
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
             }
         } else if (subcommand === 'server') {
             const fetchedMembers = interaction.guild.members.fetch({ withPresences: true });
