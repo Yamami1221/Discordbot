@@ -42,7 +42,7 @@ module.exports = {
             } catch (error) {
                 console.error(error);
             }
-        } else if (interaction.isUserContextMenuCommand()) {
+        } else if (interaction.isContextMenuCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) {
