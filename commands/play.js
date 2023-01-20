@@ -4,7 +4,6 @@ const { yt_validate, video_basic_info, stream } = require('play-dl');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 
-
 const { globalqueue } = require('../global.js');
 
 module.exports = {
