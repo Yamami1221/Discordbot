@@ -53,8 +53,8 @@ async function volume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
-    const data = JSON.stringify(globalqueue, replacer);
     if (!serverqueue.playing) {
+        const data = JSON.stringify(globalqueue, replacer);
         fs.writeFile('./data.json', data, err => {
             if (err) {
                 console.log('There has been an error saving your configuration data.');
