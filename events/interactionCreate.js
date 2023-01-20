@@ -36,6 +36,26 @@ module.exports = {
             } catch (error) {
                 console.error(error);
             }
+        } else if (interaction.isUserContextMenu()) {
+            const command = interaction.client.contextMenus.get(interaction.commandName);
+
+            if (!command) {
+                interaction.reply({ content: `No context menu matching ${interaction.commandName} was found.`, ephemeral: true });
+                console.error(`No context menu matching ${interaction.commandName} was found.`);
+                return;
+            }
+
+            try {
+                await command.execute(interaction);
+            } catch (error) {
+                const deffered = await interaction.fetchReply();
+                if (!deffered) {
+                    interaction.defferReply({ ephemeral: true });
+                }
+                interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+                console.error(`Error executing ${interaction.commandName}`);
+                console.error(error);
+            }
         } else if (interaction.isButton()) {
             return;
         } else if (!interaction.isCommand()) {
