@@ -8,7 +8,7 @@ module.exports = {
         await interaction.deferReply();
         const user = interaction.targetUser;
         const embed = new EmbedBuilder()
-            .setTitle(`${user.username}'s Avatar`)
+            .setTitle(`**${user.username}'s Avatar**`)
             .setImage(user.displayAvatarURL({ dynamic: true, size: 4096 }));
         await interaction.editReply({ embeds: [embed] });
     },
