@@ -9,7 +9,6 @@ const { globalqueue } = require('../global.js');
 module.exports = {
     data: new ContextMenuCommandBuilder()
         .setName('play')
-        .setDescription('Play music form a link')
         .setType(ApplicationCommandType.Message),
     async execute(interaction) {
         // playtest(interaction);
