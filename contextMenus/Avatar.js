@@ -2,7 +2,7 @@ const { ContextMenuCommandBuilder, EmbedBuilder, ApplicationCommandType } = requ
 
 module.exports = {
     data: new ContextMenuCommandBuilder()
-        .setName('avatar')
+        .setName('Avatar')
         .setType(ApplicationCommandType.User)
         .setDMPermission(false),
     async execute(interaction) {
