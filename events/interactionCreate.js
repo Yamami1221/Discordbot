@@ -37,8 +37,7 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isUserContextMenuCommand()) {
-            console.log(interaction.client);
-            const command = interaction.client.contextMenus.get(interaction.commandName);
+            const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) {
                 interaction.reply({ content: `No context menu matching ${interaction.commandName} was found.`, ephemeral: true });
