@@ -8,7 +8,7 @@ module.exports = {
             option.setName('amount')
                 .setDescription('The amount of messages to delete.')
                 .setMinValue(1)
-                .setMaxValue(100)
+                .setMaxValue(1000)
                 .setRequired(true)),
     async execute(interaction) {
         try {
@@ -18,13 +18,16 @@ module.exports = {
             await interaction.channel.bulkDelete(messages);
             const embed = new EmbedBuilder()
                 .setTitle('Clear')
-                .setDescription(`Deleted ${amount} messages!`);
-            await interaction.channel.send({ embeds: [embed] });
+                .setDescription(`Deleted ${messages.size - 1} messages!`);
+            const sentMessage = await interaction.channel.send({ embeds: [embed] });
+            setTimeout(() => {
+                sentMessage.delete();
+            }, 3000);
         } catch (error) {
             const embed = new EmbedBuilder()
                 .setTitle('Clear')
                 .setDescription('You can not delete messages that over 14 days old.');
-            await interaction.channel.send({ embeds: [embed], ephemeral: true });
+            await interaction.channel.send({ embeds: [embed] });
         }
     },
 };
