@@ -42,7 +42,7 @@ async function queue(interaction) {
         .setTitle('Queue')
         .setDescription(`Now playing: ${serverqueue.songs[0].title}`);
     for (let i = 1; i < serverqueue.songs.length; i++) {
-        queueembed.addField({ name:`Song ${i}`, value:serverqueue.songs[i].title });
+        queueembed.addFields({ name:`Song ${i}`, value:serverqueue.songs[i].title });
     }
     await interaction.editReply({ embeds: [queueembed] });
 }
