@@ -97,6 +97,16 @@ async function remove(interaction) {
 async function verify(interaction) {
     await interaction.deferReply();
     const serverqueue = globalqueue.get(interaction.guild.id);
+    if (!serverqueue) {
+        load(interaction);
+    }
+    const veriChannel = serverqueue.veriChannel;
+    if (interaction.channel.id !== veriChannel.id) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify')
+            .setDescription('You can only verify in the verify channel!');
+        return interaction.editReply({ embeds: [embed], ephemeral: true });
+    }
     const verirole = serverqueue.veriRole;
     if (!verirole) {
         const embed = new EmbedBuilder()
