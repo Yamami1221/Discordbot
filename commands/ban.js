@@ -28,7 +28,9 @@ module.exports = {
         }
         const embed = new EmbedBuilder()
             .setTitle('Ban')
-            .setDescription(`${target.username} have been banned from ${interaction.guild.name} for reason: ${reason}`);
+            .setDescription(`${target.username} have been banned from ${interaction.guild.name} for reason: ${reason}`)
+            .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
+            .setTimestamp();
         await interaction.editReply({ embeds: [embed] });
         await interaction.guild.members.ban(target);
     },
