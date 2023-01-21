@@ -1,0 +1,37 @@
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('embed')
+        .setDescription('Sends an embed.')
+        .addChannelOption(option =>
+            option.setName('channel')
+                .setDescription('The channel to send the embed in')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('title')
+                .setDescription('The title of the embed')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('description')
+                .setDescription('The description of the embed')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('color')
+                .setDescription('The color of the embed')),
+    async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+        const channel = interaction.options.getChannel('channel');
+        const title = interaction.options.getString('title');
+        const description = interaction.options.getString('description');
+        const color = interaction.options.getString('color') || 'DEFAULT';
+        const embed = new EmbedBuilder()
+            .setTitle(title)
+            .setDescription(description)
+            .setColor(color)
+            .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
+            .setTimestamp();
+        await interaction.editReply({ content: `Embed sent to ${channel.toString()}`, ephemeral: true });
+        await channel.send({ embeds: [embed] });
+    },
+};
