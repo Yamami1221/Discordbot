@@ -24,7 +24,7 @@ module.exports = {
         const channel = interaction.options.getChannel('channel');
         const title = interaction.options.getString('title');
         const description = interaction.options.getString('description');
-        const color = interaction.options.getString('color') || 'DEFAULT';
+        const color = interaction.options.getString('color') || 0x000000;
         const embed = new EmbedBuilder()
             .setTitle(title)
             .setDescription(description)
