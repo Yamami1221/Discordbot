@@ -1,6 +1,6 @@
 # Discordbot
 
-Discordbot on node js
-
+Discord Music and verify bot using DISCORD.JS V.14
 ---
-.env file not include for security reason
+`.env` and `data.json` file not include
+
