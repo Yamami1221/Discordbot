@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,10 +13,17 @@ module.exports = {
                 .setDescription('The message to send')
                 .setRequired(true)),
     async execute(interaction) {
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const channel = interaction.options.getChannel('channel');
         const message = interaction.options.getString('message');
-        await channel.send(message);
-        await interaction.editReply('Message sent!');
+        const embed = new EmbedBuilder()
+            .setTitle('Send')
+            .setDescription('Message sent!');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        const pendingmessage = new EmbedBuilder()
+            .setTitle('Send')
+            .setDescription(`${message}`)
+            .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) });
+        await channel.send({ embeds: [pendingmessage] });
     },
 };
