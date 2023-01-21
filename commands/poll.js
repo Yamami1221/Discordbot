@@ -30,7 +30,7 @@ module.exports = {
         const question = interaction.options.getString('question');
         const options = interaction.options.getString('options').split(',');
         const embed = new EmbedBuilder()
-            .setTitle(`**${question}**`)
+            .setTitle(`Poll **"${question}"**`)
             .setTimestamp();
         for (let i = 0; i < options.length; i++) {
             embed.addFields({ name:`choice ${options[i]}`, value:'0' });
