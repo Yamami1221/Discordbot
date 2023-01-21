@@ -128,15 +128,15 @@ async function verify(interaction) {
             .setDescription('You are already verified!');
         return interaction.editReply({ embeds: [embed], ephemeral: true });
     }
+    const embed = new EmbedBuilder()
+        .setTitle('Verify')
+        .setDescription('You have been verified!');
+    await interaction.editReply({ embeds: [embed] });
     const min = 1000;
     const max = 5000;
     const random = Math.floor(Math.random() * (max - min + 1)) + min;
     await sleep(random);
     await member.roles.add(verirole);
-    const embed = new EmbedBuilder()
-        .setTitle('Verify')
-        .setDescription('You have been verified!');
-    await interaction.editReply({ embeds: [embed] });
 }
 
 
