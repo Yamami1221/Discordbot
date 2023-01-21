@@ -59,6 +59,7 @@ module.exports = {
         serverqueue.connection.subscribe(serverqueue.player);
         serverqueue.player.on(AudioPlayerStatus.Idle, () => {
             serverqueue.playing = false;
+            serverqueue.resource = null;
             serverqueue.connection.destroy();
             interaction.deleteReply();
             if (fs.existsSync('temp.mp3')) {
