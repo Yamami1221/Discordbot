@@ -14,6 +14,10 @@ module.exports = {
                 .addRoleOption(option =>
                     option.setName('role')
                         .setDescription('The role to give to verified users')
+                        .setRequired(true))
+                .addChannelOption(option =>
+                    option.setName('channel')
+                        .setDescription('The channel to verify in')
                         .setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand.setName('remove')
@@ -49,6 +53,7 @@ async function setup(interaction) {
         load(interaction);
     }
     const role = interaction.options.getRole('role');
+    const channel = interaction.options.getChannel('channel');
     if (serverqueue.veriRole) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
@@ -62,9 +67,10 @@ async function setup(interaction) {
         await interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = role;
+    serverqueue.veriChannel = channel;
     const embed = new EmbedBuilder()
         .setTitle('Verify')
-        .setDescription(`Set the verify role to ${role}!`);
+        .setDescription(`Seting up the verify command!\nRole: ${role}\nChannel: ${channel}`);
     await interaction.editReply({ embeds: [embed] });
 }
 
@@ -88,6 +94,7 @@ async function remove(interaction) {
         await interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = null;
+    serverqueue.veriChannel = null;
     const embed = new EmbedBuilder()
         .setTitle('Verify')
         .setDescription('Removed the verify command!');
