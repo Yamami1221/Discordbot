@@ -30,6 +30,7 @@ module.exports = {
                     bassboost: false,
                     nightcore: false,
                     veriRole: null,
+                    veriChannel: null,
                 };
                 queueconstruct.textchannel.push(interaction.channel);
                 globalqueue.set(interaction.guild.id, queueconstruct);

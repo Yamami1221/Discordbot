@@ -46,44 +46,19 @@ async function setup(interaction) {
     }
     const serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
-        const queueconstruct = {
-            textchannel: [],
-            voicechannel: null,
-            connection: null,
-            songs: [],
-            volume: 50,
-            player: null,
-            resource: null,
-            playing: false,
-            loop: false,
-            shuffle: false,
-            autoplay: false,
-            sound8d: false,
-            bassboost: false,
-            nightcore: false,
-            veriRole: null,
-        };
-        globalqueue.set(interaction.guild.id, queueconstruct);
-        if (!serverqueue.playing) {
-            const data = JSON.stringify(globalqueue, replacer);
-            fs.writeFile('./data.json', data, err => {
-                if (err) {
-                    console.log('There has been an error saving your configuration data.');
-                    console.log(err.message);
-                    const embed = new EmbedBuilder()
-                        .setTitle('Enable')
-                        .setDescription('There has been an error saving your configuration data.');
-                    interaction.editReply({ embeds: [embed] });
-                    return;
-                }
-            });
-        }
+        load(interaction);
     }
     const role = interaction.options.getRole('role');
     if (serverqueue.veriRole) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('There is already a verify role!');
+        await interaction.editReply({ embeds: [embed] });
+    }
+    if (serverqueue.veriChannel) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify')
+            .setDescription('There is already a verify channel!');
         await interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = role;
@@ -104,38 +79,7 @@ async function remove(interaction) {
     }
     const serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
-        const queueconstruct = {
-            textchannel: [],
-            voicechannel: null,
-            connection: null,
-            songs: [],
-            volume: 50,
-            player: null,
-            resource: null,
-            playing: false,
-            loop: false,
-            shuffle: false,
-            autoplay: false,
-            sound8d: false,
-            bassboost: false,
-            nightcore: false,
-            veriRole: null,
-        };
-        globalqueue.set(interaction.guild.id, queueconstruct);
-        if (!serverqueue.playing) {
-            const data = JSON.stringify(globalqueue, replacer);
-            fs.writeFile('./data.json', data, err => {
-                if (err) {
-                    console.log('There has been an error saving your configuration data.');
-                    console.log(err.message);
-                    const embed = new EmbedBuilder()
-                        .setTitle('Enable')
-                        .setDescription('There has been an error saving your configuration data.');
-                    interaction.editReply({ embeds: [embed] });
-                    return;
-                }
-            });
-        }
+        load(interaction);
     }
     if (!serverqueue.veriRole) {
         const embed = new EmbedBuilder()
@@ -153,40 +97,6 @@ async function remove(interaction) {
 async function verify(interaction) {
     await interaction.deferReply();
     const serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue) {
-        const queueconstruct = {
-            textchannel: [],
-            voicechannel: null,
-            connection: null,
-            songs: [],
-            volume: 50,
-            player: null,
-            resource: null,
-            playing: false,
-            loop: false,
-            shuffle: false,
-            autoplay: false,
-            sound8d: false,
-            bassboost: false,
-            nightcore: false,
-            veriRole: null,
-        };
-        globalqueue.set(interaction.guild.id, queueconstruct);
-        if (!serverqueue.playing) {
-            const data = JSON.stringify(globalqueue, replacer);
-            fs.writeFile('./data.json', data, err => {
-                if (err) {
-                    console.log('There has been an error saving your configuration data.');
-                    console.log(err.message);
-                    const embed = new EmbedBuilder()
-                        .setTitle('Enable')
-                        .setDescription('There has been an error saving your configuration data.');
-                    interaction.editReply({ embeds: [embed] });
-                    return;
-                }
-            });
-        }
-    }
     const verirole = serverqueue.veriRole;
     if (!verirole) {
         const embed = new EmbedBuilder()
@@ -234,5 +144,42 @@ function replacer(key, value) {
         };
     } else {
         return value;
+    }
+}
+
+async function load(interaction) {
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    const queueconstruct = {
+        textchannel: [],
+        voicechannel: null,
+        connection: null,
+        songs: [],
+        volume: 50,
+        player: null,
+        resource: null,
+        playing: false,
+        loop: false,
+        shuffle: false,
+        autoplay: false,
+        sound8d: false,
+        bassboost: false,
+        nightcore: false,
+        veriRole: null,
+        veriChannel: null,
+    };
+    globalqueue.set(interaction.guild.id, queueconstruct);
+    if (!serverqueue.playing) {
+        const data = JSON.stringify(globalqueue, replacer);
+        fs.writeFile('./data.json', data, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const embed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [embed] });
+                return;
+            }
+        });
     }
 }
