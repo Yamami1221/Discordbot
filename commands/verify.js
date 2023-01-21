@@ -128,6 +128,10 @@ async function verify(interaction) {
             .setDescription('You are already verified!');
         return interaction.editReply({ embeds: [embed], ephemeral: true });
     }
+    const min = 1000;
+    const max = 5000;
+    const random = Math.floor(Math.random() * (max - min + 1)) + min;
+    await sleep(random);
     await member.roles.add(verirole);
     const embed = new EmbedBuilder()
         .setTitle('Verify')
@@ -199,4 +203,8 @@ async function load(interaction) {
             }
         });
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
