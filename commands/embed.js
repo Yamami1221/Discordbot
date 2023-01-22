@@ -18,9 +18,13 @@ module.exports = {
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('color')
-                .setDescription('The color of the embed')),
+                .setDescription('The color of the embed'))
+        .addAttachmentOption(option =>
+            option.setName('image')
+                .setDescription('The image to send in the embed')),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
+        const image = await interaction.options.getAttachment('image');
         const channel = interaction.options.getChannel('channel');
         const title = interaction.options.getString('title');
         const description = interaction.options.getString('description');
@@ -29,6 +33,7 @@ module.exports = {
             .setTitle(title)
             .setDescription(description)
             .setColor(color)
+            .setImage(image ? image.proxyURL : null)
             .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
             .setTimestamp();
         await interaction.editReply({ content: `Embed sent to ${channel.toString()}`, ephemeral: true });
