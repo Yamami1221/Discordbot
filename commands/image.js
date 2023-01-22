@@ -1,7 +1,8 @@
+require('dotenv').config();
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const imageSearch = require('image-search-google');
 
-const client = new imageSearch('97e0d287cb72249a0', 'AIzaSyD7EpFipmp1B0GNHkfq2coJumvsq66yTU8');
+const client = new imageSearch(process.env.CSE_ID, process.env.GOOGLE_API_KEY);
 
 module.exports = {
     data: new SlashCommandBuilder()
