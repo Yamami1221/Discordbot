@@ -45,7 +45,7 @@ async function setup(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Enable')
             .setDescription('You do not have permission to use this command.');
-        await interaction.editReply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     const serverqueue = globalqueue.get(interaction.guild.id);
@@ -80,7 +80,7 @@ async function remove(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Enable')
             .setDescription('You do not have permission to use this command.');
-        await interaction.editReply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     const serverqueue = globalqueue.get(interaction.guild.id);
@@ -187,6 +187,8 @@ async function load(interaction) {
         nightcore: false,
         veriRole: null,
         veriChannel: null,
+        chatbotChannel: null,
+        chatbot: false,
     };
     globalqueue.set(interaction.guild.id, queueconstruct);
     if (!serverqueue.playing) {

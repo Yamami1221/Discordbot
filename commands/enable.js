@@ -41,6 +41,8 @@ module.exports = {
                     nightcore: false,
                     veriRole: null,
                     veriChannel: null,
+                    chatbotChannel: null,
+                    chatbot: false,
                 };
                 queueconstruct.textchannel.push(interaction.channel);
                 globalqueue.set(interaction.guild.id, queueconstruct);
