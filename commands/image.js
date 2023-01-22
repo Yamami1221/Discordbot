@@ -2,6 +2,8 @@ require('dotenv').config();
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const imageSearch = require('image-search-google');
 
+const { globalqueue } = require('../global.js');
+
 const client = new imageSearch(process.env.CSE_ID, process.env.GOOGLE_API_KEY);
 
 module.exports = {
@@ -15,6 +17,16 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
+        const serverQueue = globalqueue.get(interaction.guildId);
+        if (serverQueue.veriChannel) {
+            if (interaction.channel.id === serverQueue.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         const option = { page: 1 };
         const query = interaction.options.getString('query');
         const results = await client.search(query, option);

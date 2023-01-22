@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits } = require('discord.js');
 
+const { globalqueue } = require('../global.js');
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 module.exports = {
@@ -7,6 +9,16 @@ module.exports = {
         .setName('stats')
         .setDescription('Shows the stats of (sharding) the bot'),
     async execute(interaction) {
+        const serverQueue = globalqueue.get(interaction.guildId);
+        if (serverQueue.veriChannel) {
+            if (interaction.channel.id === serverQueue.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         const guildcount = await client.shard.fetchClientValues('guilds.cache.size');
         const usercount = await client.shard.fetchClientValues('users.cache.size');
         const channelcount = await client.shard.fetchClientValues('channels.cache.size');

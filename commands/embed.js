@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
+const { globalqueue } = require('../global.js');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('embed')
@@ -24,6 +26,16 @@ module.exports = {
                 .setDescription('The image to send in the embed')),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
+        const serverQueue = globalqueue.get(interaction.guildId);
+        if (serverQueue.veriChannel) {
+            if (interaction.channel.id === serverQueue.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         const image = await interaction.options.getAttachment('image');
         const channel = interaction.options.getChannel('channel');
         const title = interaction.options.getString('title');

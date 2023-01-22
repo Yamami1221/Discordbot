@@ -1,4 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+
+const { globalqueue } = require('../global.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,10 +11,22 @@ module.exports = {
                 .setDescription('The amount of messages to delete.')
                 .setMinValue(1)
                 .setMaxValue(1000)
-                .setRequired(true)),
+                .setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             await interaction.deferReply();
+            const serverQueue = globalqueue.get(interaction.guildId);
+            if (serverQueue.veriChannel) {
+                if (interaction.channel.id === serverQueue.veriChannel.id) {
+                    const embed = new EmbedBuilder()
+                        .setTitle('Verification')
+                        .setDescription('You cannot use this command in the verification channel');
+                    await interaction.editReply({ embeds: [embed], ephemeral: true });
+                    return;
+                }
+            }
             const amount = interaction.options.getInteger('amount');
             const messages = await interaction.channel.messages.fetch({ limit: amount });
             await interaction.channel.bulkDelete(messages);

@@ -1,12 +1,24 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const { stripIndents } = require('common-tags');
 
+const { globalqueue } = require('../global.js');
+
 module.exports = {
     data: new ContextMenuCommandBuilder()
         .setName('User Info')
         .setType(ApplicationCommandType.User),
     async execute(interaction) {
         await interaction.deferReply();
+        const serverQueue = globalqueue.get(interaction.guildId);
+        if (serverQueue.veriChannel) {
+            if (interaction.channel.id === serverQueue.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         const member = interaction.guild.members.cache.get(interaction.targetId) || interaction.member;
 
         const embed = new EmbedBuilder()

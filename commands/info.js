@@ -2,6 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { stripIndents } = require('common-tags');
 const moment = require('moment');
 
+const { globalqueue } = require('../global.js');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
@@ -19,6 +21,16 @@ module.exports = {
                 .setDescription('Info about the server')),
     async execute(interaction) {
         await interaction.deferReply();
+        const serverQueue = globalqueue.get(interaction.guildId);
+        if (serverQueue.veriChannel) {
+            if (interaction.channel.id === serverQueue.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         const subcommand = interaction.options.getSubcommand();
         if (subcommand === 'user') {
             const user = interaction.options.getUser('target');
@@ -53,7 +65,7 @@ module.exports = {
                             inline: false,
                         },
                     )
-                    .setFooter(`Requested by ${interaction.user.username}#${interaction.user.discriminator}`, interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .setFooter({ text:`Requested by ${interaction.user.username}#${interaction.user.discriminator}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
                     .setTimestamp();
                 await interaction.editReply({ embeds: [embed], ephemeral: true });
             } else {
@@ -87,7 +99,7 @@ module.exports = {
                             inline: false,
                         },
                     )
-                    .setFooter(`Requested by ${interaction.user.username}`, interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }))
+                    .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
                     .setTimestamp();
                 await interaction.editReply({ embeds: [embed], ephemeral: true });
             }
@@ -106,6 +118,7 @@ module.exports = {
                 .addFields({ name:'Build on', value:servertimedata[0] })
                 .addFields({ name:'Server time zone', value:servertimedata[1] })
                 .addFields({ name:'Created', value:servertimedata[2] })
+                .setFooter({ text:`Requested by ${interaction.user.username}#${interaction.user.discriminator}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
                 .setTimestamp();
             await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
