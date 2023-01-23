@@ -140,11 +140,11 @@ module.exports = {
             serverqueue.player.on(AudioPlayerStatus.Idle, () => {
                 serverqueue.playing = false;
                 serverqueue.resource = null;
-                serverqueue.connection.destroy();
             });
             i.deferUpdate();
         });
         collector.on('end', () => {
+            serverqueue.connection.destroy();
             const replied = interaction.fetchReply();
             if (replied) interaction.deleteReply();
         });
