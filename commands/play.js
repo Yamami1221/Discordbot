@@ -150,8 +150,8 @@ async function playSong(interaction, song) {
     const serverqueue = globalqueue.get(interaction.guild.id);
     serverqueue.playing = true;
     if (!song) {
-        await serverqueue.connection.destroy();
-        serverqueue.connection = null;
+        // await serverqueue.connection.destroy();
+        // serverqueue.connection = null;
         serverqueue.resource = null;
         serverqueue.player = null;
         serverqueue.playing = false;
@@ -186,6 +186,31 @@ async function playSong(interaction, song) {
             serverqueue.songs.shift();
             playSong(interaction, serverqueue.songs[0]);
         }
+    });
+    serverqueue.player.on(AudioPlayerStatus.AutoPaused, () => {
+        const settimeoutObj = setTimeout(() => {
+            serverqueue.connection.destroy();
+            serverqueue.connection = null;
+            serverqueue.resource = null;
+            serverqueue.player = null;
+            serverqueue.playing = false;
+            const datatowrite = JSON.stringify(globalqueue, replacer);
+            fs.writeFile('./data.json', datatowrite, err => {
+                if (err) {
+                    console.log('There has been an error saving your configuration data.');
+                    console.log(err.message);
+                    const errorembed = new EmbedBuilder()
+                        .setTitle('Play')
+                        .setDescription('There has been an error saving your configuration data.');
+                    interaction.editReply({ embeds: [errorembed] });
+                    return;
+                }
+            });
+        }, 30000);
+        serverqueue.timeout = settimeoutObj;
+    });
+    serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+        clearTimeout(serverqueue.timeout);
     });
     const embed = new EmbedBuilder()
         .setTitle('Play')
