@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
+const fs = require('fs');
 
 
 const { globalqueue } = require('../global.js');
@@ -158,10 +159,38 @@ module.exports = {
         });
         collector.on('end', async () => {
             serverqueue.playing = false;
-            serverqueue.connection?.destroy();
             serverqueue.connection = null;
             const deffered = await interaction.fetchReply();
             if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
+            if (!serverqueue.playing) {
+                serverqueue.player = null;
+                serverqueue.resource = null;
+                serverqueue.connection.destroy();
+                serverqueue.connection = null;
+                const datatowrite = JSON.stringify(serverqueue, replacer);
+                fs.writeFileSync('./data.json', datatowrite, err => {
+                    if (err) {
+                        console.log(err);
+                        console.log(err.message);
+                        const errorEmbed = new EmbedBuilder()
+                            .setTitle('Soundboard')
+                            .setDescription('An error occured while saving the data')
+                            .setTimestamp();
+                        interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
+                    }
+                });
+            }
         });
     },
 };
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
