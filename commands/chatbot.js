@@ -16,7 +16,7 @@ module.exports = {
                 .setDescription('Disable the chat bot')),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId);
+        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
         if (serverQueue.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
