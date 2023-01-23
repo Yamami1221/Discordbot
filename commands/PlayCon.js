@@ -1,4 +1,4 @@
-const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
+const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder, NoSubscriberBehavior } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
 const { yt_validate, video_basic_info, stream } = require('play-dl');
 const ytdl = require('ytdl-core');
@@ -169,7 +169,11 @@ async function playSong(interaction, song) {
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });
     serverqueue.resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
     serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
-    serverqueue.player = createAudioPlayer();
+    serverqueue.player = createAudioPlayer({
+        behaviors: {
+            noSubscriber: NoSubscriberBehavior.Pause,
+        },
+    });
     serverqueue.player.play(serverqueue.resource);
     serverqueue.connection.subscribe(serverqueue.player);
     serverqueue.player.on(AudioPlayerStatus.Idle, () => {

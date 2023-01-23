@@ -7,11 +7,11 @@ module.exports = {
         .setName('leave')
         .setDescription('Stops the music and clears the queue'),
     async execute(interaction) {
-        stop(interaction);
+        leave(interaction);
     },
 };
 
-async function stop(interaction) {
+async function leave(interaction) {
     await interaction.deferReply();
     const serverQueue = globalqueue.get(interaction.guildId) || undefined;
     if (serverQueue?.veriChannel) {
