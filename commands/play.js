@@ -155,18 +155,18 @@ async function playSong(interaction, song) {
         serverqueue.resource = null;
         serverqueue.player = null;
         serverqueue.playing = false;
-        const datatowrite = JSON.stringify(globalqueue, replacer);
-        fs.writeFile('./data.json', datatowrite, err => {
-            if (err) {
-                console.log('There has been an error saving your configuration data.');
-                console.log(err.message);
-                const embed = new EmbedBuilder()
-                    .setTitle('Enable')
-                    .setDescription('There has been an error saving your configuration data.');
-                interaction.editReply({ embeds: [embed] });
-                return;
-            }
-        });
+        // const datatowrite = JSON.stringify(globalqueue, replacer);
+        // fs.writeFile('./data.json', datatowrite, err => {
+        //     if (err) {
+        //         console.log('There has been an error saving your configuration data.');
+        //         console.log(err.message);
+        //         const embed = new EmbedBuilder()
+        //             .setTitle('Enable')
+        //             .setDescription('There has been an error saving your configuration data.');
+        //         interaction.editReply({ embeds: [embed] });
+        //         return;
+        //     }
+        // });
         return;
     }
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });

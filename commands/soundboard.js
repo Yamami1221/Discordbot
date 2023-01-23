@@ -139,12 +139,26 @@ module.exports = {
             serverqueue.player.unpause();
             serverqueue.player.on(AudioPlayerStatus.Idle, () => {
                 serverqueue.resource = null;
+                serverqueue.playing = false;
+            });
+            serverqueue.player.on(AudioPlayerStatus.AutoPaused, () => {
+                const timeoutObj = setTimeout(() => {
+                    serverqueue.connection.destroy();
+                    serverqueue.connection = null;
+                    serverqueue.playing = false;
+                    serverqueue.player = null;
+                    serverqueue.resource = null;
+                }, 10000);
+                serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+                    clearTimeout(timeoutObj);
+                    serverqueue.playing = true;
+                });
             });
             i.deferUpdate();
         });
         collector.on('end', async () => {
             serverqueue.playing = false;
-            serverqueue.connection.destroy();
+            serverqueue.connection?.destroy();
             serverqueue.connection = null;
             const deffered = await interaction.fetchReply();
             if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
