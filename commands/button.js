@@ -1,6 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-
-const { globalqueue } = require('../global.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,16 +6,6 @@ module.exports = {
         .setDescription('button test'),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId);
-        if (serverQueue.veriChannel) {
-            if (interaction.channel.id === serverQueue.veriChannel.id) {
-                const embed = new EmbedBuilder()
-                    .setTitle('Verification')
-                    .setDescription('You cannot use this command in the verification channel');
-                await interaction.editReply({ embeds: [embed], ephemeral: true });
-                return;
-            }
-        }
         const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()

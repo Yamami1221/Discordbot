@@ -21,8 +21,8 @@ module.exports = {
                 .setDescription('Info about the server')),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId);
-        if (serverQueue.veriChannel) {
+        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
