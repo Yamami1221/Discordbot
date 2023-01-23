@@ -46,7 +46,7 @@ async function setup(interaction) {
             .setTitle('Verify Setup')
             .setDescription('You do not have permission to use this command')
             .setTimestamp();
-        interaction.editReply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     const role = interaction.options.getRole('role');
@@ -114,7 +114,7 @@ async function remove(interaction) {
             .setTitle('Verify Remove')
             .setDescription('You do not have permission to use this command')
             .setTimestamp();
-        interaction.editReply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     const serverQueue = globalqueue.get(interaction.guild.id);
@@ -224,7 +224,7 @@ async function verify(interaction) {
                 .setTitle('Verify')
                 .setDescription('You can only verify in verify channel!')
                 .setTimestamp();
-            interaction.editReply({ embeds: [embed] });
+            interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     }
 }
