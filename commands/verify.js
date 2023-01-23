@@ -200,7 +200,6 @@ async function verify(interaction) {
         globalqueue.set(interaction.guild.id, queueconstruct);
     }
     const serverqueue = globalqueue.get(interaction.guild.id);
-    console.dir(serverqueue);
     if (serverqueue.veriRole === null || serverqueue.veriChannel === null) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
