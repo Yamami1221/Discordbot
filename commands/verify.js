@@ -48,10 +48,11 @@ async function setup(interaction) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    let serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
-        load(interaction);
+        await load(interaction);
     }
+    serverqueue = globalqueue.get(interaction.guild.id);
     const role = interaction.options.getRole('role');
     const channel = interaction.options.getChannel('channel');
     if (serverqueue.veriRole) {
@@ -83,10 +84,11 @@ async function remove(interaction) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    let serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
-        load(interaction);
+        await load(interaction);
     }
+    serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue.veriRole) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
@@ -103,10 +105,11 @@ async function remove(interaction) {
 
 async function verify(interaction) {
     await interaction.deferReply();
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    let serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
-        load(interaction);
+        await load(interaction);
     }
+    serverqueue = globalqueue.get(interaction.guild.id);
     const veriChannel = serverqueue.veriChannel;
     if (interaction.channel.id !== veriChannel.id) {
         const embed = new EmbedBuilder()
@@ -169,7 +172,6 @@ function replacer(key, value) {
 }
 
 async function load(interaction) {
-    const serverqueue = globalqueue.get(interaction.guild.id);
     const queueconstruct = {
         textchannel: [],
         voicechannel: null,
@@ -191,6 +193,7 @@ async function load(interaction) {
         chatbot: false,
     };
     globalqueue.set(interaction.guild.id, queueconstruct);
+    const serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue.playing) {
         const data = JSON.stringify(globalqueue, replacer);
         fs.writeFile('./data.json', data, err => {
