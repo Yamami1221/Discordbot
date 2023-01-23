@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, NoSubscriberBehavior } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
 const { yt_validate, video_basic_info, stream } = require('play-dl');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
