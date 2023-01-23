@@ -112,6 +112,19 @@ async function remove(interaction) {
         .setTitle('Verify')
         .setDescription('Removed the verify command!');
     await interaction.editReply({ embeds: [embed] });
+    if (!serverqueue.playing) {
+        const datatowrite = JSON.stringify(serverqueue, replacer);
+        fs.writeFileSync('./data.json', datatowrite, err => {
+            if (err) {
+                console.log(err);
+                console.log(err.message);
+                const embed2 = new EmbedBuilder()
+                    .setTitle('Verify')
+                    .setDescription('There was an error saving the data!');
+                return interaction.editReply({ embeds: [embed2] });
+            }
+        });
+    }
 }
 
 async function verify(interaction) {
