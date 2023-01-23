@@ -16,7 +16,7 @@ module.exports = {
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('options')
-                .setDescription('The options to choose from (separate with commas)')
+                .setDescription('The options to choose from (separate with commas)(limit 5)')
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('anonymous')
@@ -41,6 +41,7 @@ module.exports = {
         const channel = interaction.options.getChannel('channel');
         const question = interaction.options.getString('question');
         const options = interaction.options.getString('options').split(',');
+        options.length = 5;
         const embed = new EmbedBuilder()
             .setTitle(`Poll **"${question}"**`)
             .setTimestamp();
