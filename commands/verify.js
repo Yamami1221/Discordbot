@@ -45,8 +45,7 @@ async function setup(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Enable')
             .setDescription('You do not have permission to use this command.');
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
-        return;
+        return interaction.editReply({ embeds: [embed], ephemeral: true });
     }
     let serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
@@ -59,13 +58,13 @@ async function setup(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('There is already a verify role!');
-        await interaction.editReply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
     }
     if (serverqueue.veriChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('There is already a verify channel!');
-        await interaction.editReply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = role;
     serverqueue.veriChannel = channel;
@@ -73,6 +72,19 @@ async function setup(interaction) {
         .setTitle('Verify')
         .setDescription(`Seting up the verify command!\nRole: ${role}\nChannel: ${channel}`);
     await interaction.editReply({ embeds: [embed] });
+    if (!serverqueue.playing) {
+        const datatowrite = JSON.stringify(serverqueue, replacer);
+        fs.writeFileSync('./data.json', datatowrite, err => {
+            if (err) {
+                console.log(err);
+                console.log(err.message);
+                const embed2 = new EmbedBuilder()
+                    .setTitle('Verify')
+                    .setDescription('There was an error saving the data!');
+                return interaction.editReply({ embeds: [embed2] });
+            }
+        });
+    }
 }
 
 async function remove(interaction) {
@@ -81,8 +93,7 @@ async function remove(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Enable')
             .setDescription('You do not have permission to use this command.');
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
-        return;
+        return interaction.editReply({ embeds: [embed], ephemeral: true });
     }
     let serverqueue = globalqueue.get(interaction.guild.id);
     if (!serverqueue) {
@@ -93,7 +104,7 @@ async function remove(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('There is no verify role!');
-        await interaction.editReply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
     }
     serverqueue.veriRole = null;
     serverqueue.veriChannel = null;
@@ -105,13 +116,14 @@ async function remove(interaction) {
 
 async function verify(interaction) {
     await interaction.deferReply();
-    let serverqueue = globalqueue.get(interaction.guild.id);
+    let serverqueue = globalqueue.get(interaction.guild.id) || undefined;
     if (!serverqueue) {
         await load(interaction);
     }
     serverqueue = globalqueue.get(interaction.guild.id);
     const veriChannel = serverqueue.veriChannel;
-    if (interaction.channel.id !== veriChannel.id) {
+    console.log(veriChannel);
+    if (interaction.channel.id !== veriChannel?.id) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('You can only verify in the verify channel!');
