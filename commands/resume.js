@@ -49,7 +49,7 @@ async function resume(interaction) {
         .setTitle('Resume')
         .setDescription('The music is already playing!');
     if (serverqueue.playing == true) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    serverqueue.resource.unpause();
+    serverqueue.player.unpause();
     embed = new EmbedBuilder()
         .setTitle('Resume')
         .setDescription('Resumed the music!');
