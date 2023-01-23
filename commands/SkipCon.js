@@ -45,9 +45,10 @@ async function skip(interaction) {
         .setTitle('Skip')
         .setDescription('There are no songs in the queue!');
     if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    const currensong = serverqueue.songs[0];
     embed = new EmbedBuilder()
         .setTitle('Skip')
-        .setDescription('Skipped the song!');
+        .setDescription(`Skipped the song **${currensong.title}**!`);
     serverqueue.player.stop();
     await interaction.editReply({ embeds: [embed] });
 }
