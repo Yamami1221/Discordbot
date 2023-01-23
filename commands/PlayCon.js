@@ -204,10 +204,9 @@ async function playSong(interaction, song) {
                 }
             });
         }, 30000);
-        serverqueue.timeout = settimeoutObj;
-    });
-    serverqueue.player.on(AudioPlayerStatus.Playing, () => {
-        clearTimeout(serverqueue.timeout);
+        serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+            clearTimeout(settimeoutObj);
+        });
     });
     const embed = new EmbedBuilder()
         .setTitle('Play')
