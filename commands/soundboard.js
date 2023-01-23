@@ -142,11 +142,12 @@ module.exports = {
             });
             i.deferUpdate();
         });
-        collector.on('end', () => {
+        collector.on('end', async () => {
             serverqueue.playing = false;
             serverqueue.connection.destroy();
-            const replied = interaction.fetchReply();
-            if (replied) interaction.deleteReply();
+            serverqueue.connection = null;
+            const deffered = await interaction.fetchReply();
+            if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
         });
     },
 };
