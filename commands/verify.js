@@ -41,47 +41,67 @@ module.exports = {
 
 async function setup(interaction) {
     await interaction.deferReply();
-    if (interaction.member.permissions.has('ADMINISTRATOR') === false || interaction.member.permissions.has('MANAGE_GUILD') === false || interaction.member.permissions.has('MANAGE_ROLES') === false) {
+    if (!interaction.member.permissions.has('MANAGE_GUILD')) {
         const embed = new EmbedBuilder()
-            .setTitle('Enable')
-            .setDescription('You do not have permission to use this command.');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
+            .setTitle('Verify Setup')
+            .setDescription('You do not have permission to use this command')
+            .setTimestamp();
+        interaction.editReply({ embeds: [embed] });
+        return;
     }
-    let serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue) {
-        await load(interaction);
-    }
-    serverqueue = globalqueue.get(interaction.guild.id);
     const role = interaction.options.getRole('role');
     const channel = interaction.options.getChannel('channel');
-    if (serverqueue.veriRole) {
-        const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('There is already a verify role!');
-        return interaction.editReply({ embeds: [embed] });
+    const serverQueue = globalqueue.get(interaction.guild.id);
+    if (!serverQueue) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: null,
+            chatbot: false,
+        };
+        globalqueue.set(interaction.guild.id, queueconstruct);
     }
-    if (serverqueue.veriChannel) {
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    if (serverqueue.veriRole || serverqueue.veriChannel) {
         const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('There is already a verify channel!');
-        return interaction.editReply({ embeds: [embed] });
+            .setTitle('Verify Setup')
+            .setDescription('The verify command has already been setup')
+            .setTimestamp();
+        interaction.editReply({ embeds: [embed] });
+        return;
     }
     serverqueue.veriRole = role;
     serverqueue.veriChannel = channel;
     const embed = new EmbedBuilder()
-        .setTitle('Verify')
-        .setDescription(`Seting up the verify command!\nRole: ${role}\nChannel: ${channel}`);
-    await interaction.editReply({ embeds: [embed] });
+        .setTitle('Verify Setup')
+        .setDescription(`The verify command has been setup in <#${channel.id}> with the role <@&${role.id}>`)
+        .setTimestamp();
+    interaction.editReply({ embeds: [embed] });
     if (!serverqueue.playing) {
-        const datatowrite = JSON.stringify(serverqueue, replacer);
-        fs.writeFileSync('./data.json', datatowrite, err => {
+        const data = JSON.stringify(globalqueue, replacer);
+        fs.writeFileSync('./data.json', data, err => {
             if (err) {
-                console.log(err);
+                console.error(err);
                 console.log(err.message);
-                const embed2 = new EmbedBuilder()
-                    .setTitle('Verify')
-                    .setDescription('There was an error saving the data!');
-                return interaction.editReply({ embeds: [embed2] });
+                const emerr = new EmbedBuilder()
+                    .setTitle('Verify Setup')
+                    .setDescription('There was an error saving the data')
+                    .setTimestamp();
+                interaction.editReply({ embeds: [emerr] });
             }
         });
     }
@@ -89,39 +109,65 @@ async function setup(interaction) {
 
 async function remove(interaction) {
     await interaction.deferReply();
-    if (interaction.member.permissions.has('ADMINISTRATOR') === false || interaction.member.permissions.has('MANAGE_GUILD') === false || interaction.member.permissions.has('MANAGE_ROLES') === false) {
+    if (!interaction.member.permissions.has('MANAGE_GUILD')) {
         const embed = new EmbedBuilder()
-            .setTitle('Enable')
-            .setDescription('You do not have permission to use this command.');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
+            .setTitle('Verify Remove')
+            .setDescription('You do not have permission to use this command')
+            .setTimestamp();
+        interaction.editReply({ embeds: [embed] });
+        return;
     }
-    let serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue) {
-        await load(interaction);
+    const serverQueue = globalqueue.get(interaction.guild.id);
+    if (!serverQueue) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: null,
+            chatbot: false,
+        };
+        globalqueue.set(interaction.guild.id, queueconstruct);
     }
-    serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue.veriRole) {
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    if (!serverqueue.veriRole || !serverqueue.veriChannel) {
         const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('There is no verify role!');
-        return interaction.editReply({ embeds: [embed] });
+            .setTitle('Verify Remove')
+            .setDescription('The verify command has not been setup')
+            .setTimestamp();
+        interaction.editReply({ embeds: [embed] });
+        return;
     }
     serverqueue.veriRole = null;
     serverqueue.veriChannel = null;
     const embed = new EmbedBuilder()
-        .setTitle('Verify')
-        .setDescription('Removed the verify command!');
-    await interaction.editReply({ embeds: [embed] });
+        .setTitle('Verify Remove')
+        .setDescription('The verify command has been removed')
+        .setTimestamp();
+    interaction.editReply({ embeds: [embed] });
     if (!serverqueue.playing) {
-        const datatowrite = JSON.stringify(serverqueue, replacer);
-        fs.writeFileSync('./data.json', datatowrite, err => {
+        const data = JSON.stringify(globalqueue, replacer);
+        fs.writeFileSync('./data.json', data, err => {
             if (err) {
-                console.log(err);
+                console.error(err);
                 console.log(err.message);
-                const embed2 = new EmbedBuilder()
-                    .setTitle('Verify')
-                    .setDescription('There was an error saving the data!');
-                return interaction.editReply({ embeds: [embed2] });
+                const emerr = new EmbedBuilder()
+                    .setTitle('Verify Remove')
+                    .setDescription('There was an error saving the data')
+                    .setTimestamp();
+                interaction.editReply({ embeds: [emerr] });
             }
         });
     }
@@ -129,61 +175,60 @@ async function remove(interaction) {
 
 async function verify(interaction) {
     await interaction.deferReply();
-    let serverqueue = globalqueue.get(interaction.guild.id) || undefined;
-    if (!serverqueue) {
-        await load(interaction);
+    const serverQueue = globalqueue.get(interaction.guild.id);
+    if (!serverQueue) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: null,
+            chatbot: false,
+        };
+        globalqueue.set(interaction.guild.id, queueconstruct);
     }
-    serverqueue = globalqueue.get(interaction.guild.id);
-    const veriChannel = serverqueue.veriChannel;
-    console.log(veriChannel);
-    if (interaction.channel.id !== veriChannel?.id) {
+    const serverqueue = globalqueue.get(interaction.guild.id);
+    if (serverqueue.veriRole === null || serverqueue.veriChannel === null) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
-            .setDescription('You can only verify in the verify channel!');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
-    }
-    const verirole = serverqueue.veriRole;
-    if (!verirole) {
-        const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('There is no verify role!\nPlease set one up with /verify setup <role>');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
-    }
-    const member = interaction.member;
-    if (member.roles.cache.has(verirole.id)) {
-        const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('You are already verified!');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
-    }
-    const embed = new EmbedBuilder()
-        .setTitle('Verify')
-        .setDescription('You have been verified!');
-    await interaction.editReply({ embeds: [embed] });
-    const min = 1000;
-    const max = 5000;
-    const random = Math.floor(Math.random() * (max - min + 1)) + min;
-    await sleep(random);
-    await member.roles.add(verirole);
-}
-
-
-/*
-        await interaction.deferReply();
-        const verirole = interaction.guild.roles.cache.find(role => role.name === 'Verified');
-        const member = interaction.member;
-        if (member.roles.cache.has(verirole.id)) {
+            .setDescription('The verify command has not been setup')
+            .setTimestamp();
+        interaction.editReply({ embeds: [embed] });
+    } else {
+        if (interaction.channel.id === serverqueue.veriChannel.id) {
+            const member = interaction.member;
             const embed = new EmbedBuilder()
                 .setTitle('Verify')
-                .setDescription('You are already verified!');
-            return interaction.editReply({ embeds: [embed], ephemeral: true });
+                .setDescription(`Verified successfully\nWelcome <@${interaction.member.id}>`)
+                .setTimestamp();
+            interaction.editReply({ embeds: [embed] });
+            const min = 1000;
+            const max = 5000;
+            const random = Math.floor(Math.random() * (max - min + 1)) + min;
+            await sleep(random);
+            member.roles.add(serverqueue.veriRole);
+        } else {
+            const embed = new EmbedBuilder()
+                .setTitle('Verify')
+                .setDescription('You can only verify in verify channel!')
+                .setTimestamp();
+            interaction.editReply({ embeds: [embed] });
         }
-        await member.roles.add(verirole);
-        const embed = new EmbedBuilder()
-            .setTitle('Verify')
-            .setDescription('You have been verified!');
-        await interaction.editReply({ embeds: [embed] });
-*/
+    }
+}
+
 
 function replacer(key, value) {
     if (value instanceof Map) {
@@ -193,45 +238,6 @@ function replacer(key, value) {
         };
     } else {
         return value;
-    }
-}
-
-async function load(interaction) {
-    const queueconstruct = {
-        textchannel: [],
-        voicechannel: null,
-        connection: null,
-        songs: [],
-        volume: 50,
-        player: null,
-        resource: null,
-        playing: false,
-        loop: false,
-        shuffle: false,
-        autoplay: false,
-        sound8d: false,
-        bassboost: false,
-        nightcore: false,
-        veriRole: null,
-        veriChannel: null,
-        chatbotChannel: null,
-        chatbot: false,
-    };
-    globalqueue.set(interaction.guild.id, queueconstruct);
-    const serverqueue = globalqueue.get(interaction.guild.id);
-    if (!serverqueue.playing) {
-        const data = JSON.stringify(globalqueue, replacer);
-        fs.writeFile('./data.json', data, err => {
-            if (err) {
-                console.log('There has been an error saving your configuration data.');
-                console.log(err.message);
-                const embed = new EmbedBuilder()
-                    .setTitle('Enable')
-                    .setDescription('There has been an error saving your configuration data.');
-                interaction.editReply({ embeds: [embed] });
-                return;
-            }
-        });
     }
 }
 
