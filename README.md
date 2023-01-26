@@ -65,9 +65,6 @@ These will create a new set of commands in the server.
 
 > NOTE: You may need to wait an hour for the commands to create. 200 Command Creates per day is the limit.
 
-**Command Folder Structure:**
-- `context` folder contains the Context Menu commands.
-- `general` and other folders are slash commands.
 ## 📚 Guides
 - [Creating commands](https://discordjs.guide/creating-your-bot/slash-commands.html)
 - [Replying to Slash Commands](https://discordjs.guide/slash-commands/response-methods.html)
