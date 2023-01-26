@@ -1,11 +1,13 @@
 const fs = require('fs');
 
 const data = fs.readFileSync('./data.json');
+const holodata = fs.readFileSync('./holodata.json');
 
 try {
     const globalqueue = JSON.parse(data, reviver);
+    const holomap = JSON.parse(holodata, reviver);
     // const globalqueue = new Map();
-    module.exports = { globalqueue };
+    module.exports = { globalqueue, holomap };
 } catch (err) {
     console.error(err);
 }
