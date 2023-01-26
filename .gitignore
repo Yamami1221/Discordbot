@@ -1,4 +1,4 @@
 /.env
 /node_modules
 /data.json
-commands/horoscope.js
+horodata.json
