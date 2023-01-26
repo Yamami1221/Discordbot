@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const fs = require('fs');
 
 const horodata = require('./../resource/horostorage.js');
 const { globalqueue, horomap } = require('../global.js');
@@ -21,21 +22,43 @@ module.exports = {
         }
         const horouserdata = horomap.get(interaction.user.id);
         if (horouserdata) {
+            const horodatatoshow = horouserdata.result;
             const embed = new EmbedBuilder()
                 .setTitle('Horoscope')
-                .setDescription(`Your horoscope for today is ${horouserdata.result}`);
+                .setDescription(`Your horoscope for today is \`\`\`${horodatatoshow.result.name} ${horodatatoshow.result.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
             return;
         } else {
+            const min = 0;
+            const max = 27;
+            const random = Math.floor(Math.random() * (max - min + 1)) + min;
             const horodatatosave = {
-                result: horodata[Math.floor(Math.random() * horodata.length)],
+                result: horodata.data[random],
             };
             horomap.set(interaction.user.id, horodatatosave);
             const embed = new EmbedBuilder()
                 .setTitle('Horoscope')
-                .setDescription(`Your horoscope for today is ${horodatatosave.result}`);
+                .setDescription(`Your horoscope for today is \`\`\`${horodatatosave.result.name} ${horodatatosave.result.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
+            const data = JSON.stringify(horomap, replacer);
+            fs.writeFileSync('./horodata.json', data, err => {
+                if (err) {
+                    console.log('There has been an error saving your configuration data.');
+                    console.log(err.message);
+                }
+            });
             return;
         }
     },
 };
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
