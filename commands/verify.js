@@ -52,6 +52,14 @@ async function setup(interaction) {
     const role = interaction.options.getRole('role');
     const channel = interaction.options.getChannel('channel');
     const serverQueue = globalqueue.get(interaction.guild.id);
+    if (channel === serverQueue?.chatbotChannel) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verify Setup')
+            .setDescription('The verify channel cannot be the same as the chatbot channel')
+            .setTimestamp();
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
     if (!serverQueue) {
         const queueconstruct = {
             textchannel: [],
