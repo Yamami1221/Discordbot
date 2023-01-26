@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const data = fs.readFileSync('./data.json');
-const holodata = fs.readFileSync('./holodata.json');
+const holodata = fs.readFileSync('./horodata.json');
 
 try {
     const globalqueue = JSON.parse(data, reviver);
