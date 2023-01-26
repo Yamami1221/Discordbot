@@ -7,8 +7,11 @@ Discord Music and verify bot using DISCORD.JS V.14
 - ✅ Verify Bot
 - 🖼️ Image Searcher
 - 🧮 Calculator
-- SoundBoard
-- Chatbot(soon)
+- 🔊 SoundBoard
+- 🔠 Translate
+- 🗳️ Poll create
+- ♈ Horoscope (Only thai)
+- 💬 Chatbot(soon)
 
 ## Setup
 1. Create a folder on your computer, then type the following console command to clone this repository.
@@ -20,7 +23,7 @@ git clone https://github.com/Yamami1221/Discordbot
 
 ![bot create](https://i.imgur.com/luHPTGL.png "Step 2")
 
-3. Create `.env` and `data.json` and fill the required values. **Do not show anyone these!**
+3. Create `.env`,`horodata.json` and `data.json` and fill the required values. **Do not show anyone these!**
 
 For .env
 ```bash
@@ -28,7 +31,7 @@ TOKEN='Your_DISCORD_TOKEN'
 CSE_ID='YOUR_GOOGLE_CDE_ID' //to use image search
 GOOGLE_API_KEY='YOUR_GOOGLE_CUSTOM_SEARCH_API'
 ```
-For data.json
+For data.json and horodata.js
 ```bash
 {"dataType":"Map","value":[]}
 ```
@@ -62,9 +65,6 @@ These will create a new set of commands in the server.
 
 > NOTE: You may need to wait an hour for the commands to create. 200 Command Creates per day is the limit.
 
-**Command Folder Structure:**
-- `context` folder contains the Context Menu commands.
-- `general` and other folders are slash commands.
 ## 📚 Guides
 - [Creating commands](https://discordjs.guide/creating-your-bot/slash-commands.html)
 - [Replying to Slash Commands](https://discordjs.guide/slash-commands/response-methods.html)
