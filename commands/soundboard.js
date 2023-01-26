@@ -139,6 +139,17 @@ module.exports = {
             serverqueue.connection.subscribe(serverqueue.player);
             serverqueue.player.unpause();
             serverqueue.player.on(AudioPlayerStatus.Idle, () => {
+                const timeoutObj = setTimeout(() => {
+                    serverqueue.connection.destroy();
+                    serverqueue.connection = null;
+                    serverqueue.playing = false;
+                    serverqueue.player = null;
+                    serverqueue.resource = null;
+                }, 10000);
+                serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+                    clearTimeout(timeoutObj);
+                    serverqueue.playing = true;
+                });
                 serverqueue.resource = null;
                 serverqueue.playing = false;
             });

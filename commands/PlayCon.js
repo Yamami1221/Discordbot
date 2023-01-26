@@ -152,6 +152,28 @@ async function playSong(interaction, song) {
         serverqueue.resource = null;
         serverqueue.player = null;
         serverqueue.playing = false;
+        const settimeoutObj = setTimeout(() => {
+            serverqueue.connection.destroy();
+            serverqueue.connection = null;
+            serverqueue.resource = null;
+            serverqueue.player = null;
+            serverqueue.playing = false;
+            const datatowrite = JSON.stringify(globalqueue, replacer);
+            fs.writeFileSync('./data.json', datatowrite, err => {
+                if (err) {
+                    console.log('There has been an error saving your configuration data.');
+                    console.log(err.message);
+                    const errorembed = new EmbedBuilder()
+                        .setTitle('Play')
+                        .setDescription('There has been an error saving your configuration data.');
+                    interaction.editReply({ embeds: [errorembed] });
+                    return;
+                }
+            });
+        }, 30000);
+        serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+            clearTimeout(settimeoutObj);
+        });
         // const datatowrite = JSON.stringify(globalqueue, replacer);
         // fs.writeFile('./data.json', datatowrite, err => {
         //     if (err) {
@@ -192,7 +214,7 @@ async function playSong(interaction, song) {
             serverqueue.player = null;
             serverqueue.playing = false;
             const datatowrite = JSON.stringify(globalqueue, replacer);
-            fs.writeFile('./data.json', datatowrite, err => {
+            fs.writeFileSync('./data.json', datatowrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
