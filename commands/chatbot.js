@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Language, NlpManager } = require('node-nlp');
 
 const { globalqueue } = require('../global.js');
 
@@ -66,8 +67,27 @@ async function disableChatBot(interaction) {
 }
 
 async function teachChatBot(interaction) {
-    const embed = new EmbedBuilder()
-        .setTitle('Chat Bot')
-        .setDescription('This feature is not yet available');
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    const text = interaction.options.getString('text');
+    const response = interaction.options.getString('response');
+    try {
+        const language = new Language();
+        const langraw = await language.guess(text, [ 'en', 'th' ]);
+        const lang = langraw[0].alpha2;
+        const manager = new NlpManager({ languages: [lang] });
+        manager.load('../model.nlp');
+        manager.addDocument(lang, text, text);
+        manager.addAnswer(lang, text, response);
+        manager.train();
+        manager.save('../model.nlp');
+        const embed = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('Successfully taught the chat bot');
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        const embed = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('Failed to teach the chat bot');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        console.error(error);
+    }
 }
