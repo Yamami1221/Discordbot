@@ -6,6 +6,9 @@ Discord Music and verify bot using DISCORD.JS V.14
 - 🎵 Music Player
 - ✅ Verify Bot
 - 🖼️ Image Searcher
+- 🧮 Calculator
+- SoundBoard
+- Chatbot(soon)
 
 ## Setup
 1. Create a folder on your computer, then type the following console command to clone this repository.
