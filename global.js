@@ -5,9 +5,9 @@ const holodata = fs.readFileSync('./horodata.json');
 
 try {
     const globalqueue = JSON.parse(data, reviver);
-    const holomap = JSON.parse(holodata, reviver);
+    const horomap = JSON.parse(holodata, reviver);
     // const globalqueue = new Map();
-    module.exports = { globalqueue, holomap };
+    module.exports = { globalqueue, horomap };
 } catch (err) {
     console.error(err);
 }
