@@ -25,7 +25,7 @@ module.exports = {
             const horodatatoshow = horouserdata.result;
             const embed = new EmbedBuilder()
                 .setTitle('Horoscope')
-                .setDescription(`Your horoscope for today is \`\`\`${horodatatoshow.result.name} ${horodatatoshow.result.value}\`\`\``);
+                .setDescription(`Your horoscope for today is \`\`\`${horodatatoshow.name} ${horodatatoshow.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
             return;
         } else {
