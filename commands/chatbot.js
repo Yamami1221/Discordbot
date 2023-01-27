@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Language, NlpManager } = require('node-nlp');
+const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,7 +32,7 @@ module.exports = {
                         .setRequired(true))),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
@@ -53,7 +54,7 @@ module.exports = {
 };
 
 async function enableChatBot(interaction) {
-    const serverQueue = globalqueue.get(interaction.guildId);
+    const serverQueue = globaldata.get(interaction.guildId);
     if (!serverQueue) {
         const queueconstruct = {
             textchannel: [],
@@ -74,9 +75,9 @@ async function enableChatBot(interaction) {
             veriChannel: null,
             chatbotChannel: [],
         };
-        globalqueue.set(interaction.guild.id, queueconstruct);
+        globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globalqueue.get(interaction.guildId);
+    const serverqueue = globaldata.get(interaction.guildId);
     if (interaction.channel.id === serverqueue.veriChannel?.id) {
         const overeri = new EmbedBuilder()
             .setTitle('Chat Bot')
@@ -103,10 +104,24 @@ async function enableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully enabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
+    if (!serverqueue.playing) {
+        const datatowrite = JSON.stringify(globaldata, replacer);
+        fs.writeFileSync('./data/data.json', datatowrite, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const writefileerror = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [writefileerror] });
+                return;
+            }
+        });
+    }
 }
 
 async function disableChatBot(interaction) {
-    const serverQueue = globalqueue.get(interaction.guildId);
+    const serverQueue = globaldata.get(interaction.guildId);
     if (!serverQueue) {
         const queueconstruct = {
             textchannel: [],
@@ -127,9 +142,9 @@ async function disableChatBot(interaction) {
             veriChannel: null,
             chatbotChannel: [],
         };
-        globalqueue.set(interaction.guild.id, queueconstruct);
+        globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globalqueue.get(interaction.guildId);
+    const serverqueue = globaldata.get(interaction.guildId);
     if (interaction.channel.id === serverqueue.veriChannel?.id) {
         const overeri = new EmbedBuilder()
             .setTitle('Chat Bot')
@@ -157,6 +172,20 @@ async function disableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully disabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
+    if (!serverqueue.playing) {
+        const datatowrite = JSON.stringify(globaldata, replacer);
+        fs.writeFileSync('./data/data.json', datatowrite, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const writefileerror = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [writefileerror] });
+                return;
+            }
+        });
+    }
 }
 
 async function teachChatBot(interaction) {
@@ -182,5 +211,16 @@ async function teachChatBot(interaction) {
             .setDescription('Failed to teach the chat bot');
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         console.error(error);
+    }
+}
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
     }
 }

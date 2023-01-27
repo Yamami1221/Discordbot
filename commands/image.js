@@ -2,7 +2,7 @@ require('dotenv').config();
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const imageSearch = require('image-search-google');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 const client = new imageSearch(process.env.CSE_ID, process.env.GOOGLE_API_KEY);
 
@@ -17,7 +17,7 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()

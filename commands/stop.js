@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,7 +13,7 @@ module.exports = {
 
 async function stop(interaction) {
     await interaction.deferReply();
-    const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+    const serverQueue = globaldata.get(interaction.guildId) || undefined;
     if (serverQueue?.veriChannel) {
         if (interaction.channel.id === serverQueue.veriChannel.id) {
             const embed = new EmbedBuilder()
@@ -28,7 +28,7 @@ async function stop(interaction) {
         .setTitle('Stop')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('This server is not enabled for music commands!');

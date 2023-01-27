@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +11,7 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
@@ -22,7 +22,7 @@ module.exports = {
             }
         }
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
-            const serverqueue = globalqueue?.get(interaction.guild.id);
+            const serverqueue = globaldata?.get(interaction.guild.id);
             if (!serverqueue) {
                 const queueconstruct = {
                     textchannel: [],
@@ -44,7 +44,7 @@ module.exports = {
                     chatbotChannel: [],
                 };
                 queueconstruct.textchannel.push(interaction.channel);
-                globalqueue.set(interaction.guild.id, queueconstruct);
+                globaldata.set(interaction.guild.id, queueconstruct);
                 let embed = new EmbedBuilder()
                     .setTitle('Enable')
                     .setDescription(`Enabled ${interaction.guild.name} for music commands`);
@@ -53,8 +53,8 @@ module.exports = {
                     .setTitle('Enable')
                     .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
                 await interaction.followUp({ embeds: [embed] });
-                const data = JSON.stringify(globalqueue, replacer);
-                fs.writeFile('./data.json', data, err => {
+                const datatowrite = JSON.stringify(globaldata, replacer);
+                fs.writeFile('./data/data.json', datatowrite, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
@@ -85,8 +85,8 @@ module.exports = {
                         .setTitle('Enable')
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
                     await interaction.editReply({ embeds: [embed] });
-                    const data = JSON.stringify(globalqueue, replacer);
-                    fs.writeFile('./data.json', data, err => {
+                    const datatowrite = JSON.stringify(globaldata, replacer);
+                    fs.writeFile('./data/data.json', datatowrite, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);

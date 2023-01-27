@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits } = require('discord.js');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -9,7 +9,7 @@ module.exports = {
         .setName('stats')
         .setDescription('Shows the stats of (sharding) the bot'),
     async execute(interaction) {
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()

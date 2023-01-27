@@ -3,7 +3,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerSta
 const fs = require('fs');
 
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +12,7 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
@@ -27,7 +27,7 @@ module.exports = {
             .setTitle('Soundboard')
             .setDescription('You need to be in a voice channel to use this command');
         if (!voiceChannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
-        const serverqueue = globalqueue.get(interaction.guild.id);
+        const serverqueue = globaldata.get(interaction.guild.id);
         embed = new EmbedBuilder()
             .setTitle('Soundboard')
             .setDescription('This server is not enabled for music commands');
@@ -179,7 +179,7 @@ module.exports = {
                 serverqueue.connection.destroy();
                 serverqueue.connection = null;
                 const datatowrite = JSON.stringify(serverqueue, replacer);
-                fs.writeFileSync('./data.json', datatowrite, err => {
+                fs.writeFileSync('./data/data.json', datatowrite, err => {
                     if (err) {
                         console.log(err);
                         console.log(err.message);

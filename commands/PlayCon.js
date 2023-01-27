@@ -5,7 +5,7 @@ const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new ContextMenuCommandBuilder()
@@ -57,7 +57,7 @@ async function isValidURL(url) {
 
 async function play(interaction) {
     await interaction.deferReply();
-    const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+    const serverQueue = globaldata.get(interaction.guildId) || undefined;
     if (serverQueue?.veriChannel) {
         if (interaction.channel.id === serverQueue.veriChannel.id) {
             const embed = new EmbedBuilder()
@@ -90,7 +90,7 @@ async function play(interaction) {
             .setDescription('I need the permissions to join and speak in your voice channel!');
         return interaction.editReply({ embeds: [permissionsembed] });
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Play')
         .setDescription('This server is not enabled for music commands!');
@@ -144,7 +144,7 @@ async function play(interaction) {
 }
 
 async function playSong(interaction, song) {
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     serverqueue.playing = true;
     if (!song) {
         // await serverqueue.connection.destroy();
@@ -158,8 +158,8 @@ async function playSong(interaction, song) {
             serverqueue.resource = null;
             serverqueue.player = null;
             serverqueue.playing = false;
-            const datatowrite = JSON.stringify(globalqueue, replacer);
-            fs.writeFileSync('./data.json', datatowrite, err => {
+            const datatowrite = JSON.stringify(globaldata, replacer);
+            fs.writeFileSync('./data/data.json', datatowrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
@@ -174,7 +174,7 @@ async function playSong(interaction, song) {
         serverqueue.player.on(AudioPlayerStatus.Playing, () => {
             clearTimeout(settimeoutObj);
         });
-        // const datatowrite = JSON.stringify(globalqueue, replacer);
+        // const datatowrite = JSON.stringify(globaldata, replacer);
         // fs.writeFile('./data.json', datatowrite, err => {
         //     if (err) {
         //         console.log('There has been an error saving your configuration data.');
@@ -213,8 +213,8 @@ async function playSong(interaction, song) {
             serverqueue.resource = null;
             serverqueue.player = null;
             serverqueue.playing = false;
-            const datatowrite = JSON.stringify(globalqueue, replacer);
-            fs.writeFileSync('./data.json', datatowrite, err => {
+            const datatowrite = JSON.stringify(globaldata, replacer);
+            fs.writeFileSync('./data/data.json', datatowrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);

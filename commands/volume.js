@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,7 +20,7 @@ module.exports = {
 
 async function volume(interaction) {
     await interaction.deferReply();
-    const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+    const serverQueue = globaldata.get(interaction.guildId) || undefined;
     if (serverQueue?.veriChannel) {
         if (interaction.channel.id === serverQueue.veriChannel.id) {
             const embed = new EmbedBuilder()
@@ -35,7 +35,7 @@ async function volume(interaction) {
         .setTitle('Volume')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription('This server is not enabled for music commands!');
@@ -64,8 +64,8 @@ async function volume(interaction) {
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
     if (!serverqueue.playing) {
-        const data = JSON.stringify(globalqueue, replacer);
-        fs.writeFile('./data.json', data, err => {
+        const data = JSON.stringify(globaldata, replacer);
+        fs.writeFile('./data/data.json', data, err => {
             if (err) {
                 console.log('There has been an error saving your configuration data.');
                 console.log(err.message);

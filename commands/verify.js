@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -51,7 +51,7 @@ async function setup(interaction) {
     }
     const role = interaction.options.getRole('role');
     const channel = interaction.options.getChannel('channel');
-    const serverQueue = globalqueue.get(interaction.guild.id);
+    const serverQueue = globaldata.get(interaction.guild.id);
     if (channel === serverQueue?.chatbotChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Setup')
@@ -80,9 +80,9 @@ async function setup(interaction) {
             veriChannel: null,
             chatbotChannel: [],
         };
-        globalqueue.set(interaction.guild.id, queueconstruct);
+        globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     if (serverqueue.veriRole || serverqueue.veriChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Setup')
@@ -99,8 +99,8 @@ async function setup(interaction) {
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
     if (!serverqueue.playing) {
-        const data = JSON.stringify(globalqueue, replacer);
-        fs.writeFileSync('./data.json', data, err => {
+        const data = JSON.stringify(globaldata, replacer);
+        fs.writeFileSync('./data/data.json', data, err => {
             if (err) {
                 console.error(err);
                 console.log(err.message);
@@ -124,7 +124,7 @@ async function remove(interaction) {
         interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    const serverQueue = globalqueue.get(interaction.guild.id);
+    const serverQueue = globaldata.get(interaction.guild.id);
     if (!serverQueue) {
         const queueconstruct = {
             textchannel: [],
@@ -145,9 +145,9 @@ async function remove(interaction) {
             veriChannel: null,
             chatbotChannel: [],
         };
-        globalqueue.set(interaction.guild.id, queueconstruct);
+        globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     if (!serverqueue.veriRole || !serverqueue.veriChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Remove')
@@ -164,8 +164,8 @@ async function remove(interaction) {
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
     if (!serverqueue.playing) {
-        const data = JSON.stringify(globalqueue, replacer);
-        fs.writeFileSync('./data.json', data, err => {
+        const data = JSON.stringify(globaldata, replacer);
+        fs.writeFileSync('./data/data.json', data, err => {
             if (err) {
                 console.error(err);
                 console.log(err.message);
@@ -181,7 +181,7 @@ async function remove(interaction) {
 
 async function verify(interaction) {
     await interaction.deferReply();
-    const serverQueue = globalqueue.get(interaction.guild.id);
+    const serverQueue = globaldata.get(interaction.guild.id);
     if (!serverQueue) {
         const queueconstruct = {
             textchannel: [],
@@ -202,9 +202,9 @@ async function verify(interaction) {
             veriChannel: null,
             chatbotChannel: [],
         };
-        globalqueue.set(interaction.guild.id, queueconstruct);
+        globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     if (serverqueue.veriRole === null || serverqueue.veriChannel === null) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')

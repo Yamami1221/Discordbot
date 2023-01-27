@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-const { globalqueue } = require('../global.js');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,7 +18,7 @@ module.exports = {
 
 async function jump(interaction) {
     await interaction.deferReply();
-    const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+    const serverQueue = globaldata.get(interaction.guildId) || undefined;
     if (serverQueue?.veriChannel) {
         if (interaction.channel.id === serverQueue.veriChannel.id) {
             const embed = new EmbedBuilder()
@@ -28,7 +28,7 @@ async function jump(interaction) {
             return;
         }
     }
-    const serverqueue = globalqueue.get(interaction.guild.id);
+    const serverqueue = globaldata.get(interaction.guild.id);
     const voicechannel = interaction.member.voice.channel;
     let embed = new EmbedBuilder()
         .setTitle('Jump')

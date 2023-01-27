@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
 const horodata = require('./../resource/horostorage.js');
-const { globalqueue, horomap } = require('../global.js');
+const { globaldata, horomap } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
         .setDescription('Get your horoscope for today'),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globalqueue.get(interaction.guildId) || undefined;
+        const serverQueue = globaldata.get(interaction.guildId) || undefined;
         if (serverQueue?.veriChannel) {
             if (interaction.channel.id === serverQueue.veriChannel.id) {
                 const embed = new EmbedBuilder()
@@ -40,8 +40,8 @@ module.exports = {
                 .setTitle('Horoscope')
                 .setDescription(`Your horoscope for today is \`\`\`${horodatatosave.result.name} ${horodatatosave.result.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
-            const data = JSON.stringify(horomap, replacer);
-            fs.writeFileSync('./horodata.json', data, err => {
+            const datatowrite = JSON.stringify(horomap, replacer);
+            fs.writeFileSync('./data/horodata.json', datatowrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
