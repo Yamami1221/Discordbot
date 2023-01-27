@@ -1,13 +1,13 @@
 const fs = require('fs');
 
-const data = fs.readFileSync('./data.json');
-const holodata = fs.readFileSync('./horodata.json');
+const data = fs.readFileSync('./data/data.json');
+const holodata = fs.readFileSync('./data/horodata.json');
 
 try {
-    const globalqueue = JSON.parse(data, reviver);
+    const globaldata = JSON.parse(data, reviver);
     const horomap = JSON.parse(holodata, reviver);
-    // const globalqueue = new Map();
-    module.exports = { globalqueue, horomap };
+    // const globaldata = new Map();
+    module.exports = { globaldata, horomap };
 } catch (err) {
     console.error(err);
 }
