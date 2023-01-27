@@ -73,11 +73,11 @@ async function teachChatBot(interaction) {
         const language = new Language();
         const langraw = await language.guess(text, [ 'en', 'th' ]);
         const lang = langraw[0].alpha2;
-        const manager = new NlpManager({ languages: [lang] });
+        const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true });
         manager.load('./model.nlp');
         manager.addDocument(lang, text, text);
         manager.addAnswer(lang, text, response);
-        manager.train();
+        await manager.train();
         manager.save('./model.nlp');
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')

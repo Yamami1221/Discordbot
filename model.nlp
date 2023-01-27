@@ -1,1 +1,375 @@
-{"settings":{"languages":["th"],"tag":"nlp","threshold":0.5,"autoLoad":true,"autoSave":true,"modelFileName":"model.nlp","executeActionsBeforeAnswers":false,"calculateSentiment":true,"forceNER":true},"nluManager":{"settings":{"tag":"nlu-manager"},"locales":["th","en"],"languageNames":{},"domainManagers":{"th":{"settings":{"locale":"th","trainByDomain":false,"tag":"domain-manager-th","nluByDomain":{"default":{"className":"NeuralNlu","settings":{}}},"useStemDict":true},"stemDict":{"สวัสดี":{"intent":"สวัสดี","domain":"default"}},"intentDict":{"สวัสดี":"default"},"sentences":[{"domain":"default","utterance":"สวัสดี","intent":"สวัสดี"}],"domains":{"master_domain":{"settings":{"locale":"th","tag":"nlu-th","keepStopwords":true,"nonefeatureValue":1,"nonedeltaMultiplier":1.2,"spellCheck":false,"spellCheckDistance":1,"filterZeros":true,"log":true},"features":{"สวัสดี":1},"intents":{"สวัสดี":1},"intentFeatures":{"สวัสดี":{"สวัสดี":1}},"featuresToIntent":{"สวัสดี":["สวัสดี"]},"neuralNetwork":{"settings":{"locale":"th","tag":"nlu-th","keepStopwords":true,"nonefeatureValue":1,"nonedeltaMultiplier":1.2,"spellCheck":false,"spellCheckDistance":1,"filterZeros":true,"log":true},"features":["สวัสดี"],"intents":["สวัสดี"],"perceptrons":[[9.46274471282959,4.736227717439353]]}}}},"en":{"settings":{"locale":"en","trainByDomain":false,"tag":"domain-manager-en","nluByDomain":{"default":{"className":"NeuralNlu","settings":{}}},"useStemDict":true},"stemDict":{"hi":{"intent":"Hi","domain":"default"},"hey":{"intent":"Hey","domain":"default"}},"intentDict":{"Hi":"default","Hey":"default"},"sentences":[{"domain":"default","utterance":"Hi","intent":"Hi"},{"domain":"default","utterance":"Hey","intent":"Hey"}],"domains":{"master_domain":{"settings":{"locale":"en","tag":"nlu-en","keepStopwords":true,"nonefeatureValue":1,"nonedeltaMultiplier":1.2,"spellCheck":false,"spellCheckDistance":1,"filterZeros":true,"log":true},"features":{"hi":1,"hey":1},"intents":{"Hi":1,"Hey":1},"intentFeatures":{"Hi":{"hi":1},"Hey":{"hey":1}},"featuresToIntent":{"hi":["Hi"],"hey":["Hey"]},"neuralNetwork":{"settings":{"locale":"en","tag":"nlu-en","keepStopwords":true,"nonefeatureValue":1,"nonedeltaMultiplier":1.2,"spellCheck":false,"spellCheckDistance":1,"filterZeros":true,"log":true},"features":["hi","hey"],"intents":["Hi","Hey"],"perceptrons":[[10.62476634979248,-3.4869275093078613,3.569221390559939],[-3.4782614707946777,10.6246337890625,3.5730609599232563]]}}}}},"intentDomains":{},"extraSentences":[["en","Hi"],["en","Hey"],["th","สวัสดี"]]},"ner":{"settings":{"tag":"ner","entityPreffix":"%","entitySuffix":"%"},"rules":{}},"nlgManager":{"settings":{"tag":"nlg-manager"},"responses":{"en":{"Hi":[{"answer":"Hey there!"}],"Hey":[{"answer":"Hey!"}]},"th":{"สวัสดี":[{"answer":"สวัสดีจ้า"}]}}},"actionManager":{"settings":{"tag":"action-manager"},"actions":{}},"slotManager":{}}
+{
+  "settings": {
+    "languages": [
+      "en"
+    ],
+    "nlu": {
+      "log": false
+    },
+    "forceNER": true,
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager",
+      "log": false
+    },
+    "locales": [
+      "en",
+      "th"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "hi": {
+            "intent": "Hi",
+            "domain": "default"
+          },
+          "hey": {
+            "intent": "Hey",
+            "domain": "default"
+          },
+          "are,who,you": {
+            "intent": "who are you",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "Hi": "default",
+          "Hey": "default",
+          "who are you": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "Hi",
+            "intent": "Hi"
+          },
+          {
+            "domain": "default",
+            "utterance": "Hey",
+            "intent": "Hey"
+          },
+          {
+            "domain": "default",
+            "utterance": "who are you",
+            "intent": "who are you"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "hi": 1,
+              "hey": 1,
+              "who": 1,
+              "are": 1,
+              "you": 1
+            },
+            "intents": {
+              "Hi": 1,
+              "Hey": 1,
+              "who are you": 1
+            },
+            "intentFeatures": {
+              "Hi": {
+                "hi": 1
+              },
+              "Hey": {
+                "hey": 1
+              },
+              "who are you": {
+                "who": 1,
+                "are": 1,
+                "you": 1
+              }
+            },
+            "featuresToIntent": {
+              "hi": [
+                "Hi"
+              ],
+              "hey": [
+                "Hey"
+              ],
+              "who": [
+                "who are you"
+              ],
+              "are": [
+                "who are you"
+              ],
+              "you": [
+                "who are you"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true
+              },
+              "features": [
+                "hi",
+                "hey",
+                "who",
+                "are",
+                "you"
+              ],
+              "intents": [
+                "Hi",
+                "Hey",
+                "who are you"
+              ],
+              "perceptrons": [
+                [
+                  10.855853080749512,
+                  -3.175779104232788,
+                  -1.096743106842041,
+                  -1.096743106842041,
+                  -1.096743106842041,
+                  3.2923558208650507
+                ],
+                [
+                  -3.1607351303100586,
+                  10.855690956115723,
+                  -1.0992363691329956,
+                  -1.0992363691329956,
+                  -1.0992363691329956,
+                  3.2979385553581366
+                ],
+                [
+                  -1.0992101430892944,
+                  -1.0964351892471313,
+                  4.395195007324219,
+                  4.395195007324219,
+                  4.395195007324219,
+                  1.0996019041900202
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "th": {
+        "settings": {
+          "locale": "th",
+          "trainByDomain": false,
+          "tag": "domain-manager-th",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "สวัสดี": {
+            "intent": "สวัสดี",
+            "domain": "default"
+          },
+          "ครับ,สวัสดี": {
+            "intent": "สวัสดีครับ",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "สวัสดี": "default",
+          "สวัสดีครับ": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "สวัสดี",
+            "intent": "สวัสดี"
+          },
+          {
+            "domain": "default",
+            "utterance": "สวัสดีครับ",
+            "intent": "สวัสดีครับ"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "th",
+              "tag": "nlu-th",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "สวัสดี": 1,
+              "ครับ": 1
+            },
+            "intents": {
+              "สวัสดี": 1,
+              "สวัสดีครับ": 1
+            },
+            "intentFeatures": {
+              "สวัสดี": {
+                "สวัสดี": 1
+              },
+              "สวัสดีครับ": {
+                "สวัสดี": 1,
+                "ครับ": 1
+              }
+            },
+            "featuresToIntent": {
+              "สวัสดี": [
+                "สวัสดี",
+                "สวัสดีครับ"
+              ],
+              "ครับ": [
+                "สวัสดีครับ"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "th",
+                "tag": "nlu-th",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true
+              },
+              "features": [
+                "สวัสดี",
+                "ครับ"
+              ],
+              "intents": [
+                "สวัสดี",
+                "สวัสดีครับ"
+              ],
+              "perceptrons": [
+                [
+                  9.438142776489258,
+                  -14.0751371383667,
+                  4.718394245853262
+                ],
+                [
+                  0.06210416555404663,
+                  14.133062362670898,
+                  0.03153998249898636
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "en",
+        "Hi"
+      ],
+      [
+        "en",
+        "Hey"
+      ],
+      [
+        "th",
+        "สวัสดี"
+      ],
+      [
+        "th",
+        "สวัสดีครับ"
+      ],
+      [
+        "en",
+        "who are you"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {
+      "en": {
+        "Hi": [
+          {
+            "answer": "Hey there!"
+          }
+        ],
+        "Hey": [
+          {
+            "answer": "Hey!"
+          }
+        ],
+        "who are you": [
+          {
+            "answer": "I'm a discord bot"
+          }
+        ]
+      },
+      "th": {
+        "สวัสดี": [
+          {
+            "answer": "สวัสดีจ้า"
+          }
+        ],
+        "สวัสดีครับ": [
+          {
+            "answer": "สวัสดีจ้า"
+          }
+        ]
+      }
+    }
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}
