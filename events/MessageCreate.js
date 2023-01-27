@@ -1,7 +1,7 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { Language, NlpManager } = require('node-nlp');
 
-const { globalqueue } = require('../data/global');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -19,8 +19,7 @@ module.exports = {
         }
         if (message.author.bot) return;
         if (message.channel.type === 'DM') return;
-        if (!message.content.startsWith(process.env.PREFIX)) return;
-        const serverqueue = globalqueue.get(message.guildId) || undefined;
+        const serverqueue = globaldata.get(message.guildId) || undefined;
         if (serverqueue) {
             let enable = false;
             for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
