@@ -53,17 +53,110 @@ module.exports = {
 };
 
 async function enableChatBot(interaction) {
+    const serverQueue = globalqueue.get(interaction.guildId);
+    if (!serverQueue) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: [],
+        };
+        globalqueue.set(interaction.guild.id, queueconstruct);
+    }
+    const serverqueue = globalqueue.get(interaction.guildId);
+    if (interaction.channel.id === serverqueue.veriChannel?.id) {
+        const overeri = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('You cannot use verification channel as the chat bot channel');
+        await interaction.editReply({ embeds: [overeri], ephemeral: true });
+        return;
+    }
+    let enabled = false;
+    for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
+        if (serverqueue.chatbotChannel[i].id === interaction.channel.id) {
+            enabled = true;
+            break;
+        }
+    }
+    if (enabled) {
+        const embed = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('Chat bot is already enabled in this channel');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
+    serverqueue.chatbotChannel.push(interaction.channel);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
-        .setDescription('This feature is not yet available');
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+        .setDescription('Successfully enabled the chat bot in this channel');
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function disableChatBot(interaction) {
+    const serverQueue = globalqueue.get(interaction.guildId);
+    if (!serverQueue) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: [],
+        };
+        globalqueue.set(interaction.guild.id, queueconstruct);
+    }
+    const serverqueue = globalqueue.get(interaction.guildId);
+    if (interaction.channel.id === serverqueue.veriChannel?.id) {
+        const overeri = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('You cannot use this command in the verification channel');
+        await interaction.editReply({ embeds: [overeri], ephemeral: true });
+        return;
+    }
+    let enabled = false;
+    for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
+        if (serverqueue.chatbotChannel[i].id === interaction.channel.id) {
+            enabled = true;
+            break;
+        }
+    }
+    if (!enabled) {
+        const embed = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription('Chat bot is not enabled in this channel');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
+    const index = serverqueue.chatbotChannel.indexOf(interaction.channel);
+    serverqueue.chatbotChannel.splice(index, 1);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
-        .setDescription('This feature is not yet available');
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+        .setDescription('Successfully disabled the chat bot in this channel');
+    await interaction.editReply({ embeds: [embed] });
 }
 
 async function teachChatBot(interaction) {
