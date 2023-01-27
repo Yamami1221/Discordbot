@@ -78,8 +78,7 @@ async function setup(interaction) {
             nightcore: false,
             veriRole: null,
             veriChannel: null,
-            chatbotChannel: null,
-            chatbot: false,
+            chatbotChannel: [],
         };
         globalqueue.set(interaction.guild.id, queueconstruct);
     }
@@ -144,8 +143,7 @@ async function remove(interaction) {
             nightcore: false,
             veriRole: null,
             veriChannel: null,
-            chatbotChannel: null,
-            chatbot: false,
+            chatbotChannel: [],
         };
         globalqueue.set(interaction.guild.id, queueconstruct);
     }
@@ -202,8 +200,7 @@ async function verify(interaction) {
             nightcore: false,
             veriRole: null,
             veriChannel: null,
-            chatbotChannel: null,
-            chatbot: false,
+            chatbotChannel: [],
         };
         globalqueue.set(interaction.guild.id, queueconstruct);
     }
