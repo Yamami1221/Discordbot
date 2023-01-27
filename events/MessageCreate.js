@@ -1,7 +1,7 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { Language, NlpManager } = require('node-nlp');
 
-const { globalqueue } = require('../global.js');
+const { globalqueue } = require('../data/global');
 
 module.exports = {
     name: Events.MessageCreate,
