@@ -17,7 +17,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
         const text = interaction.options.getString('text');
-        const language = interaction.options.getString('language') || 'en';
+        const language = interaction.options.getString('language') || 'th';
         try {
             const translated = await translate(text, { to: language });
             const embed = new EmbedBuilder()
