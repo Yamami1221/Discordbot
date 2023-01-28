@@ -10,8 +10,8 @@ Discord Music and verify bot using DISCORD.JS V.14
 - 🔊 SoundBoard
 - 🔠 Translate
 - 🗳️ Poll create
-- ♈ Horoscope (Only thai)
-- 💬 Chatbot(soon)
+- ♈ Horoscope (Only Thai)
+- 💬 Chatbot(Only support Thai and English)
 
 ## Setup
 1. Create a folder on your computer, then type the following console command to clone this repository.
@@ -23,7 +23,7 @@ git clone https://github.com/Yamami1221/Discordbot
 
 ![bot create](https://i.imgur.com/luHPTGL.png "Step 2")
 
-3. Create `.env`,`horodata.json` and `data.json` and fill the required values. **Do not show anyone these!**
+3. Create `.env` in main folder and `horodata.json`,`data.json` in data folder and fill the required values. **Do not show anyone these!**
 
 For .env
 ```bash
