@@ -40,6 +40,8 @@ module.exports = {
                 } catch (error) {
                     console.error(error);
                 }
+            } else {
+                return;
             }
         }
     },
