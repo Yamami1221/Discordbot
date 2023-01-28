@@ -19,11 +19,11 @@ module.exports = {
         }
         if (message.author.bot) return;
         if (message.channel.type === 'DM') return;
-        const serverqueue = globaldata.get(message.guildId) || undefined;
-        if (serverqueue) {
+        const serverdata = globaldata.get(message.guildId) || undefined;
+        if (serverdata) {
             let enable = false;
-            for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
-                if (serverqueue.chatbotChannel[i].id === message.channel.id) {
+            for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
+                if (serverdata.chatbotChannel[i].id === message.channel.id) {
                     enable = true;
                     break;
                 }

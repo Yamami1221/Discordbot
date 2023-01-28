@@ -32,9 +32,9 @@ module.exports = {
                         .setRequired(true))),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globaldata.get(interaction.guildId) || undefined;
-        if (serverQueue?.veriChannel) {
-            if (interaction.channel.id === serverQueue.veriChannel.id) {
+        const serverData = globaldata.get(interaction.guildId) || undefined;
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You cannot use this command in the verification channel');
@@ -54,8 +54,8 @@ module.exports = {
 };
 
 async function enableChatBot(interaction) {
-    const serverQueue = globaldata.get(interaction.guildId);
-    if (!serverQueue) {
+    const serverData = globaldata.get(interaction.guildId);
+    if (!serverData) {
         const queueconstruct = {
             textchannel: [],
             voicechannel: null,
@@ -77,8 +77,8 @@ async function enableChatBot(interaction) {
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globaldata.get(interaction.guildId);
-    if (interaction.channel.id === serverqueue.veriChannel?.id) {
+    const serverdata = globaldata.get(interaction.guildId);
+    if (interaction.channel.id === serverdata.veriChannel?.id) {
         const overeri = new EmbedBuilder()
             .setTitle('Chat Bot')
             .setDescription('You cannot use verification channel as the chat bot channel');
@@ -86,8 +86,8 @@ async function enableChatBot(interaction) {
         return;
     }
     let enabled = false;
-    for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
-        if (serverqueue.chatbotChannel[i].id === interaction.channel.id) {
+    for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
+        if (serverdata.chatbotChannel[i].id === interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -99,12 +99,12 @@ async function enableChatBot(interaction) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    serverqueue.chatbotChannel.push(interaction.channel);
+    serverdata.chatbotChannel.push(interaction.channel);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
         .setDescription('Successfully enabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    if (!serverqueue.playing) {
+    if (!serverdata.playing) {
         const datatowrite = JSON.stringify(globaldata, replacer);
         fs.writeFileSync('./data/data.json', datatowrite, err => {
             if (err) {
@@ -121,8 +121,8 @@ async function enableChatBot(interaction) {
 }
 
 async function disableChatBot(interaction) {
-    const serverQueue = globaldata.get(interaction.guildId);
-    if (!serverQueue) {
+    const serverData = globaldata.get(interaction.guildId);
+    if (!serverData) {
         const queueconstruct = {
             textchannel: [],
             voicechannel: null,
@@ -144,8 +144,8 @@ async function disableChatBot(interaction) {
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globaldata.get(interaction.guildId);
-    if (interaction.channel.id === serverqueue.veriChannel?.id) {
+    const serverdata = globaldata.get(interaction.guildId);
+    if (interaction.channel.id === serverdata.veriChannel?.id) {
         const overeri = new EmbedBuilder()
             .setTitle('Chat Bot')
             .setDescription('You cannot use this command in the verification channel');
@@ -153,8 +153,8 @@ async function disableChatBot(interaction) {
         return;
     }
     let enabled = false;
-    for (let i = 0; i < serverqueue.chatbotChannel.length; i++) {
-        if (serverqueue.chatbotChannel[i].id === interaction.channel.id) {
+    for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
+        if (serverdata.chatbotChannel[i].id === interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -166,13 +166,13 @@ async function disableChatBot(interaction) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    const index = serverqueue.chatbotChannel.indexOf(interaction.channel);
-    serverqueue.chatbotChannel.splice(index, 1);
+    const index = serverdata.chatbotChannel.indexOf(interaction.channel);
+    serverdata.chatbotChannel.splice(index, 1);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
         .setDescription('Successfully disabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    if (!serverqueue.playing) {
+    if (!serverdata.playing) {
         const datatowrite = JSON.stringify(globaldata, replacer);
         fs.writeFileSync('./data/data.json', datatowrite, err => {
             if (err) {

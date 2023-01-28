@@ -13,9 +13,9 @@ module.exports = {
 
 async function queue(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guildId) || undefined;
-    if (serverQueue?.veriChannel) {
-        if (interaction.channel.id === serverQueue.veriChannel.id) {
+    const serverData = globaldata.get(interaction.guildId) || undefined;
+    if (serverData?.veriChannel) {
+        if (interaction.channel.id === serverData.veriChannel.id) {
             const embed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('You cannot use this command in the verification channel');
@@ -28,14 +28,14 @@ async function queue(interaction) {
         .setTitle('Queue')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const serverqueue = globaldata.get(interaction.guild.id);
+    const serverdata = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Queue')
         .setDescription('This server is not enabled music commands!');
-    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.textchannels.length; i++) {
-        if (serverqueue.textchannels[i].id == interaction.channel.id) {
+    for (let i = 0; i < serverdata.textchannels.length; i++) {
+        if (serverdata.textchannels[i].id == interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -47,12 +47,12 @@ async function queue(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Queue')
         .setDescription('There is nothing in the queue!');
-    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const queueembed = new EmbedBuilder()
         .setTitle('Queue')
-        .setDescription(`Now playing: ${serverqueue.songs[0].title}`);
-    for (let i = 1; i < serverqueue.songs.length; i++) {
-        queueembed.addFields({ name:`Song ${i}`, value:serverqueue.songs[i].title });
+        .setDescription(`Now playing: ${serverdata.songs[0].title}`);
+    for (let i = 1; i < serverdata.songs.length; i++) {
+        queueembed.addFields({ name:`Song ${i}`, value:serverdata.songs[i].title });
     }
     await interaction.editReply({ embeds: [queueembed] });
 }

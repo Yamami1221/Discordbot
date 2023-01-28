@@ -12,9 +12,9 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        const serverQueue = globaldata.get(interaction.guildId) || undefined;
-        if (serverQueue?.veriChannel) {
-            if (interaction.channel.id === serverQueue.veriChannel.id) {
+        const serverData = globaldata.get(interaction.guildId) || undefined;
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You cannot use this command in the verification channel');
@@ -27,14 +27,14 @@ module.exports = {
             .setTitle('Soundboard')
             .setDescription('You need to be in a voice channel to use this command');
         if (!voiceChannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
-        const serverqueue = globaldata.get(interaction.guild.id);
+        const serverdata = globaldata.get(interaction.guild.id);
         embed = new EmbedBuilder()
             .setTitle('Soundboard')
             .setDescription('This server is not enabled for music commands');
-        if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+        if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
         let enabled = false;
-        for (let i = 0; i < serverqueue.textchannel.length; i++) {
-            if (interaction.channel.id === serverqueue.textchannel[i].id) {
+        for (let i = 0; i < serverdata.textchannel.length; i++) {
+            if (interaction.channel.id === serverdata.textchannel[i].id) {
                 enabled = true;
                 break;
             }
@@ -43,7 +43,7 @@ module.exports = {
             .setTitle('Soundboard')
             .setDescription('This channel is not enabled for music commands');
         if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
-        const botmusicstate = serverqueue.playing;
+        const botmusicstate = serverdata.playing;
         embed = new EmbedBuilder()
             .setTitle('Soundboard')
             .setDescription('The bot is playing music!');
@@ -129,56 +129,56 @@ module.exports = {
                 guildId: voiceChannel.guild.id,
                 adapterCreator: voiceChannel.guild.voiceAdapterCreator,
             });
-            serverqueue.connection = connection;
-            serverqueue.playing = true;
-            serverqueue.resource = createAudioResource(path, { inputType: StreamType.Arbitrary, inlineVolume: true });
-            serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
-            serverqueue.player = createAudioPlayer();
-            serverqueue.player.play(serverqueue.resource);
-            serverqueue.player.pause();
-            serverqueue.connection.subscribe(serverqueue.player);
-            serverqueue.player.unpause();
-            serverqueue.player.on(AudioPlayerStatus.Idle, () => {
+            serverdata.connection = connection;
+            serverdata.playing = true;
+            serverdata.resource = createAudioResource(path, { inputType: StreamType.Arbitrary, inlineVolume: true });
+            serverdata.resource.volume.setVolume(serverdata.volume / 100);
+            serverdata.player = createAudioPlayer();
+            serverdata.player.play(serverdata.resource);
+            serverdata.player.pause();
+            serverdata.connection.subscribe(serverdata.player);
+            serverdata.player.unpause();
+            serverdata.player.on(AudioPlayerStatus.Idle, () => {
                 const timeoutObj = setTimeout(() => {
-                    serverqueue.connection.destroy();
-                    serverqueue.connection = null;
-                    serverqueue.playing = false;
-                    serverqueue.player = null;
-                    serverqueue.resource = null;
+                    serverdata.connection.destroy();
+                    serverdata.connection = null;
+                    serverdata.playing = false;
+                    serverdata.player = null;
+                    serverdata.resource = null;
                 }, 10000);
-                serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+                serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutObj);
-                    serverqueue.playing = true;
+                    serverdata.playing = true;
                 });
-                serverqueue.resource = null;
-                serverqueue.playing = false;
+                serverdata.resource = null;
+                serverdata.playing = false;
             });
-            serverqueue.player.on(AudioPlayerStatus.AutoPaused, () => {
+            serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
                 const timeoutObj = setTimeout(() => {
-                    serverqueue.connection.destroy();
-                    serverqueue.connection = null;
-                    serverqueue.playing = false;
-                    serverqueue.player = null;
-                    serverqueue.resource = null;
+                    serverdata.connection.destroy();
+                    serverdata.connection = null;
+                    serverdata.playing = false;
+                    serverdata.player = null;
+                    serverdata.resource = null;
                 }, 10000);
-                serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+                serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutObj);
-                    serverqueue.playing = true;
+                    serverdata.playing = true;
                 });
             });
             i.deferUpdate();
         });
         collector.on('end', async () => {
-            serverqueue.playing = false;
-            serverqueue.connection = null;
+            serverdata.playing = false;
+            serverdata.connection = null;
             const deffered = await interaction.fetchReply();
             if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
-            if (!serverqueue.playing) {
-                serverqueue.player = null;
-                serverqueue.resource = null;
-                serverqueue.connection.destroy();
-                serverqueue.connection = null;
-                const datatowrite = JSON.stringify(serverqueue, replacer);
+            if (!serverdata.playing) {
+                serverdata.player = null;
+                serverdata.resource = null;
+                serverdata.connection.destroy();
+                serverdata.connection = null;
+                const datatowrite = JSON.stringify(serverdata, replacer);
                 fs.writeFileSync('./data/data.json', datatowrite, err => {
                     if (err) {
                         console.log(err);

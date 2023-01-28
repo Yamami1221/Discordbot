@@ -11,9 +11,9 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverQueue = globaldata.get(interaction.guildId) || undefined;
-        if (serverQueue?.veriChannel) {
-            if (interaction.channel.id === serverQueue.veriChannel.id) {
+        const serverData = globaldata.get(interaction.guildId) || undefined;
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You cannot use this command in the verification channel');
@@ -22,8 +22,8 @@ module.exports = {
             }
         }
         if (interaction.member.permissions.has('MANAGE_CHANNELS')) {
-            const serverqueue = globaldata?.get(interaction.guild.id);
-            if (!serverqueue) {
+            const serverdata = globaldata?.get(interaction.guild.id);
+            if (!serverdata) {
                 const queueconstruct = {
                     textchannel: [],
                     voicechannel: null,
@@ -67,8 +67,8 @@ module.exports = {
                 });
             } else {
                 let enabled = false;
-                for (let i = 0; i < serverqueue.textchannel.length; i++) {
-                    if (serverqueue.textchannel[i].id === interaction.channel.id) {
+                for (let i = 0; i < serverdata.textchannel.length; i++) {
+                    if (serverdata.textchannel[i].id === interaction.channel.id) {
                         const embed = new EmbedBuilder()
                             .setTitle('Enable')
                             .setDescription(`<#${interaction.channel.id}> is already enabled`);
@@ -78,9 +78,9 @@ module.exports = {
                     }
                 }
                 if (enabled === false) {
-                    serverqueue.textchannel.push(interaction.channel);
-                    const textchannelforshowloc = serverqueue.textchannel.indexOf(interaction.channel);
-                    const textchannelforshow = serverqueue.textchannel[textchannelforshowloc].id;
+                    serverdata.textchannel.push(interaction.channel);
+                    const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
+                    const textchannelforshow = serverdata.textchannel[textchannelforshowloc].id;
                     let embed = new EmbedBuilder()
                         .setTitle('Enable')
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);

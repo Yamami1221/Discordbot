@@ -13,9 +13,9 @@ module.exports = {
 
 async function loop(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guildId) || undefined;
-    if (serverQueue?.veriChannel) {
-        if (interaction.channel.id === serverQueue.veriChannel.id) {
+    const serverData = globaldata.get(interaction.guildId) || undefined;
+    if (serverData?.veriChannel) {
+        if (interaction.channel.id === serverData.veriChannel.id) {
             const embed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('You cannot use this command in the verification channel');
@@ -28,14 +28,14 @@ async function loop(interaction) {
         .setTitle('Loop')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const serverqueue = globaldata.get(interaction.guild.id);
+    const serverdata = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Loop')
         .setDescription('This server is not enabled for music commands!');
-    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.textchannels.length; i++) {
-        if (serverqueue.textchannels[i] == interaction.channel.id) {
+    for (let i = 0; i < serverdata.textchannels.length; i++) {
+        if (serverdata.textchannels[i] == interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -47,9 +47,9 @@ async function loop(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Loop')
         .setDescription('There is no song in queue right now');
-    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    serverqueue.loop = !serverqueue.loop;
-    if (serverqueue.loop) {
+    if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    serverdata.loop = !serverdata.loop;
+    if (serverdata.loop) {
         embed = new EmbedBuilder()
             .setTitle('Loop')
             .setDescription('Looped the queue!');

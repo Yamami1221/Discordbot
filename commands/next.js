@@ -20,9 +20,9 @@ module.exports = {
 
 async function next(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guildId) || undefined;
-    if (serverQueue?.veriChannel) {
-        if (interaction.channel.id === serverQueue.veriChannel.id) {
+    const serverData = globaldata.get(interaction.guildId) || undefined;
+    if (serverData?.veriChannel) {
+        if (interaction.channel.id === serverData.veriChannel.id) {
             const embed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('You cannot use this command in the verification channel');
@@ -30,7 +30,7 @@ async function next(interaction) {
             return;
         }
     }
-    const serverqueue = globaldata.get(interaction.guild.id);
+    const serverdata = globaldata.get(interaction.guild.id);
     const voicechannel = interaction.member.voice.channel;
     let embed = new EmbedBuilder()
         .setTitle('Next')
@@ -39,10 +39,10 @@ async function next(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription('This server is not enabled for music commands');
-    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.textchannel.length; i++) {
-        if (serverqueue.textchannel[i].id === interaction.channel.id) {
+    for (let i = 0; i < serverdata.textchannel.length; i++) {
+        if (serverdata.textchannel[i].id === interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -54,7 +54,7 @@ async function next(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription('There is no song in queue right now');
-    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let link = interaction.options.getString('query');
     if (!await isValidYoutubeUrl(link) && !await isValidURL(link)) {
         link = await search(interaction);
@@ -71,7 +71,7 @@ async function next(interaction) {
         title: songinfo1.video_details.title,
         url: songinfo2.videoDetails.video_url,
     };
-    serverqueue.songs.splice(1, 0, song);
+    serverdata.songs.splice(1, 0, song);
     embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription(`Added ${song.title} to the queue in next position`);

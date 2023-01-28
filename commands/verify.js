@@ -51,8 +51,8 @@ async function setup(interaction) {
     }
     const role = interaction.options.getRole('role');
     const channel = interaction.options.getChannel('channel');
-    const serverQueue = globaldata.get(interaction.guild.id);
-    if (channel === serverQueue?.chatbotChannel) {
+    const serverData = globaldata.get(interaction.guild.id);
+    if (channel === serverData?.chatbotChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Setup')
             .setDescription('The verify channel cannot be the same as the chatbot channel')
@@ -60,7 +60,7 @@ async function setup(interaction) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    if (!serverQueue) {
+    if (!serverData) {
         const queueconstruct = {
             textchannel: [],
             voicechannel: null,
@@ -82,8 +82,8 @@ async function setup(interaction) {
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globaldata.get(interaction.guild.id);
-    if (serverqueue.veriRole || serverqueue.veriChannel) {
+    const serverdata = globaldata.get(interaction.guild.id);
+    if (serverdata.veriRole || serverdata.veriChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Setup')
             .setDescription('The verify command has already been setup')
@@ -91,14 +91,14 @@ async function setup(interaction) {
         interaction.editReply({ embeds: [embed] });
         return;
     }
-    serverqueue.veriRole = role;
-    serverqueue.veriChannel = channel;
+    serverdata.veriRole = role;
+    serverdata.veriChannel = channel;
     const embed = new EmbedBuilder()
         .setTitle('Verify Setup')
         .setDescription(`The verify command has been setup in <#${channel.id}> with the role <@&${role.id}>`)
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    if (!serverqueue.playing) {
+    if (!serverdata.playing) {
         const data = JSON.stringify(globaldata, replacer);
         fs.writeFileSync('./data/data.json', data, err => {
             if (err) {
@@ -124,8 +124,8 @@ async function remove(interaction) {
         interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
-    const serverQueue = globaldata.get(interaction.guild.id);
-    if (!serverQueue) {
+    const serverData = globaldata.get(interaction.guild.id);
+    if (!serverData) {
         const queueconstruct = {
             textchannel: [],
             voicechannel: null,
@@ -147,8 +147,8 @@ async function remove(interaction) {
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globaldata.get(interaction.guild.id);
-    if (!serverqueue.veriRole || !serverqueue.veriChannel) {
+    const serverdata = globaldata.get(interaction.guild.id);
+    if (!serverdata.veriRole || !serverdata.veriChannel) {
         const embed = new EmbedBuilder()
             .setTitle('Verify Remove')
             .setDescription('The verify command has not been setup')
@@ -156,14 +156,14 @@ async function remove(interaction) {
         interaction.editReply({ embeds: [embed] });
         return;
     }
-    serverqueue.veriRole = null;
-    serverqueue.veriChannel = null;
+    serverdata.veriRole = null;
+    serverdata.veriChannel = null;
     const embed = new EmbedBuilder()
         .setTitle('Verify Remove')
         .setDescription('The verify command has been removed')
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    if (!serverqueue.playing) {
+    if (!serverdata.playing) {
         const data = JSON.stringify(globaldata, replacer);
         fs.writeFileSync('./data/data.json', data, err => {
             if (err) {
@@ -181,8 +181,8 @@ async function remove(interaction) {
 
 async function verify(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guild.id);
-    if (!serverQueue) {
+    const serverData = globaldata.get(interaction.guild.id);
+    if (!serverData) {
         const queueconstruct = {
             textchannel: [],
             voicechannel: null,
@@ -204,15 +204,15 @@ async function verify(interaction) {
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
-    const serverqueue = globaldata.get(interaction.guild.id);
-    if (serverqueue.veriRole === null || serverqueue.veriChannel === null) {
+    const serverdata = globaldata.get(interaction.guild.id);
+    if (serverdata.veriRole === null || serverdata.veriChannel === null) {
         const embed = new EmbedBuilder()
             .setTitle('Verify')
             .setDescription('The verify command has not been setup')
             .setTimestamp();
         interaction.editReply({ embeds: [embed] });
     } else {
-        if (interaction.channel.id === serverqueue.veriChannel.id) {
+        if (interaction.channel.id === serverdata.veriChannel.id) {
             const member = interaction.member;
             const embed = new EmbedBuilder()
                 .setTitle('Verify')
@@ -223,7 +223,7 @@ async function verify(interaction) {
             const max = 5000;
             const random = Math.floor(Math.random() * (max - min + 1)) + min;
             await sleep(random);
-            member.roles.add(serverqueue.veriRole);
+            member.roles.add(serverdata.veriRole);
         } else {
             const embed = new EmbedBuilder()
                 .setTitle('Verify')

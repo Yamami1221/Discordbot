@@ -11,9 +11,9 @@ module.exports = {
                 .setDescription('Phrase to search for')
                 .setAutocomplete(true)),
     async autocomplete(interaction) {
-        const serverQueue = globaldata.get(interaction.guildId) || undefined;
-        if (serverQueue?.veriChannel) {
-            if (interaction.channel.id === serverQueue.veriChannel.id) {
+        const serverData = globaldata.get(interaction.guildId) || undefined;
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You cannot use this command in the verification channel');

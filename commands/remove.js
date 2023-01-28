@@ -17,9 +17,9 @@ module.exports = {
 
 async function remove(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guildId) || undefined;
-    if (serverQueue?.veriChannel) {
-        if (interaction.channel.id === serverQueue.veriChannel.id) {
+    const serverData = globaldata.get(interaction.guildId) || undefined;
+    if (serverData?.veriChannel) {
+        if (interaction.channel.id === serverData.veriChannel.id) {
             const embed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('You cannot use this command in the verification channel');
@@ -32,14 +32,14 @@ async function remove(interaction) {
         .setTitle('Remove')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!voicechannel) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const serverqueue = globaldata.get(interaction.guild.id);
+    const serverdata = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('This server is not enabled music commands!');
-    if (!serverqueue) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let enabled = false;
-    for (let i = 0; i < serverqueue.textchannels.length; i++) {
-        if (serverqueue.textchannels[i].id == interaction.channel.id) {
+    for (let i = 0; i < serverdata.textchannels.length; i++) {
+        if (serverdata.textchannels[i].id == interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -51,15 +51,15 @@ async function remove(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('There is nothing in the queue!');
-    if (!serverqueue.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const index = interaction.options.getInteger('position');
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('You need to provide a valid position!');
-    if (index > serverqueue.songs.length) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (index > serverdata.songs.length) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
         .setTitle('Remove')
-        .setDescription(`Removed the song name: ${serverqueue.songs[index - 1].title}!`);
+        .setDescription(`Removed the song name: ${serverdata.songs[index - 1].title}!`);
     await interaction.editReply({ embeds: [embed] });
-    serverqueue.songs.splice(index - 1, 1);
+    serverdata.songs.splice(index - 1, 1);
 }

@@ -57,9 +57,9 @@ async function isValidURL(url) {
 
 async function play(interaction) {
     await interaction.deferReply();
-    const serverQueue = globaldata.get(interaction.guildId) || undefined;
-    if (serverQueue?.veriChannel) {
-        if (interaction.channel.id === serverQueue.veriChannel.id) {
+    const serverData = globaldata.get(interaction.guildId) || undefined;
+    if (serverData?.veriChannel) {
+        if (interaction.channel.id === serverData.veriChannel.id) {
             const embed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('You cannot use this command in the verification channel');
@@ -90,14 +90,14 @@ async function play(interaction) {
             .setDescription('I need the permissions to join and speak in your voice channel!');
         return interaction.editReply({ embeds: [permissionsembed] });
     }
-    const serverqueue = globaldata.get(interaction.guild.id);
+    const serverdata = globaldata.get(interaction.guild.id);
     embed = new EmbedBuilder()
         .setTitle('Play')
         .setDescription('This server is not enabled for music commands!');
-    if (!serverqueue) return interaction.editReply({ embeds: [embed] });
+    if (!serverdata) return interaction.editReply({ embeds: [embed] });
     let enabled = false;
-    for (let i = 0; i < serverqueue.textchannel.length; i++) {
-        if (serverqueue.textchannel[i].id === interaction.channel.id) {
+    for (let i = 0; i < serverdata.textchannel.length; i++) {
+        if (serverdata.textchannel[i].id === interaction.channel.id) {
             enabled = true;
             break;
         }
@@ -112,8 +112,8 @@ async function play(interaction) {
         title: songinfo1.video_details.title,
         url: songinfo2.videoDetails.video_url,
     };
-    if (!serverqueue.songs[0]) {
-        serverqueue.songs.push(song);
+    if (!serverdata.songs[0]) {
+        serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription(`**${song.title}** has been added to the queue!`);
@@ -124,18 +124,18 @@ async function play(interaction) {
                 guildId: voicechannel.guild.id,
                 adapterCreator: voicechannel.guild.voiceAdapterCreator,
             });
-            serverqueue.connection = connection;
-            await playSong(interaction, serverqueue.songs[0]);
+            serverdata.connection = connection;
+            await playSong(interaction, serverdata.songs[0]);
         } catch (error) {
             console.error(error);
-            serverqueue.song = [];
+            serverdata.song = [];
             const errorembed = new EmbedBuilder()
                 .setTitle('Play')
                 .setDescription(`There was an error: ${error}`);
             return interaction.editReply({ embeds: [errorembed] });
         }
     } else {
-        serverqueue.songs.push(song);
+        serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription(`**${song.title}** has been added to the queue!`);
@@ -144,20 +144,20 @@ async function play(interaction) {
 }
 
 async function playSong(interaction, song) {
-    const serverqueue = globaldata.get(interaction.guild.id);
-    serverqueue.playing = true;
+    const serverdata = globaldata.get(interaction.guild.id);
+    serverdata.playing = true;
     if (!song) {
-        // await serverqueue.connection.destroy();
-        // serverqueue.connection = null;
-        serverqueue.resource = null;
-        serverqueue.player = null;
-        serverqueue.playing = false;
+        // await serverdata.connection.destroy();
+        // serverdata.connection = null;
+        serverdata.resource = null;
+        serverdata.player = null;
+        serverdata.playing = false;
         const settimeoutObj = setTimeout(() => {
-            serverqueue.connection.destroy();
-            serverqueue.connection = null;
-            serverqueue.resource = null;
-            serverqueue.player = null;
-            serverqueue.playing = false;
+            serverdata.connection.destroy();
+            serverdata.connection = null;
+            serverdata.resource = null;
+            serverdata.player = null;
+            serverdata.playing = false;
             const datatowrite = JSON.stringify(globaldata, replacer);
             fs.writeFileSync('./data/data.json', datatowrite, err => {
                 if (err) {
@@ -171,7 +171,7 @@ async function playSong(interaction, song) {
                 }
             });
         }, 30000);
-        serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+        serverdata.player.on(AudioPlayerStatus.Playing, () => {
             clearTimeout(settimeoutObj);
         });
         // const datatowrite = JSON.stringify(globaldata, replacer);
@@ -189,30 +189,30 @@ async function playSong(interaction, song) {
         return;
     }
     const songstream = await stream(song.url, { discordPlayerCompatibility : true });
-    serverqueue.resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
-    serverqueue.resource.volume.setVolume(serverqueue.volume / 100);
-    serverqueue.player = createAudioPlayer({
+    serverdata.resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
+    serverdata.resource.volume.setVolume(serverdata.volume / 100);
+    serverdata.player = createAudioPlayer({
         behaviors: {
             noSubscriber: NoSubscriberBehavior.Pause,
         },
     });
-    serverqueue.player.play(serverqueue.resource);
-    serverqueue.connection.subscribe(serverqueue.player);
-    serverqueue.player.on(AudioPlayerStatus.Idle, () => {
-        if (serverqueue.loop) {
-            playSong(interaction, serverqueue.songs[0]);
+    serverdata.player.play(serverdata.resource);
+    serverdata.connection.subscribe(serverdata.player);
+    serverdata.player.on(AudioPlayerStatus.Idle, () => {
+        if (serverdata.loop) {
+            playSong(interaction, serverdata.songs[0]);
         } else {
-            serverqueue.songs.shift();
-            playSong(interaction, serverqueue.songs[0]);
+            serverdata.songs.shift();
+            playSong(interaction, serverdata.songs[0]);
         }
     });
-    serverqueue.player.on(AudioPlayerStatus.AutoPaused, () => {
+    serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
         const settimeoutObj = setTimeout(() => {
-            serverqueue.connection.destroy();
-            serverqueue.connection = null;
-            serverqueue.resource = null;
-            serverqueue.player = null;
-            serverqueue.playing = false;
+            serverdata.connection.destroy();
+            serverdata.connection = null;
+            serverdata.resource = null;
+            serverdata.player = null;
+            serverdata.playing = false;
             const datatowrite = JSON.stringify(globaldata, replacer);
             fs.writeFileSync('./data/data.json', datatowrite, err => {
                 if (err) {
@@ -226,7 +226,7 @@ async function playSong(interaction, song) {
                 }
             });
         }, 30000);
-        serverqueue.player.on(AudioPlayerStatus.Playing, () => {
+        serverdata.player.on(AudioPlayerStatus.Playing, () => {
             clearTimeout(settimeoutObj);
         });
     });
