@@ -1,7 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
-const { yt_validate, video_basic_info, stream } = require('play-dl');
-const ytdl = require('ytdl-core');
+const { video_basic_info, stream, validate, playlist_info } = require('play-dl');
 const ytsr = require('ytsr');
 const fs = require('fs');
 
@@ -17,21 +16,21 @@ module.exports = {
     },
 };
 
-async function isValidYoutubeUrl(url) {
-    const regex = new RegExp(
-        // eslint-disable-next-line no-useless-escape
-        /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/,
-    );
-    return regex.test(url);
-}
+// async function isValidYoutubeUrl(url) {
+//     const regex = new RegExp(
+//         // eslint-disable-next-line no-useless-escape
+//         /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/,
+//     );
+//     return regex.test(url);
+// }
 
-async function isValidURL(url) {
-    if (yt_validate(url) === 'video') {
-        return true;
-    } else {
-        return false;
-    }
-}
+// async function isValidURL(url) {
+//     if (yt_validate(url) === 'video') {
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
 
 // async function playtest(interaction) {
 // 	const link = interaction.options.getString('link');
@@ -69,7 +68,7 @@ async function play(interaction) {
     }
     const msg = await interaction.channel.messages.fetch(interaction.targetId);
     let link = msg.content;
-    if (!await isValidYoutubeUrl(link) && !await isValidURL(link)) {
+    if (validate(link) === 'search') {
         link = await search(interaction);
         if (!link) {
             const embed = new EmbedBuilder()
@@ -78,6 +77,15 @@ async function play(interaction) {
             return interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     }
+    // if (!await isValidYoutubeUrl(link) && !await isValidURL(link)) {
+    //     link = await search(interaction);
+    //     if (!link) {
+    //         const embed = new EmbedBuilder()
+    //             .setTitle('Play')
+    //             .setDescription('No results found!');
+    //         return interaction.editReply({ embeds: [embed], ephemeral: true });
+    //     }
+    // }
     const voicechannel = interaction.member.voice.channel;
     let embed = new EmbedBuilder()
         .setTitle('Play')
@@ -106,17 +114,97 @@ async function play(interaction) {
         .setTitle('Play')
         .setDescription('this channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed] });
-    const songinfo1 = await video_basic_info(link);
-    const songinfo2 = await ytdl.getBasicInfo(link);
     const song = {
-        title: songinfo1.video_details.title,
-        url: songinfo2.videoDetails.video_url,
+        title: null,
+        url: null,
+        durationRaw: null,
+        durationInSeconds: null,
+        thumbnail: null,
+        relatedVideos: null,
+        requestedBy: null,
     };
-    if (!serverdata.songs[0]) {
-        serverdata.songs.push(song);
+    const playlist = {
+        title: null,
+        url: null,
+        thumbnail: null,
+        videos: [],
+    };
+    if (validate(link) === 'yt_video') {
+        const songinfo = await video_basic_info(link);
+        const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+        song.title = songinfo.video_details.title;
+        song.url = songinfo.video_details.video_url;
+        song.durationRaw = songinfo.video_details.durationRaw;
+        song.durationInSeconds = songinfo.video_details.durationInSec;
+        song.thumbnail = thumbnail.url;
+        song.relatedVideos = songinfo.video_details.related_videos;
+        song.requestedBy = interaction.user;
+    } else if (validate(link) === 'yt_playlist') {
+        const playlistinfo = await playlist_info(link);
+        playlist.title = playlistinfo.title;
+        playlist.url = playlistinfo.url;
+        playlist.thumbnail = playlistinfo.thumbnail;
+        playlist.videos = playlistinfo.videos;
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription(`**${song.title}** has been added to the queue!`);
+            .setDescription(`**${playlist.title}** playlist has been added!`)
+            .setThumbnail(playlist.thumbnail)
+            .setFooter(`Requested by ${interaction.user.tag}`, interaction.user.avatarURL());
+        interaction.editReply({ embeds: [embed] });
+        for (let i = 0; i < playlist.videos.length; i++) {
+            const songinfo = await video_basic_info(playlist.videos[i].url);
+            const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+            song.title = songinfo.video_details.title;
+            song.url = songinfo.video_details.video_url;
+            song.durationRaw = songinfo.video_details.durationRaw;
+            song.durationInSeconds = songinfo.video_details.durationInSec;
+            song.thumbnail = thumbnail.url;
+            song.relatedVideos = songinfo.video_details.related_videos;
+            song.requestedBy = interaction.user;
+            serverdata.songs.push(song);
+        }
+    } else if (validate(link) === 'so_track') {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Soundcloud is not supported yet!');
+        return interaction.editReply({ embeds: [embed] });
+        // const songinfo = await soundcloud(link);
+        // song.title = songinfo.title;
+        // song.url = songinfo.url;
+        // song.durationRaw = songinfo.durationRaw;
+        // song.durationInSeconds = songinfo.durationInSeconds;
+        // song.thumbnail = songinfo.thumbnail;
+        // song.requestedBy = interaction.user;
+    } else if (validate(link) === 'sp_track') {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Spotify is not supported yet!');
+        return interaction.editReply({ embeds: [embed] });
+        // const songinfo = await spotify(link);
+        // song.title = songinfo.title;
+        // song.url = songinfo.url;
+        // song.durationRaw = songinfo.durationRaw;
+        // song.durationInSeconds = songinfo.durationInSeconds;
+        // song.thumbnail = songinfo.thumbnail;
+        // song.requestedBy = interaction.user;
+    } else {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Invalid link!');
+        return interaction.editReply({ embeds: [embed] });
+    }
+    if (!serverdata.songs[0]) {
+        serverdata.songs.push(song);
+        if (!song.title && playlist.title) {
+            serverdata.songs.pop();
+            await playSong(interaction, serverdata.songs[0]);
+            return;
+        }
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription(`**${song.title}** has been added to the queue!\nSong duration: ${song.durationRaw}`)
+            .setThumbnail(song.thumbnail)
+            .setFooter(`Requested by ${song.requestedBy.tag}`, song.requestedBy.avatarURL());
         interaction.editReply({ embeds: [embed] });
         try {
             const connection = joinVoiceChannel({
@@ -132,7 +220,7 @@ async function play(interaction) {
             const errorembed = new EmbedBuilder()
                 .setTitle('Play')
                 .setDescription(`There was an error: ${error}`);
-            return interaction.editReply({ embeds: [errorembed] });
+            return interaction.editReply({ embeds: [errorembed], ephemeral: true });
         }
     } else {
         serverdata.songs.push(song);
@@ -201,6 +289,20 @@ async function playSong(interaction, song) {
     serverdata.player.on(AudioPlayerStatus.Idle, () => {
         if (serverdata.loop) {
             playSong(interaction, serverdata.songs[0]);
+        } else if (serverdata.autoplay) {
+            const relatedsong = serverdata.songs[0].relatedVideos[Math.floor(Math.random() * serverdata.songs[0].relatedVideos.length)];
+            const resong = {
+                title: relatedsong.title,
+                url: relatedsong.video_url,
+                durationRaw: relatedsong.durationRaw,
+                durationInSeconds: relatedsong.durationInSec,
+                thumbnail: relatedsong.thumbnails[relatedsong.thumbnails.length - 1].url,
+                relatedVideos: relatedsong.related_videos,
+                requestedBy: serverdata.songs[0].requestedBy,
+            };
+            serverdata.songs.shift();
+            serverdata.songs.unshift(resong);
+            playSong(interaction, serverdata.songs[0]);
         } else {
             serverdata.songs.shift();
             playSong(interaction, serverdata.songs[0]);
@@ -232,7 +334,9 @@ async function playSong(interaction, song) {
     });
     const embed = new EmbedBuilder()
         .setTitle('Play')
-        .setDescription(`Now playing **${song.title}**`);
+        .setDescription(`Now playing **${song.title}**\nSong duration: ${song.durationRaw}`)
+        .setThumbnail(song.thumbnail)
+        .setFooter(`Requested by ${song.requestedBy.tag}`, song.requestedBy.avatarURL());
     await interaction.channel.send({ embeds: [embed] });
 }
 
