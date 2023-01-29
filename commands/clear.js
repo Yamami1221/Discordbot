@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
-const { globaldata } = require('../data/global');
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear')
@@ -17,16 +15,6 @@ module.exports = {
     async execute(interaction) {
         try {
             await interaction.deferReply();
-            const serverData = globaldata.get(interaction.guildId) || undefined;
-            if (serverData?.veriChannel) {
-                if (interaction.channel.id === serverData.veriChannel.id) {
-                    const embed = new EmbedBuilder()
-                        .setTitle('Verification')
-                        .setDescription('You cannot use this command in the verification channel');
-                    await interaction.editReply({ embeds: [embed], ephemeral: true });
-                    return;
-                }
-            }
             const amount = interaction.options.getInteger('amount');
             const messages = await interaction.channel.messages.fetch({ limit: amount });
             await interaction.channel.bulkDelete(messages);

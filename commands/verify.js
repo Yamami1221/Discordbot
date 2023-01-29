@@ -210,10 +210,18 @@ async function verify(interaction) {
             .setTitle('Verify')
             .setDescription('The verify command has not been setup')
             .setTimestamp();
-        interaction.editReply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed], ephemeral: true });
     } else {
         if (interaction.channel.id === serverdata.veriChannel.id) {
             const member = interaction.member;
+            if (member.roles.cache.has(serverdata.veriRole.id)) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verify')
+                    .setDescription('You are already verified')
+                    .setTimestamp();
+                interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
             const embed = new EmbedBuilder()
                 .setTitle('Verify')
                 .setDescription(`Verified successfully\nWelcome <@${interaction.member.id}>`)
@@ -223,7 +231,7 @@ async function verify(interaction) {
             const max = 5000;
             const random = Math.floor(Math.random() * (max - min + 1)) + min;
             await sleep(random);
-            member.roles.add(serverdata.veriRole);
+            member.roles.add(serverdata.veriRole.id);
         } else {
             const embed = new EmbedBuilder()
                 .setTitle('Verify')
