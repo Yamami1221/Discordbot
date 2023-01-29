@@ -23,6 +23,6 @@ module.exports = {
             .setDescription('This is the help command')
             .setDescription('work in progress')
             .setTimestamp();
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     },
 };
