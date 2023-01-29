@@ -36,7 +36,9 @@ module.exports = {
                     const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true });
                     manager.load('./data/model.nlp');
                     const response = await manager.process(lang, message.content);
-                    message.channel.send(response.answer);
+                    if (response.answer) {
+                        message.channel.send(response.answer);
+                    }
                 } catch (error) {
                     console.error(error);
                 }
