@@ -7,7 +7,7 @@ module.exports = {
         .setName('help')
         .setDescription('Help command'),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
         const serverData = globaldata.get(interaction.guildId) || undefined;
         if (serverData?.veriChannel) {
             if (interaction.channel.id === serverData.veriChannel.id) {
