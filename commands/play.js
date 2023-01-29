@@ -293,6 +293,11 @@ async function playSong(interaction, song) {
         if (serverdata.loop) {
             playSong(interaction, serverdata.songs[0]);
         } else if (serverdata.autoplay) {
+            if (serverdata.songs[1]) {
+                serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
+                return;
+            }
             const relatedsong = serverdata.songs[0].relatedVideos[Math.floor(Math.random() * serverdata.songs[0].relatedVideos.length)];
             const resong = {
                 title: relatedsong.title,
