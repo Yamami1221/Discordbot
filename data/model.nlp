@@ -1,16 +1,16 @@
 {
   "settings": {
     "languages": [
-      "en"
+      "th"
     ],
     "nlu": {
       "log": false
     },
     "forceNER": true,
+    "autoSave": false,
     "tag": "nlp",
     "threshold": 0.5,
     "autoLoad": true,
-    "autoSave": true,
     "modelFileName": "model.nlp",
     "executeActionsBeforeAnswers": false,
     "calculateSentiment": true
@@ -21,11 +21,212 @@
       "log": false
     },
     "locales": [
-      "en",
-      "th"
+      "th",
+      "en"
     ],
     "languageNames": {},
     "domainManagers": {
+      "th": {
+        "settings": {
+          "locale": "th",
+          "trainByDomain": false,
+          "tag": "domain-manager-th",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "สวัสดี": {
+            "intent": "สวัสดี",
+            "domain": "default"
+          },
+          "ครับ,สวัสดี": {
+            "intent": "สวัสดีครับ",
+            "domain": "default"
+          },
+          "คั้บ,ดี": {
+            "intent": "ดีคั้บ",
+            "domain": "default"
+          },
+          "ยอง,อัน": {
+            "intent": "อันยอง",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "สวัสดี": "default",
+          "สวัสดีครับ": "default",
+          "ดีคั้บ": "default",
+          "อันยอง": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "สวัสดี",
+            "intent": "สวัสดี"
+          },
+          {
+            "domain": "default",
+            "utterance": "สวัสดีครับ",
+            "intent": "สวัสดีครับ"
+          },
+          {
+            "domain": "default",
+            "utterance": "สวัสดี",
+            "intent": "สวัสดี"
+          },
+          {
+            "domain": "default",
+            "utterance": "ดีคั้บ",
+            "intent": "ดีคั้บ"
+          },
+          {
+            "domain": "default",
+            "utterance": "สวัสดี",
+            "intent": "สวัสดี"
+          },
+          {
+            "domain": "default",
+            "utterance": "อันยอง",
+            "intent": "อันยอง"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "th",
+              "tag": "nlu-th",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "สวัสดี": 1,
+              "ครับ": 1,
+              "ดี": 1,
+              "คั้บ": 1,
+              "อัน": 1,
+              "ยอง": 1
+            },
+            "intents": {
+              "สวัสดี": 1,
+              "สวัสดีครับ": 1,
+              "ดีคั้บ": 1,
+              "อันยอง": 1
+            },
+            "intentFeatures": {
+              "สวัสดี": {
+                "สวัสดี": 1
+              },
+              "สวัสดีครับ": {
+                "สวัสดี": 1,
+                "ครับ": 1
+              },
+              "ดีคั้บ": {
+                "ดี": 1,
+                "คั้บ": 1
+              },
+              "อันยอง": {
+                "อัน": 1,
+                "ยอง": 1
+              }
+            },
+            "featuresToIntent": {
+              "สวัสดี": [
+                "สวัสดี",
+                "สวัสดีครับ"
+              ],
+              "ครับ": [
+                "สวัสดีครับ"
+              ],
+              "ดี": [
+                "ดีคั้บ"
+              ],
+              "คั้บ": [
+                "ดีคั้บ"
+              ],
+              "อัน": [
+                "อันยอง"
+              ],
+              "ยอง": [
+                "อันยอง"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "th",
+                "tag": "nlu-th",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true
+              },
+              "features": [
+                "สวัสดี",
+                "ครับ",
+                "ดี",
+                "คั้บ",
+                "อัน",
+                "ยอง"
+              ],
+              "intents": [
+                "สวัสดี",
+                "สวัสดีครับ",
+                "ดีคั้บ",
+                "อันยอง"
+              ],
+              "perceptrons": [
+                [
+                  10.6251859664917,
+                  -13.901476860046387,
+                  -1.7651000022888184,
+                  -1.7651000022888184,
+                  -1.7682629823684692,
+                  -1.7682629823684692,
+                  3.5473333194764134
+                ],
+                [
+                  0.25751203298568726,
+                  13.977058410644531,
+                  -0.3058632016181946,
+                  -0.3058632016181946,
+                  -0.25513342022895813,
+                  -0.25513342022895813,
+                  -0.16889236698885365
+                ],
+                [
+                  -1.7857136726379395,
+                  -0.2550242245197296,
+                  6.249999046325684,
+                  6.249999046325684,
+                  -0.8928567171096802,
+                  -0.8928567171096802,
+                  1.7857142197560258
+                ],
+                [
+                  -1.7857136726379395,
+                  -0.30582672357559204,
+                  -0.8928562998771667,
+                  -0.8928562998771667,
+                  6.249999046325684,
+                  6.249999046325684,
+                  1.7857142670800425
+                ]
+              ]
+            }
+          }
+        }
+      },
       "en": {
         "settings": {
           "locale": "en",
@@ -182,119 +383,6 @@
             }
           }
         }
-      },
-      "th": {
-        "settings": {
-          "locale": "th",
-          "trainByDomain": false,
-          "tag": "domain-manager-th",
-          "nluByDomain": {
-            "default": {
-              "className": "NeuralNlu",
-              "settings": {}
-            }
-          },
-          "useStemDict": true
-        },
-        "stemDict": {
-          "สวัสดี": {
-            "intent": "สวัสดี",
-            "domain": "default"
-          },
-          "ครับ,สวัสดี": {
-            "intent": "สวัสดีครับ",
-            "domain": "default"
-          }
-        },
-        "intentDict": {
-          "สวัสดี": "default",
-          "สวัสดีครับ": "default"
-        },
-        "sentences": [
-          {
-            "domain": "default",
-            "utterance": "สวัสดี",
-            "intent": "สวัสดี"
-          },
-          {
-            "domain": "default",
-            "utterance": "สวัสดีครับ",
-            "intent": "สวัสดีครับ"
-          }
-        ],
-        "domains": {
-          "master_domain": {
-            "settings": {
-              "locale": "th",
-              "tag": "nlu-th",
-              "keepStopwords": true,
-              "nonefeatureValue": 1,
-              "nonedeltaMultiplier": 1.2,
-              "spellCheck": false,
-              "spellCheckDistance": 1,
-              "filterZeros": true,
-              "log": true
-            },
-            "features": {
-              "สวัสดี": 1,
-              "ครับ": 1
-            },
-            "intents": {
-              "สวัสดี": 1,
-              "สวัสดีครับ": 1
-            },
-            "intentFeatures": {
-              "สวัสดี": {
-                "สวัสดี": 1
-              },
-              "สวัสดีครับ": {
-                "สวัสดี": 1,
-                "ครับ": 1
-              }
-            },
-            "featuresToIntent": {
-              "สวัสดี": [
-                "สวัสดี",
-                "สวัสดีครับ"
-              ],
-              "ครับ": [
-                "สวัสดีครับ"
-              ]
-            },
-            "neuralNetwork": {
-              "settings": {
-                "locale": "th",
-                "tag": "nlu-th",
-                "keepStopwords": true,
-                "nonefeatureValue": 1,
-                "nonedeltaMultiplier": 1.2,
-                "spellCheck": false,
-                "spellCheckDistance": 1,
-                "filterZeros": true
-              },
-              "features": [
-                "สวัสดี",
-                "ครับ"
-              ],
-              "intents": [
-                "สวัสดี",
-                "สวัสดีครับ"
-              ],
-              "perceptrons": [
-                [
-                  9.438142776489258,
-                  -14.0751371383667,
-                  4.718394245853262
-                ],
-                [
-                  0.06210416555404663,
-                  14.133062362670898,
-                  0.03153998249898636
-                ]
-              ]
-            }
-          }
-        }
       }
     },
     "intentDomains": {},
@@ -318,6 +406,22 @@
       [
         "en",
         "who are you"
+      ],
+      [
+        "th",
+        "สวัสดี"
+      ],
+      [
+        "th",
+        "ดีคั้บ"
+      ],
+      [
+        "th",
+        "สวัสดี"
+      ],
+      [
+        "th",
+        "อันยอง"
       ]
     ]
   },
@@ -355,9 +459,22 @@
         "สวัสดี": [
           {
             "answer": "สวัสดีจ้า"
+          },
+          {
+            "answer": "สวัสดีครับ"
           }
         ],
         "สวัสดีครับ": [
+          {
+            "answer": "สวัสดีจ้า"
+          }
+        ],
+        "ดีคั้บ": [
+          {
+            "answer": "สวัสดีจ้า"
+          }
+        ],
+        "อันยอง": [
           {
             "answer": "สวัสดีจ้า"
           }
