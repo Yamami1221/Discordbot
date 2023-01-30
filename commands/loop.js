@@ -5,7 +5,12 @@ const { globaldata } = require('../data/global');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('loop')
-        .setDescription('Loops the current song or the queue'),
+        .setDescription('Loops the current song or the queue')
+        .addBooleanOption(option =>
+            option
+                .setName('loop')
+                .setDescription('Whether to loop the queue or not')
+                .setRequired(true)),
     async execute(interaction) {
         loop(interaction);
     },
@@ -48,15 +53,10 @@ async function loop(interaction) {
         .setTitle('Loop')
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    serverdata.loop = !serverdata.loop;
-    if (serverdata.loop) {
-        embed = new EmbedBuilder()
-            .setTitle('Loop')
-            .setDescription('Looped the queue!');
-    } else {
-        embed = new EmbedBuilder()
-            .setTitle('Loop')
-            .setDescription('Unlooped the queue!');
-    }
+    const loopdata = interaction.options.getBoolean('loop');
+    serverdata.loop = loopdata;
+    embed = new EmbedBuilder()
+        .setTitle('Loop')
+        .setDescription(`Looping ${loop ? 'enabled' : 'disabled'}`);
     await interaction.editReply({ embeds: [embed] });
 }
