@@ -115,8 +115,9 @@ module.exports = {
         }
         await interaction.editReply({ content: 'Select a sound to play', components: [row1, row2, row3, row4, row5] });
         const filter = (i) => i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+        const collector = interaction.channel.createMessageComponentCollector({ filter });
         collector.on('collect', async (i) => {
+            await i.deferUpdate();
             let path;
             for (let j = 0; j < data.length; j++) {
                 if (i.customId === data[j].name) {
@@ -140,45 +141,42 @@ module.exports = {
             serverdata.player.unpause();
             serverdata.player.on(AudioPlayerStatus.Idle, () => {
                 const timeoutObj = setTimeout(() => {
+                    collector.stop();
                     serverdata.connection.destroy();
-                    serverdata.connection = null;
                     serverdata.playing = false;
-                    serverdata.player = null;
                     serverdata.resource = null;
                 }, 10000);
+                console.log(timeoutObj);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutObj);
                     serverdata.playing = true;
                 });
-                serverdata.resource = null;
-                serverdata.playing = false;
             });
             serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
                 const timeoutObj = setTimeout(() => {
+                    collector.stop();
                     serverdata.connection.destroy();
-                    serverdata.connection = null;
                     serverdata.playing = false;
-                    serverdata.player = null;
                     serverdata.resource = null;
                 }, 10000);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutObj);
+                    console.log(timeoutObj);
                     serverdata.playing = true;
                 });
             });
-            i.deferUpdate();
+            await i.deferUpdate();
         });
         collector.on('end', async () => {
             serverdata.playing = false;
-            serverdata.connection = null;
             const deffered = await interaction.fetchReply();
             if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
             if (!serverdata.playing) {
                 serverdata.player = null;
                 serverdata.resource = null;
-                serverdata.connection.destroy();
+                // serverdata.connection.destroy();
                 serverdata.connection = null;
-                const datatowrite = JSON.stringify(serverdata, replacer);
+                const datatowrite = JSON.stringify(globaldata, replacer);
                 fs.writeFileSync('./data/data.json', datatowrite, err => {
                     if (err) {
                         console.log(err);
