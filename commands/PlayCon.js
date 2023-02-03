@@ -129,17 +129,17 @@ async function play(interaction) {
         thumbnail: null,
         videos: [],
     };
-    if (validate(link) === 'yt_video') {
+    if (await validate(link) === 'yt_video') {
         const songinfo = await video_basic_info(link);
         const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
         song.title = songinfo.video_details.title;
-        song.url = songinfo.video_details.video_url;
+        song.url = songinfo.video_details.url;
         song.durationRaw = songinfo.video_details.durationRaw;
         song.durationInSeconds = songinfo.video_details.durationInSec;
         song.thumbnail = thumbnail.url;
         song.relatedVideos = songinfo.video_details.related_videos;
         song.requestedBy = interaction.user;
-    } else if (validate(link) === 'yt_playlist') {
+    } else if (await validate(link) === 'yt_playlist') {
         const playlistinfo = await playlist_info(link);
         playlist.title = playlistinfo.title;
         playlist.url = playlistinfo.url;
@@ -149,13 +149,13 @@ async function play(interaction) {
             .setTitle('Play')
             .setDescription(`**${playlist.title}** playlist has been added!`)
             .setThumbnail(playlist.thumbnail)
-            .setFooter(`Requested by ${interaction.user.tag}`, interaction.user.avatarURL());
+            .setFooter({ text:`Requested by ${interaction.user.tag}`, iconURL:interaction.user.avatarURL() });
         interaction.editReply({ embeds: [embed] });
         for (let i = 0; i < playlist.videos.length; i++) {
             const songinfo = await video_basic_info(playlist.videos[i].url);
             const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
             song.title = songinfo.video_details.title;
-            song.url = songinfo.video_details.video_url;
+            song.url = songinfo.video_details.url;
             song.durationRaw = songinfo.video_details.durationRaw;
             song.durationInSeconds = songinfo.video_details.durationInSec;
             song.thumbnail = thumbnail.url;
@@ -163,7 +163,7 @@ async function play(interaction) {
             song.requestedBy = interaction.user;
             serverdata.songs.push(song);
         }
-    } else if (validate(link) === 'so_track') {
+    } else if (await validate(link) === 'so_track') {
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription('Soundcloud is not supported yet!');
@@ -175,7 +175,7 @@ async function play(interaction) {
         // song.durationInSeconds = songinfo.durationInSeconds;
         // song.thumbnail = songinfo.thumbnail;
         // song.requestedBy = interaction.user;
-    } else if (validate(link) === 'sp_track') {
+    } else if (await validate(link) === 'sp_track') {
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription('Spotify is not supported yet!');
@@ -204,7 +204,7 @@ async function play(interaction) {
             .setTitle('Play')
             .setDescription(`**${song.title}** has been added to the queue!\nSong duration: ${song.durationRaw}`)
             .setThumbnail(song.thumbnail)
-            .setFooter(`Requested by ${song.requestedBy.tag}`, song.requestedBy.avatarURL());
+            .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
         interaction.editReply({ embeds: [embed] });
         try {
             const connection = joinVoiceChannel({
@@ -238,7 +238,6 @@ async function playSong(interaction, song) {
         // await serverdata.connection.destroy();
         // serverdata.connection = null;
         serverdata.resource = null;
-        serverdata.player = null;
         serverdata.playing = false;
         const settimeoutObj = setTimeout(() => {
             serverdata.connection.destroy();
@@ -286,7 +285,7 @@ async function playSong(interaction, song) {
     });
     serverdata.player.play(serverdata.resource);
     serverdata.connection.subscribe(serverdata.player);
-    serverdata.player.on(AudioPlayerStatus.Idle, () => {
+    serverdata.player.on(AudioPlayerStatus.Idle, async () => {
         if (serverdata.loop) {
             playSong(interaction, serverdata.songs[0]);
         } else if (serverdata.autoplay) {
@@ -295,19 +294,21 @@ async function playSong(interaction, song) {
                 playSong(interaction, serverdata.songs[0]);
                 return;
             }
-            const relatedsong = serverdata.songs[0].relatedVideos[Math.floor(Math.random() * serverdata.songs[0].relatedVideos.length)];
-            const resong = {
-                title: relatedsong.title,
-                url: relatedsong.video_url,
-                durationRaw: relatedsong.durationRaw,
-                durationInSeconds: relatedsong.durationInSec,
-                thumbnail: relatedsong.thumbnails[relatedsong.thumbnails.length - 1].url,
-                relatedVideos: relatedsong.related_videos,
-                requestedBy: serverdata.songs[0].requestedBy,
-            };
-            serverdata.songs.shift();
-            serverdata.songs.unshift(resong);
-            playSong(interaction, serverdata.songs[0]);
+            if (await validate(serverdata.songs[0].relatedVideos[0]) === 'yt_video') {
+                const relatedsong = await video_basic_info(serverdata.songs[0].relatedVideos[0]);
+                const resong = {
+                    title: relatedsong.title,
+                    url: relatedsong.video_url,
+                    durationRaw: relatedsong.durationRaw,
+                    durationInSeconds: relatedsong.durationInSec,
+                    thumbnail: relatedsong.thumbnails[relatedsong.thumbnails.length - 1].url,
+                    relatedVideos: relatedsong.related_videos,
+                    requestedBy: serverdata.songs[0].requestedBy,
+                };
+                serverdata.songs.shift();
+                serverdata.songs.unshift(resong);
+                playSong(interaction, serverdata.songs[0]);
+            }
         } else {
             serverdata.songs.shift();
             playSong(interaction, serverdata.songs[0]);
@@ -341,7 +342,7 @@ async function playSong(interaction, song) {
         .setTitle('Play')
         .setDescription(`Now playing **${song.title}**\nSong duration: ${song.durationRaw}`)
         .setThumbnail(song.thumbnail)
-        .setFooter(`Requested by ${song.requestedBy.tag}`, song.requestedBy.avatarURL());
+        .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
     await interaction.channel.send({ embeds: [embed] });
 }
 
