@@ -195,7 +195,7 @@ async function teachChatBot(interaction) {
         const language = new Language();
         const langraw = await language.guess(text, [ 'en', 'th' ]);
         const lang = langraw[0].alpha2;
-        const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true, autoSave: false });
+        const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true, autosave: false, autoSave: false });
         manager.load('./data/model.nlp');
         manager.addDocument(lang, text, text);
         manager.addAnswer(lang, text, response);

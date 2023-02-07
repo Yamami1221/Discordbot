@@ -33,7 +33,7 @@ module.exports = {
                     const language = new Language();
                     const langraw = await language.guess(message.content, [ 'en', 'th' ]);
                     const lang = langraw[0].alpha2;
-                    const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true });
+                    const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true, autosave: false, autoSave: false });
                     manager.load('./data/model.nlp');
                     const response = await manager.process(lang, message.content);
                     if (response.answer) {
