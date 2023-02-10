@@ -103,13 +103,14 @@ async function play(interaction) {
         .setTitle('Play')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed] });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id === interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
+    // let enabled = false;
+    // for (let i = 0; i < serverdata.textchannel.length; i++) {
+    //     if (serverdata.textchannel[i].id === interaction.channel.id) {
+    //         enabled = true;
+    //         break;
+    //     }
+    // }
     embed = new EmbedBuilder()
         .setTitle('Play')
         .setDescription('this channel is not enabled for music commands!');
@@ -129,6 +130,7 @@ async function play(interaction) {
         thumbnail: null,
         videos: [],
     };
+    let sendasplaylist = false;
     if (await validate(link) === 'yt_video') {
         const songinfo = await video_basic_info(link);
         const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
@@ -163,6 +165,7 @@ async function play(interaction) {
             song.requestedBy = interaction.user;
             serverdata.songs.push(song);
         }
+        sendasplaylist = true;
     } else if (await validate(link) === 'so_track') {
         embed = new EmbedBuilder()
             .setTitle('Play')
@@ -195,7 +198,7 @@ async function play(interaction) {
     }
     if (!serverdata.songs[0]) {
         serverdata.songs.push(song);
-        if (!song.title && playlist.title) {
+        if (sendasplaylist) {
             serverdata.songs.pop();
             await playSong(interaction, serverdata.songs[0]);
             return;
@@ -239,7 +242,7 @@ async function playSong(interaction, song) {
         // serverdata.connection = null;
         serverdata.resource = null;
         serverdata.playing = false;
-        const settimeoutObj = setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
@@ -259,7 +262,7 @@ async function playSong(interaction, song) {
             });
         }, 30000);
         serverdata.player.on(AudioPlayerStatus.Playing, () => {
-            clearTimeout(settimeoutObj);
+            clearTimeout(timeoutId);
         });
         // const datatowrite = JSON.stringify(globaldata, replacer);
         // fs.writeFile('./data.json', datatowrite, err => {
@@ -308,6 +311,9 @@ async function playSong(interaction, song) {
                 serverdata.songs.shift();
                 serverdata.songs.unshift(resong);
                 playSong(interaction, serverdata.songs[0]);
+            } else {
+                serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
             }
         } else {
             serverdata.songs.shift();
@@ -315,7 +321,7 @@ async function playSong(interaction, song) {
         }
     });
     serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
-        const settimeoutObj = setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
@@ -335,7 +341,7 @@ async function playSong(interaction, song) {
             });
         }, 30000);
         serverdata.player.on(AudioPlayerStatus.Playing, () => {
-            clearTimeout(settimeoutObj);
+            clearTimeout(timeoutId);
         });
     });
     const embed = new EmbedBuilder()

@@ -32,13 +32,14 @@ module.exports = {
             .setTitle('Soundboard')
             .setDescription('This server is not enabled for music commands');
         if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-        let enabled = false;
-        for (let i = 0; i < serverdata.textchannel.length; i++) {
-            if (interaction.channel.id === serverdata.textchannel[i].id) {
-                enabled = true;
-                break;
-            }
-        }
+        const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
+        // let enabled = false;
+        // for (let i = 0; i < serverdata.textchannel.length; i++) {
+        //     if (interaction.channel.id === serverdata.textchannel[i].id) {
+        //         enabled = true;
+        //         break;
+        //     }
+        // }
         embed = new EmbedBuilder()
             .setTitle('Soundboard')
             .setDescription('This channel is not enabled for music commands');
@@ -118,13 +119,7 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter });
         collector.on('collect', async (i) => {
             await i.deferUpdate();
-            let path;
-            for (let j = 0; j < data.length; j++) {
-                if (i.customId === data[j].name) {
-                    path = data[j].path;
-                    break;
-                }
-            }
+            const path = data.find((x) => x.name === i.customId).path;
             const connection = joinVoiceChannel({
                 channelId: voiceChannel.id,
                 guildId: voiceChannel.guild.id,
@@ -140,28 +135,24 @@ module.exports = {
             serverdata.connection.subscribe(serverdata.player);
             serverdata.player.unpause();
             serverdata.player.on(AudioPlayerStatus.Idle, () => {
-                const timeoutObj = setTimeout(() => {
+                const timeoutId = setTimeout(() => {
                     collector.stop();
                     serverdata.connection.destroy();
                     serverdata.playing = false;
-                    serverdata.resource = null;
-                }, 10000);
-                console.log(timeoutObj);
+                }, 5000);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
-                    clearTimeout(timeoutObj);
+                    clearTimeout(timeoutId);
                     serverdata.playing = true;
                 });
             });
             serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
-                const timeoutObj = setTimeout(() => {
+                const timeoutId = setTimeout(() => {
                     collector.stop();
                     serverdata.connection.destroy();
                     serverdata.playing = false;
-                    serverdata.resource = null;
-                }, 10000);
+                }, 5000);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
-                    clearTimeout(timeoutObj);
-                    console.log(timeoutObj);
+                    clearTimeout(timeoutId);
                     serverdata.playing = true;
                 });
             });
