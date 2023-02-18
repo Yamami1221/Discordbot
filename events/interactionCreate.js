@@ -69,6 +69,8 @@ module.exports = {
                 console.error(`Error executing ${interaction.commandName}`);
                 console.error(error);
             }
+        } else if (interaction.isModalSubmit()) {
+            return;
         } else if (interaction.isButton()) {
             return;
         } else if (!interaction.isCommand()) {
