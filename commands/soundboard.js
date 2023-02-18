@@ -118,7 +118,6 @@ module.exports = {
         const filter = (i) => i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter });
         collector.on('collect', async (i) => {
-            await i.deferUpdate();
             const path = data.find((x) => x.name === i.customId).path;
             const connection = joinVoiceChannel({
                 channelId: voiceChannel.id,
@@ -136,9 +135,9 @@ module.exports = {
             serverdata.player.unpause();
             serverdata.player.on(AudioPlayerStatus.Idle, () => {
                 const timeoutId = setTimeout(() => {
-                    collector.stop();
                     serverdata.connection.destroy();
                     serverdata.playing = false;
+                    collector.stop();
                 }, 5000);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutId);
@@ -147,9 +146,9 @@ module.exports = {
             });
             serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
                 const timeoutId = setTimeout(() => {
-                    collector.stop();
                     serverdata.connection.destroy();
                     serverdata.playing = false;
+                    collector.stop();
                 }, 5000);
                 serverdata.player.on(AudioPlayerStatus.Playing, () => {
                     clearTimeout(timeoutId);
