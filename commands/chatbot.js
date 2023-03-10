@@ -31,7 +31,6 @@ module.exports = {
                         .setDescription('The response to the text(for multiple responses, separate them with a comma)')
                         .setRequired(true))),
     async execute(interaction) {
-        await interaction.deferReply();
         const serverData = globaldata.get(interaction.guildId) || undefined;
         if (serverData?.veriChannel) {
             if (interaction.channel.id === serverData.veriChannel.id) {
@@ -54,6 +53,7 @@ module.exports = {
 };
 
 async function enableChatBot(interaction) {
+    await interaction.deferReply();
     const serverData = globaldata.get(interaction.guildId);
     if (!serverData) {
         const queueconstruct = {
@@ -121,6 +121,7 @@ async function enableChatBot(interaction) {
 }
 
 async function disableChatBot(interaction) {
+    await interaction.deferReply();
     const serverData = globaldata.get(interaction.guildId);
     if (!serverData) {
         const queueconstruct = {
@@ -189,6 +190,7 @@ async function disableChatBot(interaction) {
 }
 
 async function teachChatBot(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const text = interaction.options.getString('text');
     const response = interaction.options.getString('response');
     try {
