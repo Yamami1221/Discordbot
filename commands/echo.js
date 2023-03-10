@@ -26,11 +26,11 @@ module.exports = {
             }
         }
         const input = interaction.options.getString('input');
-        const ephemeral = interaction.options.getBoolean('ephemeral');
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const embed = new EmbedBuilder()
             .setTitle('Echo')
             .setDescription(`Message: ${input}`)
-            .setFooter(`Requested by ${interaction.user.tag}`);
+            .setFooter({ text:`Requested by ${interaction.user.username}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) });
         await interaction.deleteReply();
         await interaction.channel.send({ embeds: [embed], ephemeral: ephemeral });
     },
