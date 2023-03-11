@@ -23,6 +23,15 @@ module.exports = {
             }
         }
         const expression = interaction.options.getString('expression');
+        const sanitizedExpression = expression.replace(/[^0-9+\-*/.()]/g, '');
+        if (sanitizedExpression !== expression) {
+            const errorEmbed = new EmbedBuilder()
+                .setTitle('Calculator')
+                .setDescription('Invalid expression')
+                .setTimestamp();
+            await interaction.editReply({ embeds: [errorEmbed] });
+            return;
+        }
         const embed = new EmbedBuilder()
             .setTitle('Calculator')
             .setDescription(`**${expression}** = ${eval(expression)}`)
