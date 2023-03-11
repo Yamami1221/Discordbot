@@ -33,13 +33,6 @@ module.exports = {
             .setDescription('This server is not enabled for music commands');
         if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
         const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
-        // let enabled = false;
-        // for (let i = 0; i < serverdata.textchannel.length; i++) {
-        //     if (interaction.channel.id === serverdata.textchannel[i].id) {
-        //         enabled = true;
-        //         break;
-        //     }
-        // }
         embed = new EmbedBuilder()
             .setTitle('Soundboard')
             .setDescription('This channel is not enabled for music commands');

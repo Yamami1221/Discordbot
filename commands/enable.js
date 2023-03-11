@@ -42,6 +42,7 @@ module.exports = {
                     veriRole: null,
                     veriChannel: null,
                     chatbotChannel: [],
+                    timervar: null,
                 };
                 queueconstruct.textchannel.push(interaction.channel);
                 globaldata.set(interaction.guild.id, queueconstruct);
@@ -66,17 +67,7 @@ module.exports = {
                     }
                 });
             } else {
-                let enabled = false;
-                for (let i = 0; i < serverdata.textchannel.length; i++) {
-                    if (serverdata.textchannel[i].id === interaction.channel.id) {
-                        const embed = new EmbedBuilder()
-                            .setTitle('Enable')
-                            .setDescription(`<#${interaction.channel.id}> is already enabled`);
-                        await interaction.editReply({ embeds: [embed], ephemeral: true });
-                        enabled = true;
-                        return;
-                    }
-                }
+                const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
                 if (enabled === false) {
                     serverdata.textchannel.push(interaction.channel);
                     const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
