@@ -8,7 +8,8 @@ module.exports = {
         .setDescription('Toggle autoplay on/off')
         .addBooleanOption(option =>
             option.setName('toggle')
-                .setDescription('Toggle autoplay on/off')),
+                .setDescription('Toggle autoplay on/off')
+                .setRequired(true)),
     async execute(interaction) {
         const serverData = globaldata.get(interaction.guildId) || undefined;
         if (serverData?.veriChannel) {
