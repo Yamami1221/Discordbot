@@ -33,10 +33,7 @@ async function pauses(interaction) {
         .setTitle('Pause')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id == interaction.channel.id) enabled = true;
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('This channel is not enabled for music commands!');
@@ -45,10 +42,12 @@ async function pauses(interaction) {
         .setTitle('Pause')
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    embed = new EmbedBuilder()
-        .setTitle('Pause')
-        .setDescription('The music is already paused!');
-    if (serverdata.playing == false) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (serverdata.player.paused) {
+        embed = new EmbedBuilder()
+            .setTitle('Pause')
+            .setDescription('The music is already paused!');
+        return interaction.editReply({ embeds: [embed], ephemeral: true });
+    }
     serverdata.player.pause();
     embed = new EmbedBuilder()
         .setTitle('Pause')

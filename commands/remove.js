@@ -9,6 +9,7 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('position')
                 .setDescription('The position of the song in the queue')
+                .setMinValue(1)
                 .setRequired(true)),
     async execute(interaction) {
         remove(interaction);
@@ -37,13 +38,7 @@ async function remove(interaction) {
         .setTitle('Remove')
         .setDescription('This server is not enabled music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannels.length; i++) {
-        if (serverdata.textchannels[i].id == interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('This channel is not enabled music commands!');
@@ -59,7 +54,11 @@ async function remove(interaction) {
     if (index > serverdata.songs.length) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
         .setTitle('Remove')
-        .setDescription(`Removed the song name: ${serverdata.songs[index - 1].title}!`);
+        .setDescription('You cannot remove the current song!');
+    if (index < 1) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Remove')
+        .setDescription(`Removed the song name: ${serverdata.songs[index].title}!`);
     await interaction.editReply({ embeds: [embed] });
-    serverdata.songs.splice(index - 1, 1);
+    serverdata.songs.splice(index, 1);
 }

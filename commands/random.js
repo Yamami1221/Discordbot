@@ -28,6 +28,13 @@ module.exports = {
         }
         let min = interaction.options.getInteger('min');
         let max = interaction.options.getInteger('max');
+        if (min === max) {
+            const embed = new EmbedBuilder()
+                .setTitle('Random Number Generator')
+                .setDescription('The minimum and maximum number cannot be the same');
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            return;
+        }
         if (min > max) {
             const temp = min;
             min = max;

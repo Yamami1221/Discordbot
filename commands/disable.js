@@ -30,13 +30,8 @@ module.exports = {
                 await interaction.editReply({ embeds: [embed], ephemeral: true });
                 return;
             } else {
-                let enabled = false;
-                for (let i = 0; i < serverdata.textchannel.length; i++) {
-                    if (serverdata.textchannel[i].id === interaction.channel.id) {
-                        enabled = true;
-                    }
-                }
-                if (enabled === true) {
+                const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
+                if (enabled) {
                     const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
                     serverdata.textchannel.splice(textchannelforshowloc, 1);
                     let embed = new EmbedBuilder()

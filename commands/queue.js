@@ -33,13 +33,7 @@ async function queue(interaction) {
         .setTitle('Queue')
         .setDescription('This server is not enabled music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannels[i].id == interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Queue')
         .setDescription('This channel is not enabled music commands!');
@@ -51,8 +45,12 @@ async function queue(interaction) {
     const queueembed = new EmbedBuilder()
         .setTitle('Queue')
         .setDescription(`Now playing: ${serverdata.songs[0].title}`);
+    let songstring = '';
     for (let i = 1; i < serverdata.songs.length; i++) {
-        queueembed.addFields({ name:`Song ${i}`, value:serverdata.songs[i].title });
+        songstring += `${serverdata.songs[i].title}\n`;
     }
+    queueembed.addField({ name: 'Songs', value: songstring, inline: true });
+    const optionstring = `Playing: ${serverdata.playing}\nLooping: ${serverdata.looping}\nAutoplay: ${serverdata.autoplay}\nVolume: ${serverdata.volume}`;
+    queueembed.addField({ name: 'Options', value: optionstring, inline: true });
     await interaction.editReply({ embeds: [queueembed] });
 }

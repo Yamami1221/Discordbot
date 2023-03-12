@@ -63,6 +63,9 @@ async function volume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
+    const testdata = serializeMap(globaldata);
+    const testjsonstring = JSON.stringify([...testdata]);
+    console.log(testjsonstring);
     if (!serverdata.playing) {
         const data = JSON.stringify(globaldata, replacer);
         fs.writeFile('./data/data.json', data, err => {
@@ -89,4 +92,56 @@ function replacer(key, value) {
     } else {
         return value;
     }
+}
+
+function serializeObject(obj, serialized = new Set()) {
+    if (serialized.has(obj)) {
+        // Circular reference
+        return '<already-serialized>';
+    }
+
+    if (typeof obj === 'object' && obj !== null) {
+        serialized.add(obj);
+        if (obj instanceof Map) {
+            return serializeMap(obj, serialized);
+        } else if (Array.isArray(obj)) {
+            return obj.map(item => serializeObject(item, serialized));
+        } else {
+            const result = {};
+            for (const [key, value] of Object.entries(obj)) {
+                result[key] = serializeObject(value, serialized);
+            }
+            return result;
+        }
+    } else {
+        return obj;
+    }
+}
+
+function serializeMap(map, serialized = new Set()) {
+    const result = new Map();
+
+    for (const [key, value] of map.entries()) {
+        if (serialized.has(value)) {
+        // Circular reference
+            result.set(key, '<already-serialized>');
+        } else if (typeof value === 'object' && value !== null) {
+            serialized.add(value);
+            if (value instanceof Map) {
+                result.set(key, serializeMap(value, serialized));
+            } else if (Array.isArray(value)) {
+                result.set(key, value.map(item => serializeObject(item, serialized)));
+            } else {
+                const objResult = {};
+                for (const [objKey, objValue] of Object.entries(value)) {
+                    objResult[objKey] = serializeObject(objValue, serialized);
+                }
+                result.set(key, objResult);
+            }
+        } else {
+            result.set(key, value);
+        }
+    }
+
+    return result;
 }

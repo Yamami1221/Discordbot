@@ -79,6 +79,7 @@ async function setup(interaction) {
             veriRole: null,
             veriChannel: null,
             chatbotChannel: [],
+            timervar: null,
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
@@ -144,6 +145,7 @@ async function remove(interaction) {
             veriRole: null,
             veriChannel: null,
             chatbotChannel: [],
+            timervar: null,
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
@@ -201,6 +203,7 @@ async function verify(interaction) {
             veriRole: null,
             veriChannel: null,
             chatbotChannel: [],
+            timervar: null,
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
@@ -227,8 +230,8 @@ async function verify(interaction) {
                 .setDescription(`Verified successfully\nWelcome <@${interaction.member.id}>`)
                 .setTimestamp();
             interaction.editReply({ embeds: [embed] });
-            const min = 1000;
-            const max = 5000;
+            const min = 3000;
+            const max = 10000;
             const random = Math.floor(Math.random() * (max - min + 1)) + min;
             await sleep(random);
             member.roles.add(serverdata.veriRole.id);

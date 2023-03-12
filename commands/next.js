@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { yt_validate, video_basic_info } = require('play-dl');
-const ytdl = require('ytdl-core');
+const { video_basic_info, validate, playlist_info } = require('play-dl');
 const ytsr = require('ytsr');
 const { globaldata } = require('../data/global');
 
@@ -40,13 +39,7 @@ async function next(interaction) {
         .setTitle('Next')
         .setDescription('This server is not enabled for music commands');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id === interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription('This channel is not enabled for music commands');
@@ -56,42 +49,105 @@ async function next(interaction) {
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     let link = interaction.options.getString('query');
-    if (!await isValidYoutubeUrl(link) && !await isValidURL(link)) {
+    if (await validate(link) === 'search') {
         link = await search(interaction);
         if (!link) {
             embed = new EmbedBuilder()
-                .setTitle('Next')
+                .setTitle('Play')
                 .setDescription('No results found!');
             return interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     }
-    const songinfo1 = await video_basic_info(link);
-    const songinfo2 = await ytdl.getBasicInfo(link);
     const song = {
-        title: songinfo1.video_details.title,
-        url: songinfo2.videoDetails.video_url,
+        title: null,
+        url: null,
+        durationRaw: null,
+        durationInSeconds: null,
+        thumbnail: null,
+        relatedVideos: null,
+        requestedBy: null,
     };
+    const playlist = {
+        title: null,
+        url: null,
+        thumbnail: null,
+        videos: [],
+    };
+    let sendasplaylist = false;
+    if (await validate(link) === 'yt_video') {
+        const songinfo = await video_basic_info(link);
+        const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+        song.title = songinfo.video_details.title;
+        song.url = songinfo.video_details.url;
+        song.durationRaw = songinfo.video_details.durationRaw;
+        song.durationInSeconds = songinfo.video_details.durationInSec;
+        song.thumbnail = thumbnail.url;
+        song.relatedVideos = songinfo.video_details.related_videos;
+        song.requestedBy = interaction.user;
+    } else if (await validate(link) === 'yt_playlist') {
+        const playlistinfo = await playlist_info(link);
+        playlist.title = playlistinfo.title;
+        playlist.url = playlistinfo.url;
+        playlist.thumbnail = playlistinfo.thumbnail;
+        playlist.videos = playlistinfo.videos;
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription(`**${playlist.title}** playlist has been added!`)
+            .setThumbnail(playlist.thumbnail)
+            .setFooter({ text:`Requested by ${interaction.user.tag}`, iconURL:interaction.user.avatarURL() });
+        interaction.editReply({ embeds: [embed] });
+        for (let i = 0; i < playlist.videos.length; i++) {
+            const songinfo = await video_basic_info(playlist.videos[i].url);
+            const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+            song.title = songinfo.video_details.title;
+            song.url = songinfo.video_details.url;
+            song.durationRaw = songinfo.video_details.durationRaw;
+            song.durationInSeconds = songinfo.video_details.durationInSec;
+            song.thumbnail = thumbnail.url;
+            song.relatedVideos = songinfo.video_details.related_videos;
+            song.requestedBy = interaction.user;
+            serverdata.songs.push(song);
+        }
+        sendasplaylist = true;
+    } else if (await validate(link) === 'so_track') {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Soundcloud is not supported yet!');
+        return interaction.editReply({ embeds: [embed] });
+        // const songinfo = await soundcloud(link);
+        // song.title = songinfo.title;
+        // song.url = songinfo.url;
+        // song.durationRaw = songinfo.durationRaw;
+        // song.durationInSeconds = songinfo.durationInSeconds;
+        // song.thumbnail = songinfo.thumbnail;
+        // song.requestedBy = interaction.user;
+    } else if (await validate(link) === 'sp_track') {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Spotify is not supported yet!');
+        return interaction.editReply({ embeds: [embed] });
+        // const songinfo = await spotify(link);
+        // song.title = songinfo.title;
+        // song.url = songinfo.url;
+        // song.durationRaw = songinfo.durationRaw;
+        // song.durationInSeconds = songinfo.durationInSeconds;
+        // song.thumbnail = songinfo.thumbnail;
+        // song.requestedBy = interaction.user;
+    } else {
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription('Invalid link!');
+        return interaction.editReply({ embeds: [embed] });
+    }
+    embed = new EmbedBuilder()
+        .setTitle('Next')
+        .setDescription('You Can\'t add playlist to queue');
+    if (sendasplaylist) return interaction.editReply({ embeds: [embed] });
     serverdata.songs.splice(1, 0, song);
     embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription(`Added ${song.title} to the queue in next position`);
     interaction.editReply({ embeds: [embed] });
-}
-
-async function isValidYoutubeUrl(url) {
-    const regex = new RegExp(
-        // eslint-disable-next-line no-useless-escape
-        /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/,
-    );
-    return regex.test(url);
-}
-
-async function isValidURL(url) {
-    if (yt_validate(url) === 'video') {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 async function search(interaction) {

@@ -33,10 +33,7 @@ async function resume(interaction) {
         .setTitle('Resume')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id == interaction.channel.id) enabled = true;
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Resume')
         .setDescription('This channel is not enabled for music commands!');
@@ -48,10 +45,10 @@ async function resume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Resume')
         .setDescription('The music is already playing!');
-    if (serverdata.playing == true) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (!serverdata.player.paused) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.player.unpause();
     embed = new EmbedBuilder()
         .setTitle('Resume')
-        .setDescription('Resumed the music!');
-    await interaction.editReply({ embeds: [embed] });
+        .setDescription('Resumed the current song!');
+    interaction.editReply({ embeds: [embed] });
 }

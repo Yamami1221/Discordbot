@@ -23,8 +23,10 @@ module.exports = {
                 .setDescription(`Deleted ${messages.size - 1} messages!`);
             const sentMessage = await interaction.channel.send({ embeds: [embed] });
             setTimeout(() => {
-                sentMessage.delete();
-            }, 3000);
+                if (interaction.channel.messages.cache.has(sentMessage.id)) {
+                    sentMessage.delete();
+                }
+            }, 1000);
         } catch (error) {
             const embed = new EmbedBuilder()
                 .setTitle('Clear')

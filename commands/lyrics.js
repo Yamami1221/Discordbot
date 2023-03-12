@@ -39,10 +39,7 @@ async function lyrics(interaction) {
         .setTitle('Lyrics')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id == interaction.channel.id) enabled = true;
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Lyrics')
         .setDescription('This channel is not enabled for music commands!');
@@ -60,7 +57,7 @@ async function lyrics(interaction) {
     if (!songlyrics) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const lyricsembed = new EmbedBuilder()
         .setTitle(`Lyrics for ${songname}`)
-        .setDescription(songlyrics);
+        .setDescription(`\`\`\`${songlyrics}\`\`\``);
     await interaction.editReply({ embeds: [lyricsembed] });
 }
 

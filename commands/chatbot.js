@@ -74,6 +74,7 @@ async function enableChatBot(interaction) {
             veriRole: null,
             veriChannel: null,
             chatbotChannel: [],
+            timervar: null,
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
@@ -85,13 +86,7 @@ async function enableChatBot(interaction) {
         await interaction.editReply({ embeds: [overeri], ephemeral: true });
         return;
     }
-    let enabled = false;
-    for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
-        if (serverdata.chatbotChannel[i].id === interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.chatbotChannel.find((channel) => channel.id === interaction.channel.id);
     if (enabled) {
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')
@@ -142,6 +137,7 @@ async function disableChatBot(interaction) {
             veriRole: null,
             veriChannel: null,
             chatbotChannel: [],
+            timervar: null,
         };
         globaldata.set(interaction.guild.id, queueconstruct);
     }
@@ -153,13 +149,7 @@ async function disableChatBot(interaction) {
         await interaction.editReply({ embeds: [overeri], ephemeral: true });
         return;
     }
-    let enabled = false;
-    for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
-        if (serverdata.chatbotChannel[i].id === interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.chatbotChannel.find((channel) => channel.id === interaction.channel.id);
     if (!enabled) {
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')

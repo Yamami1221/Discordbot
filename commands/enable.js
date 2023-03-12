@@ -68,7 +68,7 @@ module.exports = {
                 });
             } else {
                 const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
-                if (enabled === false) {
+                if (!enabled) {
                     serverdata.textchannel.push(interaction.channel);
                     const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
                     const textchannelforshow = serverdata.textchannel[textchannelforshowloc].id;

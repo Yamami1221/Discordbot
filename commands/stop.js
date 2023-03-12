@@ -33,10 +33,7 @@ async function stop(interaction) {
         .setTitle('Stop')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannel.length; i++) {
-        if (serverdata.textchannel[i].id == interaction.channel.id) enabled = true;
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('This channel is not enabled for music commands!');
@@ -45,6 +42,8 @@ async function stop(interaction) {
     serverdata.player.stop();
     serverdata.connection.destroy();
     serverdata.playing = false;
+    serverdata.player = null;
+    serverdata.connection = null;
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('Stopped the music!');

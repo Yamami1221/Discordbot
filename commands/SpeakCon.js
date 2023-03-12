@@ -36,11 +36,10 @@ module.exports = {
             .setTitle('Speak')
             .setDescription('This server is not enabled for music commands');
         if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-        const botmusicstate = serverdata.playing;
         embed = new EmbedBuilder()
             .setTitle('Speak')
             .setDescription('The bot is playing music!');
-        if (botmusicstate) return interaction.editReply({ embeds: [embed], ephemeral: true });
+        if (serverdata.playing) return interaction.editReply({ embeds: [embed], ephemeral: true });
         try {
             await generateVoice(input);
         }
@@ -65,7 +64,9 @@ module.exports = {
         serverdata.connection.subscribe(serverdata.player);
         serverdata.player.on(AudioPlayerStatus.Idle, () => {
             serverdata.playing = false;
+            serverdata.resource = null;
             serverdata.connection.destroy();
+            serverdata.connection = null;
             interaction.deleteReply();
             if (fs.existsSync('temp.mp3')) {
                 fs.unlinkSync('temp.mp3');

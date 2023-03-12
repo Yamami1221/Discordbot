@@ -38,13 +38,7 @@ async function loop(interaction) {
         .setTitle('Loop')
         .setDescription('This server is not enabled for music commands!');
     if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    let enabled = false;
-    for (let i = 0; i < serverdata.textchannels.length; i++) {
-        if (serverdata.textchannels[i] == interaction.channel.id) {
-            enabled = true;
-            break;
-        }
-    }
+    const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
     embed = new EmbedBuilder()
         .setTitle('Loop')
         .setDescription('This channel is not enabled for music commands!');

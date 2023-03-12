@@ -127,26 +127,22 @@ module.exports = {
             serverdata.connection.subscribe(serverdata.player);
             serverdata.player.unpause();
             serverdata.player.on(AudioPlayerStatus.Idle, () => {
-                const timeoutId = setTimeout(() => {
+                serverdata.timervar = setTimeout(() => {
                     serverdata.connection.destroy();
                     serverdata.playing = false;
                     collector.stop();
                 }, 5000);
-                serverdata.player.on(AudioPlayerStatus.Playing, () => {
-                    clearTimeout(timeoutId);
-                    serverdata.playing = true;
-                });
+            });
+            serverdata.player.on(AudioPlayerStatus.Playing, () => {
+                clearTimeout(serverdata.timervar);
+                serverdata.playing = true;
             });
             serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
-                const timeoutId = setTimeout(() => {
+                serverdata.timervar = setTimeout(() => {
                     serverdata.connection.destroy();
                     serverdata.playing = false;
                     collector.stop();
                 }, 5000);
-                serverdata.player.on(AudioPlayerStatus.Playing, () => {
-                    clearTimeout(timeoutId);
-                    serverdata.playing = true;
-                });
             });
             await i.deferUpdate();
         });
@@ -157,7 +153,6 @@ module.exports = {
             if (!serverdata.playing) {
                 serverdata.player = null;
                 serverdata.resource = null;
-                // serverdata.connection.destroy();
                 serverdata.connection = null;
                 const datatowrite = JSON.stringify(globaldata, replacer);
                 fs.writeFileSync('./data/data.json', datatowrite, err => {
