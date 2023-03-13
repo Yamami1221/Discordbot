@@ -40,13 +40,9 @@ For data.json and horodata.js
 
 ![nodejs](https://i.imgur.com/mtJcz5E.png "Step 4")
 
-5. Install all of the required NPM modules, and `Visual Studio C++ Build Tools` on Windows (if you have issues).
+5. Install all of the required NPM modules.
 ```bash
 npm install
-```
-
-```bash
-npm i -g --add-python-to-path --vs2015 --production windows-build-tools
 ```
 
 6. Deploy commands and Start the bot.
