@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
+const flatted = require('flatted');
 const fs = require('fs');
 
 
@@ -111,6 +112,7 @@ module.exports = {
         const filter = (i) => i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter });
         collector.on('collect', async (i) => {
+            const myinteraction = interaction;
             const path = data.find((x) => x.name === i.customId).path;
             const connection = joinVoiceChannel({
                 channelId: voiceChannel.id,
@@ -130,6 +132,7 @@ module.exports = {
                 serverdata.timervar = setTimeout(() => {
                     serverdata.connection.destroy();
                     serverdata.playing = false;
+                    myinteraction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
                     collector.stop();
                 }, 5000);
             });
@@ -141,6 +144,7 @@ module.exports = {
                 serverdata.timervar = setTimeout(() => {
                     serverdata.connection.destroy();
                     serverdata.playing = false;
+                    myinteraction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
                     collector.stop();
                 }, 5000);
             });
@@ -148,36 +152,27 @@ module.exports = {
         });
         collector.on('end', async () => {
             serverdata.playing = false;
-            const deffered = await interaction.fetchReply();
-            if (deffered) await interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
-            if (!serverdata.playing) {
-                serverdata.player = null;
-                serverdata.resource = null;
-                serverdata.connection = null;
-                const datatowrite = JSON.stringify(globaldata, replacer);
-                fs.writeFileSync('./data/data.json', datatowrite, err => {
-                    if (err) {
-                        console.log(err);
-                        console.log(err.message);
-                        const errorEmbed = new EmbedBuilder()
-                            .setTitle('Soundboard')
-                            .setDescription('An error occured while saving the data')
-                            .setTimestamp();
-                        interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
-                    }
-                });
-            }
+            const mapToWrite = new Map([...globaldata].map(([key, value]) => [key, Object.assign({}, value)]));
+
+            mapToWrite.forEach((value) => {
+                value.connection = null;
+                value.player = null;
+                value.resource = null;
+            });
+
+            const jsonToWrite = JSON.stringify(flatted.stringify([...mapToWrite]));
+            fs.writeFileSync('./data/data.json', jsonToWrite, err => {
+                if (err) {
+                    console.log(err);
+                    console.log(err.message);
+                    const errorEmbed = new EmbedBuilder()
+                        .setTitle('Soundboard')
+                        .setDescription('An error occured while saving the data')
+                        .setTimestamp();
+                    interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
+                }
+            });
+
         });
     },
 };
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}
