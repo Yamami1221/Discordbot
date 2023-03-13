@@ -11,7 +11,7 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         await interaction.deferReply();
-        const serverData = globaldata.get(interaction.guildId) || undefined;
+        const serverData = globaldata.get(interaction.guildId) ?? undefined;
         if (serverData?.veriChannel) {
             if (interaction.channel.id === serverData.veriChannel.id) {
                 const embed = new EmbedBuilder()
@@ -88,6 +88,11 @@ module.exports = {
                             return;
                         }
                     });
+                } else {
+                    const embed = new EmbedBuilder()
+                        .setTitle('Enable')
+                        .setDescription('This channel is already enabled for music commands');
+                    await interaction.editReply({ embeds: [embed] });
                 }
             }
         } else {
