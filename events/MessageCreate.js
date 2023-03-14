@@ -21,13 +21,7 @@ module.exports = {
         if (message.channel.type === 'DM') return;
         const serverdata = globaldata.get(message.guildId) || undefined;
         if (serverdata) {
-            let enable = false;
-            for (let i = 0; i < serverdata.chatbotChannel.length; i++) {
-                if (serverdata.chatbotChannel[i].id === message.channel.id) {
-                    enable = true;
-                    break;
-                }
-            }
+            const enable = serverdata.chatbotChannel.find((channel) => channel.id === message.channel.id);
             if (enable) {
                 try {
                     const language = new Language();
