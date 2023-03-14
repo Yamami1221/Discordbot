@@ -10,6 +10,9 @@ Discord Music and verify bot using DISCORD.JS V.14
 - 🔊 SoundBoard
 - 🔠 Translate
 - 🗳️ Poll create
+- 🖼️ Random memes
+- 😸 Random cat pics
+- 🍝 Random foods (Only Thai)
 - ♈ Horoscope (Only Thai)
 - 💬 Chatbot(Only support Thai and English)
 
@@ -33,7 +36,7 @@ GOOGLE_API_KEY='YOUR_GOOGLE_CUSTOM_SEARCH_API'
 ```
 For data.json and horodata.js
 ```bash
-"[[]]"
+{}
 ```
 
 4. Install Node.js v18.13.0 or higher by selecting the **Current** tab, and then **"OS Name" Installer**. [Click here](https://nodejs.org/en/download/current/) for the download page.
