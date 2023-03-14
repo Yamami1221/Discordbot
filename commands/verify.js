@@ -99,20 +99,25 @@ async function setup(interaction) {
         .setDescription(`The verify command has been setup in <#${channel.id}> with the role <@&${role.id}>`)
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    if (!serverdata.playing) {
-        const data = JSON.stringify(globaldata, replacer);
-        fs.writeFileSync('./data/data.json', data, err => {
-            if (err) {
-                console.error(err);
-                console.log(err.message);
-                const emerr = new EmbedBuilder()
-                    .setTitle('Verify Setup')
-                    .setDescription('There was an error saving the data')
-                    .setTimestamp();
-                interaction.editReply({ embeds: [emerr] });
-            }
-        });
-    }
+    const mapToWrite = new Map(globaldata);
+    mapToWrite.forEach((value) => {
+        value.connection = null;
+        value.player = null;
+        value.resource = null;
+    });
+    const objToWrite = Object.fromEntries(mapToWrite);
+    const jsonToWrite = JSON.stringify(objToWrite);
+    fs.writeFile('./data/data.json', jsonToWrite, err => {
+        if (err) {
+            console.log('There has been an error saving your configuration data.');
+            console.log(err.message);
+            const errembed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('There has been an error saving your configuration data.');
+            interaction.editReply({ embeds: [errembed] });
+            return;
+        }
+    });
 }
 
 async function remove(interaction) {
@@ -165,20 +170,25 @@ async function remove(interaction) {
         .setDescription('The verify command has been removed')
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    if (!serverdata.playing) {
-        const data = JSON.stringify(globaldata, replacer);
-        fs.writeFileSync('./data/data.json', data, err => {
-            if (err) {
-                console.error(err);
-                console.log(err.message);
-                const emerr = new EmbedBuilder()
-                    .setTitle('Verify Remove')
-                    .setDescription('There was an error saving the data')
-                    .setTimestamp();
-                interaction.editReply({ embeds: [emerr] });
-            }
-        });
-    }
+    const mapToWrite = new Map(globaldata);
+    mapToWrite.forEach((value) => {
+        value.connection = null;
+        value.player = null;
+        value.resource = null;
+    });
+    const objToWrite = Object.fromEntries(mapToWrite);
+    const jsonToWrite = JSON.stringify(objToWrite);
+    fs.writeFile('./data/data.json', jsonToWrite, err => {
+        if (err) {
+            console.log('There has been an error saving your configuration data.');
+            console.log(err.message);
+            const errembed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('There has been an error saving your configuration data.');
+            interaction.editReply({ embeds: [errembed] });
+            return;
+        }
+    });
 }
 
 async function verify(interaction) {
@@ -242,18 +252,6 @@ async function verify(interaction) {
                 .setTimestamp();
             interaction.editReply({ embeds: [embed], ephemeral: true });
         }
-    }
-}
-
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
     }
 }
 

@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
-const flatted = require('flatted');
 const fs = require('fs');
 
 
@@ -152,24 +151,26 @@ module.exports = {
         });
         collector.on('end', async () => {
             serverdata.playing = false;
-            const mapToWrite = new Map([...globaldata].map(([key, value]) => [key, Object.assign({}, value)]));
-
+            serverdata.connection = null;
+            serverdata.player = null;
+            serverdata.resource = null;
+            const mapToWrite = new Map(globaldata);
             mapToWrite.forEach((value) => {
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
             });
-
-            const jsonToWrite = JSON.stringify(flatted.stringify([...mapToWrite]));
-            fs.writeFileSync('./data/data.json', jsonToWrite, err => {
+            const objToWrite = Object.fromEntries(mapToWrite);
+            const jsonToWrite = JSON.stringify(objToWrite);
+            fs.writeFile('./data/data.json', jsonToWrite, err => {
                 if (err) {
-                    console.log(err);
+                    console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
-                    const errorEmbed = new EmbedBuilder()
-                        .setTitle('Soundboard')
-                        .setDescription('An error occured while saving the data')
-                        .setTimestamp();
-                    interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
+                    const errembed = new EmbedBuilder()
+                        .setTitle('Enable')
+                        .setDescription('There has been an error saving your configuration data.');
+                    interaction.editReply({ embeds: [errembed] });
+                    return;
                 }
             });
 

@@ -99,20 +99,25 @@ async function enableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully enabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    if (!serverdata.playing) {
-        const datatowrite = JSON.stringify(globaldata, replacer);
-        fs.writeFileSync('./data/data.json', datatowrite, err => {
-            if (err) {
-                console.log('There has been an error saving your configuration data.');
-                console.log(err.message);
-                const writefileerror = new EmbedBuilder()
-                    .setTitle('Enable')
-                    .setDescription('There has been an error saving your configuration data.');
-                interaction.editReply({ embeds: [writefileerror] });
-                return;
-            }
-        });
-    }
+    const mapToWrite = new Map(globaldata);
+    mapToWrite.forEach((value) => {
+        value.connection = null;
+        value.player = null;
+        value.resource = null;
+    });
+    const objToWrite = Object.fromEntries(mapToWrite);
+    const jsonToWrite = JSON.stringify(objToWrite);
+    fs.writeFile('./data/data.json', jsonToWrite, err => {
+        if (err) {
+            console.log('There has been an error saving your configuration data.');
+            console.log(err.message);
+            const errembed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('There has been an error saving your configuration data.');
+            interaction.editReply({ embeds: [errembed] });
+            return;
+        }
+    });
 }
 
 async function disableChatBot(interaction) {
@@ -163,20 +168,25 @@ async function disableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully disabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    if (!serverdata.playing) {
-        const datatowrite = JSON.stringify(globaldata, replacer);
-        fs.writeFileSync('./data/data.json', datatowrite, err => {
-            if (err) {
-                console.log('There has been an error saving your configuration data.');
-                console.log(err.message);
-                const writefileerror = new EmbedBuilder()
-                    .setTitle('Enable')
-                    .setDescription('There has been an error saving your configuration data.');
-                interaction.editReply({ embeds: [writefileerror] });
-                return;
-            }
-        });
-    }
+    const mapToWrite = new Map(globaldata);
+    mapToWrite.forEach((value) => {
+        value.connection = null;
+        value.player = null;
+        value.resource = null;
+    });
+    const objToWrite = Object.fromEntries(mapToWrite);
+    const jsonToWrite = JSON.stringify(objToWrite);
+    fs.writeFile('./data/data.json', jsonToWrite, err => {
+        if (err) {
+            console.log('There has been an error saving your configuration data.');
+            console.log(err.message);
+            const errembed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('There has been an error saving your configuration data.');
+            interaction.editReply({ embeds: [errembed] });
+            return;
+        }
+    });
 }
 
 async function teachChatBot(interaction) {
@@ -203,16 +213,5 @@ async function teachChatBot(interaction) {
             .setDescription('Failed to teach the chat bot');
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         console.error(error);
-    }
-}
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
     }
 }

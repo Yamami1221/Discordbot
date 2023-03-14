@@ -54,15 +54,22 @@ module.exports = {
                     .setTitle('Enable')
                     .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
                 await interaction.followUp({ embeds: [embed] });
-                const datatowrite = JSON.stringify(globaldata, replacer);
-                fs.writeFile('./data/data.json', datatowrite, err => {
+                const mapToWrite = new Map(globaldata);
+                mapToWrite.forEach((value) => {
+                    value.connection = null;
+                    value.player = null;
+                    value.resource = null;
+                });
+                const objToWrite = Object.fromEntries(mapToWrite);
+                const jsonToWrite = JSON.stringify(objToWrite);
+                fs.writeFile('./data/data.json', jsonToWrite, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
-                        embed = new EmbedBuilder()
+                        const errembed = new EmbedBuilder()
                             .setTitle('Enable')
                             .setDescription('There has been an error saving your configuration data.');
-                        interaction.editReply({ embeds: [embed] });
+                        interaction.editReply({ embeds: [errembed] });
                         return;
                     }
                 });
@@ -72,19 +79,26 @@ module.exports = {
                     serverdata.textchannel.push(interaction.channel);
                     const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
                     const textchannelforshow = serverdata.textchannel[textchannelforshowloc].id;
-                    let embed = new EmbedBuilder()
+                    const embed = new EmbedBuilder()
                         .setTitle('Enable')
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
                     await interaction.editReply({ embeds: [embed] });
-                    const datatowrite = JSON.stringify(globaldata, replacer);
-                    fs.writeFile('./data/data.json', datatowrite, err => {
+                    const mapToWrite = new Map(globaldata);
+                    mapToWrite.forEach((value) => {
+                        value.connection = null;
+                        value.player = null;
+                        value.resource = null;
+                    });
+                    const objToWrite = Object.fromEntries(mapToWrite);
+                    const jsonToWrite = JSON.stringify(objToWrite);
+                    fs.writeFile('./data/data.json', jsonToWrite, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
-                            embed = new EmbedBuilder()
+                            const errembed = new EmbedBuilder()
                                 .setTitle('Enable')
                                 .setDescription('There has been an error saving your configuration data.');
-                            interaction.editReply({ embeds: [embed] });
+                            interaction.editReply({ embeds: [errembed] });
                             return;
                         }
                     });
@@ -103,14 +117,3 @@ module.exports = {
         }
     },
 };
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}

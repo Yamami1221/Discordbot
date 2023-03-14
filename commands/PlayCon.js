@@ -191,15 +191,22 @@ async function playSong(interaction, song) {
             serverdata.resource = null;
             serverdata.player = null;
             serverdata.playing = false;
-            const datatowrite = JSON.stringify(globaldata, replacer);
-            fs.writeFileSync('./data/data.json', datatowrite, err => {
+            const mapToWrite = new Map(globaldata);
+            mapToWrite.forEach((value) => {
+                value.connection = null;
+                value.player = null;
+                value.resource = null;
+            });
+            const objToWrite = Object.fromEntries(mapToWrite);
+            const jsonToWrite = JSON.stringify(objToWrite);
+            fs.writeFile('./data/data.json', jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
-                    const errorembed = new EmbedBuilder()
-                        .setTitle('Play')
+                    const errembed = new EmbedBuilder()
+                        .setTitle('Enable')
                         .setDescription('There has been an error saving your configuration data.');
-                    interaction.editReply({ embeds: [errorembed] });
+                    interaction.editReply({ embeds: [errembed] });
                     return;
                 }
             });
@@ -259,15 +266,22 @@ async function playSong(interaction, song) {
             serverdata.resource = null;
             serverdata.player = null;
             serverdata.playing = false;
-            const datatowrite = JSON.stringify(globaldata, replacer);
-            fs.writeFileSync('./data/data.json', datatowrite, err => {
+            const mapToWrite = new Map(globaldata);
+            mapToWrite.forEach((value) => {
+                value.connection = null;
+                value.player = null;
+                value.resource = null;
+            });
+            const objToWrite = Object.fromEntries(mapToWrite);
+            const jsonToWrite = JSON.stringify(objToWrite);
+            fs.writeFile('./data/data.json', jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
-                    const errorembed = new EmbedBuilder()
-                        .setTitle('Play')
+                    const errembed = new EmbedBuilder()
+                        .setTitle('Enable')
                         .setDescription('There has been an error saving your configuration data.');
-                    interaction.editReply({ embeds: [errorembed] });
+                    interaction.editReply({ embeds: [errembed] });
                     return;
                 }
             });
@@ -288,15 +302,4 @@ async function search(interaction) {
     if (!song.items[0]) return false;
     const songurl = song.items[0].url;
     return songurl;
-}
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
 }

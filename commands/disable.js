@@ -32,21 +32,32 @@ module.exports = {
             } else {
                 const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
                 if (enabled) {
-                    const textchannelforshowloc = serverdata.textchannel.indexOf(interaction.channel);
-                    serverdata.textchannel.splice(textchannelforshowloc, 1);
-                    let embed = new EmbedBuilder()
+                    for (let i = 0; i < serverdata.textchannel.length; i++) {
+                        if (serverdata.textchannel[i].id === interaction.channel.id) {
+                            serverdata.textchannel.splice(i, 1);
+                            break;
+                        }
+                    }
+                    const embed = new EmbedBuilder()
                         .setTitle('Disable')
                         .setDescription(`Disabled <#${interaction.channel.id}> for music commands`);
                     await interaction.editReply({ embeds: [embed] });
-                    const datatowrite = JSON.stringify(globaldata, replacer);
-                    fs.writeFile('./data/data.json', datatowrite, err => {
+                    const mapToWrite = new Map(globaldata);
+                    mapToWrite.forEach((value) => {
+                        value.connection = null;
+                        value.player = null;
+                        value.resource = null;
+                    });
+                    const objToWrite = Object.fromEntries(mapToWrite);
+                    const jsonToWrite = JSON.stringify(objToWrite);
+                    fs.writeFile('./data/data.json', jsonToWrite, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);
-                            embed = new EmbedBuilder()
-                                .setTitle('Disable')
+                            const errembed = new EmbedBuilder()
+                                .setTitle('Enable')
                                 .setDescription('There has been an error saving your configuration data.');
-                            interaction.editReply({ embeds: [embed] });
+                            interaction.editReply({ embeds: [errembed] });
                             return;
                         }
                     });
@@ -66,14 +77,3 @@ module.exports = {
         }
     },
 };
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}

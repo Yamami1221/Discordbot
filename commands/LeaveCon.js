@@ -39,8 +39,12 @@ async function leave(interaction) {
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.songs = [];
-    if (serverdata.player) serverdata.player.stop();
+    if (serverdata.player) {
+        serverdata.player.stop();
+        serverdata.player = null;
+    }
     serverdata.connection.destroy();
+    serverdata.connection = null;
     serverdata.playing = false;
     await interaction.deleteReply();
 }

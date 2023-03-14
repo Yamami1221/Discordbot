@@ -40,25 +40,48 @@ module.exports = {
                 .setTitle('Horoscope')
                 .setDescription(`Your horoscope for today is \`\`\`${horodatatosave.result.name} ${horodatatosave.result.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
-            const datatowrite = JSON.stringify(horomap, replacer);
-            fs.writeFileSync('./data/horodata.json', datatowrite, err => {
+            const mapToWrite = new Map(globaldata);
+            mapToWrite.forEach((value) => {
+                value.connection = null;
+                value.player = null;
+                value.resource = null;
+            });
+            const objToWrite = Object.fromEntries(mapToWrite);
+            const jsonToWrite = JSON.stringify(objToWrite);
+            fs.writeFile('./data/horodata.json', jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
+                    const errembed = new EmbedBuilder()
+                        .setTitle('Enable')
+                        .setDescription('There has been an error saving your configuration data.');
+                    interaction.editReply({ embeds: [errembed] });
+                    return;
                 }
             });
+            setTimeout(() => {
+                horomap.delete(interaction.user.id);
+                const mapToWrite2 = new Map(globaldata);
+                mapToWrite.forEach((value) => {
+                    value.connection = null;
+                    value.player = null;
+                    value.resource = null;
+                });
+                const objToWrite2 = Object.fromEntries(mapToWrite2);
+                const jsonToWrite2 = JSON.stringify(objToWrite2);
+                fs.writeFile('./data/data.json', jsonToWrite2, err => {
+                    if (err) {
+                        console.log('There has been an error saving your configuration data.');
+                        console.log(err.message);
+                        const errembed = new EmbedBuilder()
+                            .setTitle('Enable')
+                            .setDescription('There has been an error saving your configuration data.');
+                        interaction.editReply({ embeds: [errembed] });
+                        return;
+                    }
+                });
+            }, 86400000);
             return;
         }
     },
 };
-
-function replacer(key, value) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}
