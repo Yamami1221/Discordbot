@@ -29,8 +29,11 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Random Cat')
             .setDescription('Here is a random cat image')
-            .setURL('https://www.google.co.th/imghp?hl=en')
-            .setImage('attachment://cat.png');
+            .setImage('attachment://cat.png')
+            .setTimestamp();
         await interaction.editReply({ embeds: [embed], files: [attachment] });
+        if (fs.existsSync('cat.png')) {
+            fs.unlinkSync('cat.png');
+        }
     },
 };
