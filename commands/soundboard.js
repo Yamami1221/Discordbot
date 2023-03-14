@@ -151,7 +151,6 @@ module.exports = {
         });
         collector.on('end', async () => {
             serverdata.playing = false;
-            serverdata.connection = null;
             serverdata.player = null;
             serverdata.resource = null;
             const mapToWrite = new Map(globaldata);
