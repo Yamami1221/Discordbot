@@ -22,7 +22,7 @@ module.exports = {
         }
         const catGenerator = new CatWithTextGenerator();
         const catToWrite = await catGenerator.getImage();
-        const bufferToWrite = catToWrite.toBuffer();
+        const bufferToWrite = Buffer.from(catToWrite.toBuffer());
         fs.writeFileSync('cat.png', bufferToWrite);
         const file = fs.readFileSync('cat.png');
         const attachment = new AttachmentBuilder(file, 'cat.png');
