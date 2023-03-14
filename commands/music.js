@@ -5,7 +5,7 @@ const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('musiccommand')
+        .setName('music')
         .setDescription('enable or disable text channel for music commands')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .setDMPermission(false)
