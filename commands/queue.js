@@ -49,8 +49,10 @@ async function queue(interaction) {
     for (let i = 1; i < serverdata.songs.length; i++) {
         songstring += `${serverdata.songs[i].title}\n`;
     }
-    queueembed.addField({ name: 'Songs', value: songstring, inline: true });
+    if (songstring.length > 1024) songstring = songstring.slice(0, 1021) + '...';
+    if (songstring === '') songstring = 'Nothing in the queue';
+    queueembed.addFields({ name: 'Songs', value: songstring, inline: true });
     const optionstring = `Playing: ${serverdata.playing}\nLooping: ${serverdata.looping}\nAutoplay: ${serverdata.autoplay}\nVolume: ${serverdata.volume}`;
-    queueembed.addField({ name: 'Options', value: optionstring, inline: true });
+    queueembed.addFields({ name: 'Options', value: optionstring, inline: true });
     await interaction.editReply({ embeds: [queueembed] });
 }
