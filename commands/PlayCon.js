@@ -84,7 +84,7 @@ async function play(interaction) {
         song.durationRaw = songinfo.video_details.durationRaw;
         song.durationInSeconds = songinfo.video_details.durationInSec;
         song.thumbnail = thumbnail.url;
-        song.relatedVideos = songinfo.video_details.related_videos[0];
+        song.relatedVideos = songinfo.related_videos[0];
         song.requestedBy = interaction.user;
     } else if (await validate(link) === 'yt_playlist') {
         const playlistinfo = await playlist_info(link);
@@ -106,7 +106,7 @@ async function play(interaction) {
             song.durationRaw = songinfo.video_details.durationRaw;
             song.durationInSeconds = songinfo.video_details.durationInSec;
             song.thumbnail = thumbnail.url;
-            song.relatedVideos = songinfo.video_details.related_videos[0];
+            song.relatedVideos = songinfo.related_videos[0];
             song.requestedBy = interaction.user;
             serverdata.songs.push(song);
         }
@@ -186,6 +186,7 @@ async function playSong(interaction, song) {
         serverdata.resource = null;
         serverdata.playing = false;
         serverdata.timervar = setTimeout(() => {
+            console.log('Leaving voice channel due to inactivity1');
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
@@ -193,6 +194,7 @@ async function playSong(interaction, song) {
             serverdata.playing = false;
             const mapToWrite = new Map(globaldata);
             mapToWrite.forEach((value) => {
+                value.songs = [];
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
@@ -224,6 +226,7 @@ async function playSong(interaction, song) {
     serverdata.player.play(serverdata.resource);
     serverdata.connection.subscribe(serverdata.player);
     serverdata.player.on(AudioPlayerStatus.Idle, async () => {
+        clearTimeout(serverdata.timervar);
         if (serverdata.loop) {
             playSong(interaction, serverdata.songs[0]);
         } else if (serverdata.autoplay) {
@@ -261,6 +264,7 @@ async function playSong(interaction, song) {
     });
     serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
         serverdata.timervar = setTimeout(() => {
+            console.log('Leaving voice channel due to inactivity2');
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
@@ -268,6 +272,7 @@ async function playSong(interaction, song) {
             serverdata.playing = false;
             const mapToWrite = new Map(globaldata);
             mapToWrite.forEach((value) => {
+                value.songs = [];
                 value.connection = null;
                 value.player = null;
                 value.resource = null;

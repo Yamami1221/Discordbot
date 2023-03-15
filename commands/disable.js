@@ -44,6 +44,7 @@ module.exports = {
                     await interaction.editReply({ embeds: [embed] });
                     const mapToWrite = new Map(globaldata);
                     mapToWrite.forEach((value) => {
+                        value.songs = [];
                         value.connection = null;
                         value.player = null;
                         value.resource = null;

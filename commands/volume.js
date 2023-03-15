@@ -59,6 +59,7 @@ async function volume(interaction) {
         .setDescription(`Set the volume to ${volumes}!`);
     const mapToWrite = new Map(globaldata);
     mapToWrite.forEach((value) => {
+        value.songs = [];
         value.connection = null;
         value.player = null;
         value.resource = null;

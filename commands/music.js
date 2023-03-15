@@ -77,6 +77,7 @@ async function enable(interaction) {
         await interaction.followUp({ embeds: [embed] });
         const mapToWrite = new Map(globaldata);
         mapToWrite.forEach((value) => {
+            value.songs = [];
             value.connection = null;
             value.player = null;
             value.resource = null;
@@ -106,6 +107,7 @@ async function enable(interaction) {
             await interaction.editReply({ embeds: [embed] });
             const mapToWrite = new Map(globaldata);
             mapToWrite.forEach((value) => {
+                value.songs = [];
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
@@ -155,6 +157,7 @@ async function disable(interaction) {
             await interaction.editReply({ embeds: [embed] });
             const mapToWrite = new Map(globaldata);
             mapToWrite.forEach((value) => {
+                value.songs = [];
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
