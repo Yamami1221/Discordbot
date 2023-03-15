@@ -40,7 +40,7 @@ module.exports = {
                 .setTitle('Horoscope')
                 .setDescription(`Your horoscope for today is \`\`\`${horodatatosave.result.name} ${horodatatosave.result.value}\`\`\``);
             await interaction.editReply({ embeds: [embed] });
-            const mapToWrite = new Map(globaldata);
+            const mapToWrite = new Map([...globaldata]);
             mapToWrite.forEach((value) => {
                 value.connection = null;
                 value.player = null;

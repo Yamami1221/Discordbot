@@ -42,7 +42,7 @@ module.exports = {
                         .setTitle('Disable')
                         .setDescription(`Disabled <#${interaction.channel.id}> for music commands`);
                     await interaction.editReply({ embeds: [embed] });
-                    const mapToWrite = new Map(globaldata);
+                    const mapToWrite = new Map([...globaldata]);
                     mapToWrite.forEach((value) => {
                         value.songs = [];
                         value.connection = null;

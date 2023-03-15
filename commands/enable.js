@@ -54,7 +54,7 @@ module.exports = {
                     .setTitle('Enable')
                     .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
                 await interaction.followUp({ embeds: [embed] });
-                const mapToWrite = new Map(globaldata);
+                const mapToWrite = new Map([...globaldata]);
                 mapToWrite.forEach((value) => {
                     value.songs = [];
                     value.connection = null;
@@ -84,7 +84,7 @@ module.exports = {
                         .setTitle('Enable')
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
                     await interaction.editReply({ embeds: [embed] });
-                    const mapToWrite = new Map(globaldata);
+                    const mapToWrite = new Map([...globaldata]);
                     mapToWrite.forEach((value) => {
                         value.songs = [];
                         value.connection = null;

@@ -75,7 +75,7 @@ async function enable(interaction) {
             .setTitle('Enable')
             .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
         await interaction.followUp({ embeds: [embed] });
-        const mapToWrite = new Map(globaldata);
+        const mapToWrite = new Map([...globaldata]);
         mapToWrite.forEach((value) => {
             value.songs = [];
             value.connection = null;
@@ -105,7 +105,7 @@ async function enable(interaction) {
                 .setTitle('Enable')
                 .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
             await interaction.editReply({ embeds: [embed] });
-            const mapToWrite = new Map(globaldata);
+            const mapToWrite = new Map([...globaldata]);
             mapToWrite.forEach((value) => {
                 value.songs = [];
                 value.connection = null;
@@ -155,7 +155,7 @@ async function disable(interaction) {
                 .setTitle('Disable')
                 .setDescription(`Disabled <#${interaction.channel.id}> for music commands`);
             await interaction.editReply({ embeds: [embed] });
-            const mapToWrite = new Map(globaldata);
+            const mapToWrite = new Map([...globaldata]);
             mapToWrite.forEach((value) => {
                 value.songs = [];
                 value.connection = null;

@@ -35,7 +35,7 @@ module.exports = {
                 .setDescription('Autoplay is now off');
             await interaction.reply({ embeds: [embed] });
         }
-        const mapToWrite = new Map(globaldata);
+        const mapToWrite = new Map([...globaldata]);
         mapToWrite.forEach((value) => {
             value.songs = [];
             value.connection = null;

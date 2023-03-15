@@ -99,7 +99,7 @@ async function setup(interaction) {
         .setDescription(`The verify command has been setup in <#${channel.id}> with the role <@&${role.id}>`)
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    const mapToWrite = new Map(globaldata);
+    const mapToWrite = new Map([...globaldata]);
     mapToWrite.forEach((value) => {
         value.songs = [];
         value.connection = null;
@@ -171,7 +171,7 @@ async function remove(interaction) {
         .setDescription('The verify command has been removed')
         .setTimestamp();
     interaction.editReply({ embeds: [embed] });
-    const mapToWrite = new Map(globaldata);
+    const mapToWrite = new Map([...globaldata]);
     mapToWrite.forEach((value) => {
         value.songs = [];
         value.connection = null;
