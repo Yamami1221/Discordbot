@@ -57,7 +57,8 @@ async function volume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Volume')
         .setDescription(`Set the volume to ${volumes}!`);
-    const mapToWrite = new Map([...globaldata]);
+    const premapToWrite = new Map([...globaldata]);
+    const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
     mapToWrite.forEach((value) => {
         value.songs = [];
         value.connection = null;

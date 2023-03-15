@@ -99,7 +99,8 @@ async function enableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully enabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    const mapToWrite = new Map([...globaldata]);
+    const premapToWrite = new Map([...globaldata]);
+    const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
     mapToWrite.forEach((value) => {
         value.songs = [];
         value.connection = null;
@@ -169,7 +170,8 @@ async function disableChatBot(interaction) {
         .setTitle('Chat Bot')
         .setDescription('Successfully disabled the chat bot in this channel');
     await interaction.editReply({ embeds: [embed] });
-    const mapToWrite = new Map([...globaldata]);
+    const premapToWrite = new Map([...globaldata]);
+    const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
     mapToWrite.forEach((value) => {
         value.songs = [];
         value.connection = null;
