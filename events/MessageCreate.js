@@ -26,6 +26,8 @@ module.exports = {
                 try {
                     const language = new Language();
                     const langraw = await language.guess(message.content, [ 'en', 'th' ]);
+                    if (langraw.length === 0) return;
+                    if (!langraw[0]?.alpha2) return;
                     const lang = langraw[0].alpha2;
                     const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true, autosave: false, autoSave: false });
                     manager.load('./data/model.nlp');
