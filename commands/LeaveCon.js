@@ -38,6 +38,10 @@ async function leave(interaction) {
         .setTitle('Leave')
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Leave')
+        .setDescription('The bot is not in a voice channel!');
+    if (!serverdata.connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.songs = [];
     if (serverdata.player) {
         serverdata.player.stop();
