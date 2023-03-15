@@ -23,6 +23,7 @@ module.exports = {
             }
         }
         const toggle = interaction.options.getBoolean('toggle');
+        serverData.autoplay = toggle;
         if (toggle) {
             const embed = new EmbedBuilder()
                 .setTitle('Autoplay')
