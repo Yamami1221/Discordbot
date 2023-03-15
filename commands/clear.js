@@ -16,7 +16,7 @@ module.exports = {
         try {
             await interaction.deferReply();
             const amount = interaction.options.getInteger('amount');
-            const messages = await interaction.channel.messages.fetch({ limit: amount });
+            const messages = await interaction.channel.messages.fetch({ limit: amount + 1 });
             await interaction.channel.bulkDelete(messages);
             const embed = new EmbedBuilder()
                 .setTitle('Clear')
