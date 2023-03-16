@@ -38,7 +38,7 @@ async function stop(interaction) {
         .setTitle('Stop')
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    clearTimeout(serverdata.timeout);
+    clearTimeout(serverdata.timervar);
     serverdata.songs = [];
     serverdata.player.stop();
     serverdata.playing = false;
