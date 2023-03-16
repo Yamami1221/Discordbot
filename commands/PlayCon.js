@@ -1,7 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
-const { video_basic_info, stream, validate, playlist_info } = require('play-dl');
-const ytsr = require('ytsr');
+const { video_basic_info, stream, validate, playlist_info, search } = require('play-dl');
 const fs = require('fs');
 
 const { globaldata } = require('../data/global');
@@ -30,7 +29,7 @@ async function play(interaction) {
     const msg = await interaction.channel.messages.fetch(interaction.targetId);
     let link = msg.content;
     if (await validate(link) === 'search') {
-        link = await search(interaction);
+        link = await mysearch(interaction);
         if (!link) {
             const embed = new EmbedBuilder()
                 .setTitle('Play')
@@ -303,11 +302,11 @@ async function playSong(interaction, song) {
     await interaction.channel.send({ embeds: [embed] });
 }
 
-async function search(interaction) {
+async function mysearch(interaction) {
     const msg = await interaction.channel.messages.fetch(interaction.targetId);
     const songname = msg.content;
-    const song = await ytsr(songname, { limit: 1 });
-    if (!song.items[0]) return false;
-    const songurl = song.items[0].url;
+    const song = await search(songname, { limit: 1 });
+    if (!song[0].url) return false;
+    const songurl = song[0].url;
     return songurl;
 }

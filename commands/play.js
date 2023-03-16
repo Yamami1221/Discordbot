@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
-const { video_basic_info, stream, validate, playlist_info } = require('play-dl');
-const ytsr = require('ytsr');
+const { video_basic_info, stream, validate, playlist_info, search } = require('play-dl');
 const fs = require('fs');
 
 const { globaldata } = require('../data/global');
@@ -33,7 +32,7 @@ async function play(interaction) {
     }
     let link = interaction.options.getString('query');
     if (await validate(link) === 'search') {
-        link = await search(interaction);
+        link = await mysearch(interaction);
         if (!link) {
             const embed = new EmbedBuilder()
                 .setTitle('Play')
@@ -306,10 +305,10 @@ async function playSong(interaction, song) {
     await interaction.channel.send({ embeds: [embed] });
 }
 
-async function search(interaction) {
-    const songname = interaction.options.getString('query');
-    const song = await ytsr(songname, { limit: 1 });
-    if (!song.items[0]) return false;
-    const songurl = song.items[0].url;
+async function mysearch(interaction) {
+    const songname = await interaction.options.getString('query');
+    const song = await search(songname, { limit: 1 });
+    if (!song[0].url) return false;
+    const songurl = song[0].url;
     return songurl;
 }
