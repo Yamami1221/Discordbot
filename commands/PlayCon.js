@@ -216,7 +216,7 @@ async function playSong(interaction, song) {
         }, 30000);
         return;
     }
-    const songstream = await stream(song.url, { discordPlayerCompatibility : true });
+    const songstream = await stream(song.url, { discordPlayerCompatibility : true, quality: 2 });
     serverdata.resource = createAudioResource(songstream.stream, { inputType: StreamType.Arbitrary, inlineVolume: true });
     serverdata.resource.volume.setVolume(serverdata.volume / 100);
     serverdata.player = createAudioPlayer({
