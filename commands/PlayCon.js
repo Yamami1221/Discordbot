@@ -159,12 +159,12 @@ async function play(interaction) {
                 guildId: voicechannel.guild.id,
                 adapterCreator: voicechannel.guild.voiceAdapterCreator,
             });
-            connection.on('stateChange', (old_state, new_state) => {
+            serverdata.connection = connection;
+            serverdata.connection.on('stateChange', (old_state, new_state) => {
                 if (old_state.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
-                    connection.configureNetworking();
+                    serverdata.connection.configureNetworking();
                 }
             });
-            serverdata.connection = connection;
             await playSong(interaction, serverdata.songs[0]);
         } catch (error) {
             console.error(error);
