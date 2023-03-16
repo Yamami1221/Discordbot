@@ -60,6 +60,7 @@ async function play(interaction) {
         .setTitle('Play')
         .setDescription('this channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed] });
+    clearTimeout(serverdata.timeout);
     const song = {
         title: null,
         url: null,
@@ -197,6 +198,7 @@ async function playSong(interaction, song) {
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
+                value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
             const jsonToWrite = JSON.stringify(objToWrite);
@@ -276,6 +278,7 @@ async function playSong(interaction, song) {
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
+                value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
             const jsonToWrite = JSON.stringify(objToWrite);

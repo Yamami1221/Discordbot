@@ -49,6 +49,7 @@ module.exports = {
                         value.connection = null;
                         value.player = null;
                         value.resource = null;
+                        value.timervar = null;
                     });
                     const objToWrite = Object.fromEntries(mapToWrite);
                     const jsonToWrite = JSON.stringify(objToWrite);

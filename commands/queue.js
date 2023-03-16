@@ -44,15 +44,15 @@ async function queue(interaction) {
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const queueembed = new EmbedBuilder()
         .setTitle('Queue')
-        .setDescription(`Now playing: ${serverdata.songs[0].title}`);
+        .setDescription(`Now playing: **${serverdata.songs[0].title}**`);
     let songstring = '';
     for (let i = 1; i < serverdata.songs.length; i++) {
-        songstring += `${serverdata.songs[i].title}\n`;
+        songstring += `${i}. ${serverdata.songs[i].title}\n`;
     }
     if (songstring.length > 1024) songstring = songstring.slice(0, 1021) + '...';
     if (songstring === '') songstring = 'Nothing in the queue';
     queueembed.addFields({ name: 'Songs', value: songstring, inline: true });
-    const optionstring = `Playing: ${serverdata.playing}\nLooping: ${serverdata.looping}\nAutoplay: ${serverdata.autoplay}\nVolume: ${serverdata.volume}`;
+    const optionstring = `**Playing:** ${serverdata.playing}\n**Looping:** ${serverdata.looping}\n**Autoplay:** ${serverdata.autoplay}\n**Volume:** ${serverdata.volume}`;
     queueembed.addFields({ name: 'Options', value: optionstring, inline: true });
     await interaction.editReply({ embeds: [queueembed] });
 }
