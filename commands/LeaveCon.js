@@ -42,13 +42,13 @@ async function leave(interaction) {
         .setTitle('Leave')
         .setDescription('The bot is not in a voice channel!');
     if (!serverdata.connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    clearTimeout(serverdata.timeout);
     serverdata.songs = [];
     if (serverdata.player) {
         serverdata.player.stop();
         serverdata.player = null;
     }
     serverdata.connection.destroy();
-    serverdata.connection = null;
     serverdata.playing = false;
     await interaction.deleteReply();
 }

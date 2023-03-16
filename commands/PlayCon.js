@@ -60,6 +60,11 @@ async function play(interaction) {
         .setTitle('Play')
         .setDescription('this channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed] });
+    if (serverdata.playing) {
+        while (serverdata.playing) {
+            await interaction.editReply({ content: 'Please wait for the current song to finish playing!' });
+        }
+    }
     const song = {
         title: null,
         url: null,
@@ -108,7 +113,7 @@ async function play(interaction) {
             song.thumbnail = thumbnail.url;
             song.relatedVideos = songinfo.related_videos[0];
             song.requestedBy = interaction.user;
-            serverdata.songs.push(song);
+            await serverdata.songs.push(song);
         }
         sendasplaylist = true;
     } else if (await validate(link) === 'so_track') {
@@ -146,7 +151,7 @@ async function play(interaction) {
             await playSong(interaction, serverdata.songs[0]);
             return;
         }
-        serverdata.songs.push(song);
+        await serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription(`**${song.title}** has been added to the queue!\nSong duration: ${song.durationRaw}`)
@@ -174,7 +179,8 @@ async function play(interaction) {
         serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription(`**${song.title}** has been added to the queue!`);
+            .setDescription(`**${song.title}** has been added to the queue!`)
+            .setThumbnail(song.thumbnail);
         interaction.editReply({ embeds: [embed] });
     }
 }
@@ -183,16 +189,14 @@ async function playSong(interaction, song) {
     const serverdata = globaldata.get(interaction.guild.id);
     serverdata.playing = true;
     if (!song) {
-        serverdata.resource = null;
-        serverdata.playing = false;
         serverdata.timervar = setTimeout(() => {
-            console.log('Leaving voice channel due to inactivity1');
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
             serverdata.player = null;
             serverdata.playing = false;
-            const mapToWrite = new Map(globaldata);
+            const premapToWrite = new Map([...globaldata]);
+            const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
             mapToWrite.forEach((value) => {
                 value.songs = [];
                 value.connection = null;
@@ -221,40 +225,41 @@ async function playSong(interaction, song) {
     serverdata.player = createAudioPlayer({
         behaviors: {
             noSubscriber: NoSubscriberBehavior.Pause,
+            maxMissedFrames: 100,
         },
     });
     serverdata.player.play(serverdata.resource);
     serverdata.connection.subscribe(serverdata.player);
     serverdata.player.on(AudioPlayerStatus.Idle, async () => {
-        clearTimeout(serverdata.timervar);
         if (serverdata.loop) {
             playSong(interaction, serverdata.songs[0]);
         } else if (serverdata.autoplay) {
             if (serverdata.songs[1]) {
-                serverdata.songs.shift();
+                await serverdata.songs.shift();
                 playSong(interaction, serverdata.songs[0]);
                 return;
             }
             if (await validate(serverdata.songs[0].relatedVideos) === 'yt_video') {
                 const relatedsong = await video_basic_info(serverdata.songs[0].relatedVideos);
+                const relatedsongthumbnail = relatedsong.video_details.thumbnails[relatedsong.video_details.thumbnails.length - 1];
                 const resong = {
-                    title: relatedsong.title,
-                    url: relatedsong.url,
-                    durationRaw: relatedsong.durationRaw,
-                    durationInSeconds: relatedsong.durationInSeconds,
-                    thumbnail: relatedsong.thumbnail,
+                    title: relatedsong.video_details.title,
+                    url: relatedsong.video_details.url,
+                    durationRaw: relatedsong.video_details.durationRaw,
+                    durationInSeconds: relatedsong.video_details.durationInSec,
+                    thumbnail: relatedsongthumbnail.url,
                     relatedVideos: relatedsong.related_videos[0],
-                    requestedBy: serverdata.songs[0].requestedBy,
+                    requestedBy: interaction.user,
                 };
-                serverdata.songs.shift();
-                serverdata.songs.unshift(resong);
+                await serverdata.songs.shift();
+                await serverdata.songs.unshift(resong);
                 playSong(interaction, serverdata.songs[0]);
             } else {
                 serverdata.songs.shift();
                 playSong(interaction, serverdata.songs[0]);
             }
         } else {
-            serverdata.songs.shift();
+            await serverdata.songs.shift();
             playSong(interaction, serverdata.songs[0]);
         }
     });
@@ -264,13 +269,13 @@ async function playSong(interaction, song) {
     });
     serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
         serverdata.timervar = setTimeout(() => {
-            console.log('Leaving voice channel due to inactivity2');
             serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
             serverdata.player = null;
             serverdata.playing = false;
-            const mapToWrite = new Map(globaldata);
+            const premapToWrite = new Map([...globaldata]);
+            const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
             mapToWrite.forEach((value) => {
                 value.songs = [];
                 value.connection = null;

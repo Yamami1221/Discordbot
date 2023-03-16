@@ -38,12 +38,11 @@ async function stop(interaction) {
         .setTitle('Stop')
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    clearTimeout(serverdata.timeout);
     serverdata.songs = [];
     serverdata.player.stop();
-    serverdata.connection.destroy();
     serverdata.playing = false;
     serverdata.player = null;
-    serverdata.connection = null;
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('Stopped the music!');

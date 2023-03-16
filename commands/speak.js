@@ -67,14 +67,21 @@ module.exports = {
         serverdata.player.play(serverdata.resource);
         serverdata.connection.subscribe(serverdata.player);
         serverdata.player.on(AudioPlayerStatus.Idle, () => {
-            serverdata.playing = false;
-            serverdata.resource = null;
-            serverdata.connection.destroy();
-            serverdata.connection = null;
-            interaction.deleteReply();
-            if (fs.existsSync('temp.mp3')) {
-                fs.unlinkSync('temp.mp3');
-            }
+            serverdata.timervar = setTimeout(() => {
+                serverdata.connection.destroy();
+                serverdata.resource = null;
+                serverdata.player = null;
+                serverdata.connection = null;
+                serverdata.playing = false;
+                interaction.deleteReply();
+                if (fs.existsSync('temp.mp3')) {
+                    fs.unlinkSync('temp.mp3');
+                }
+            }, 10000);
+        });
+        serverdata.player.on(AudioPlayerStatus.Playing, () => {
+            clearTimeout(serverdata.timervar);
+            serverdata.playing = true;
         });
     },
 };
