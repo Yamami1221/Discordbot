@@ -42,12 +42,10 @@ async function pauses(interaction) {
         .setTitle('Pause')
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    if (serverdata.player.paused) {
-        embed = new EmbedBuilder()
-            .setTitle('Pause')
-            .setDescription('The music is already paused!');
-        return interaction.editReply({ embeds: [embed], ephemeral: true });
-    }
+    embed = new EmbedBuilder()
+        .setTitle('Pause')
+        .setDescription('The music is already paused!');
+    if (serverdata.player.paused) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.player.pause();
     embed = new EmbedBuilder()
         .setTitle('Pause')
