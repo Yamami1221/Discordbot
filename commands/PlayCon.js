@@ -1,5 +1,5 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
 const { video_basic_info, stream, validate, playlist_info, search } = require('play-dl');
 const fs = require('fs');
 
@@ -158,6 +158,11 @@ async function play(interaction) {
                 channelId: voicechannel.id,
                 guildId: voicechannel.guild.id,
                 adapterCreator: voicechannel.guild.voiceAdapterCreator,
+            });
+            connection.on('stateChange', (old_state, new_state) => {
+                if (old_state.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
+                    connection.configureNetworking();
+                }
             });
             serverdata.connection = connection;
             await playSong(interaction, serverdata.songs[0]);
