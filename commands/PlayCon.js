@@ -60,11 +60,6 @@ async function play(interaction) {
         .setTitle('Play')
         .setDescription('this channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed] });
-    if (serverdata.playing) {
-        while (serverdata.playing) {
-            await interaction.editReply({ content: 'Please wait for the current song to finish playing!' });
-        }
-    }
     const song = {
         title: null,
         url: null,
