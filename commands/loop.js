@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const fs = require('fs');
 
 const { globaldata } = require('../data/global');
 
@@ -43,14 +44,32 @@ async function loop(interaction) {
         .setTitle('Loop')
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    const toggle = interaction.options.getBoolean('loop');
+    serverdata.loop = toggle;
     embed = new EmbedBuilder()
         .setTitle('Loop')
-        .setDescription('There is no song in queue right now');
-    if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const loopdata = interaction.options.getBoolean('loop');
-    serverdata.loop = loopdata;
-    embed = new EmbedBuilder()
-        .setTitle('Loop')
-        .setDescription(`Looping ${loop ? 'enabled' : 'disabled'}`);
+        .setDescription(`Looping ${serverdata.loop ? 'enabled' : 'disabled'}`);
     await interaction.editReply({ embeds: [embed] });
+    const premapToWrite = new Map([...globaldata]);
+    const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
+    mapToWrite.forEach((value) => {
+        value.songs = [];
+        value.connection = null;
+        value.player = null;
+        value.resource = null;
+        value.timervar = null;
+    });
+    const objToWrite = Object.fromEntries(mapToWrite);
+    const jsonToWrite = JSON.stringify(objToWrite);
+    fs.writeFile('./data/data.json', jsonToWrite, err => {
+        if (err) {
+            console.log('There has been an error saving your configuration data.');
+            console.log(err.message);
+            embed = new EmbedBuilder()
+                .setTitle('Enable')
+                .setDescription('There has been an error saving your configuration data.');
+            interaction.editReply({ embeds: [embed] });
+            return;
+        }
+    });
 }

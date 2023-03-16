@@ -22,19 +22,28 @@ module.exports = {
                 return;
             }
         }
+        await interaction.deferReply();
+        const connection = interaction.member.voice.channel;
+        let embed = new EmbedBuilder()
+            .setTitle('Autoplay')
+            .setDescription('You need to be in a voice channel to use this command!');
+        if (!connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
+        const serverdata = globaldata.get(interaction.guild.id);
+        embed = new EmbedBuilder()
+            .setTitle('Autoplay')
+            .setDescription('This server is not enabled for music commands!');
+        if (!serverdata) return interaction.editReply({ embeds: [embed], ephemeral: true });
+        const enabled = serverdata.textchannel.find((channel) => channel.id === interaction.channel.id);
+        embed = new EmbedBuilder()
+            .setTitle('Autoplay')
+            .setDescription('This channel is not enabled for music commands!');
+        if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
         const toggle = interaction.options.getBoolean('toggle');
         serverData.autoplay = toggle;
-        if (toggle) {
-            const embed = new EmbedBuilder()
-                .setTitle('Autoplay')
-                .setDescription('Autoplay is now on');
-            await interaction.reply({ embeds: [embed] });
-        } else {
-            const embed = new EmbedBuilder()
-                .setTitle('Autoplay')
-                .setDescription('Autoplay is now off');
-            await interaction.reply({ embeds: [embed] });
-        }
+        embed = new EmbedBuilder()
+            .setTitle('Autoplay')
+            .setDescription(`Autoplay ${serverdata.autoplay ? 'enabled' : 'disabled'}`);
+        await interaction.editReply({ embeds: [embed] });
         const premapToWrite = new Map([...globaldata]);
         const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
         mapToWrite.forEach((value) => {
@@ -50,7 +59,7 @@ module.exports = {
             if (err) {
                 console.log('There has been an error saving your configuration data.');
                 console.log(err.message);
-                const embed = new EmbedBuilder()
+                embed = new EmbedBuilder()
                     .setTitle('Enable')
                     .setDescription('There has been an error saving your configuration data.');
                 interaction.editReply({ embeds: [embed] });
