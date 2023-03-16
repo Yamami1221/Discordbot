@@ -1,6 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
-const { video_basic_info, stream, validate, playlist_info, search } = require('play-dl');
+const { video_basic_info, stream, validate, playlist_info, search, setToken } = require('play-dl');
 const fs = require('fs');
 
 const { globaldata } = require('../data/global');
@@ -76,6 +76,11 @@ async function play(interaction) {
         videos: [],
     };
     let sendasplaylist = false;
+    await setToken({
+        youtube : {
+            cookie : process.env.YT_COOKIE, // Youtube cookie frow network tab developer tools in browser
+        },
+    });
     if (await validate(link) === 'yt_video') {
         const songinfo = await video_basic_info(link);
         const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
