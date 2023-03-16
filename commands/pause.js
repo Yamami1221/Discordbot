@@ -45,7 +45,7 @@ async function pauses(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Pause')
         .setDescription('The music is already paused!');
-    if (serverdata.player.paused) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (serverdata.player.state.status === 'paused') return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.player.pause();
     embed = new EmbedBuilder()
         .setTitle('Pause')

@@ -45,7 +45,7 @@ async function resume(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Resume')
         .setDescription('The music is already playing!');
-    if (!serverdata.player.paused) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (serverdata.player.state.status === 'playing') return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.player.unpause();
     embed = new EmbedBuilder()
         .setTitle('Resume')
