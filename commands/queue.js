@@ -38,7 +38,8 @@ async function queue(interaction) {
         .setTitle('Queue')
         .setDescription('This channel is not enabled music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const queueembed = new EmbedBuilder();
+    const queueembed = new EmbedBuilder()
+        .setFooter({ text: `Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL() });
     if (!serverdata.songs[0]) {
         queueembed
             .setTitle('Queue')
@@ -46,7 +47,8 @@ async function queue(interaction) {
     } else {
         queueembed
             .setTitle('Queue')
-            .setDescription(`Now playing: **${serverdata.songs[0].title}**`);
+            .setDescription(`Now playing: **${serverdata.songs[0].title}**`)
+            .setThumbnail(serverdata.songs[0].thumbnail);
     }
     let songstring = '';
     for (let i = 1; i < serverdata.songs.length; i++) {
