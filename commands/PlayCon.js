@@ -154,7 +154,7 @@ async function play(interaction) {
         await serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription(`**${song.title}** has been added to the queue!\nSong duration: ${song.durationRaw}`)
+            .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!\nSong duration: ${song.durationRaw}`)
             .setThumbnail(song.thumbnail)
             .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
         interaction.editReply({ embeds: [embed] });
@@ -184,7 +184,7 @@ async function play(interaction) {
         serverdata.songs.push(song);
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription(`**${song.title}** has been added to the queue!`)
+            .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!`)
             .setThumbnail(song.thumbnail);
         interaction.editReply({ embeds: [embed] });
     }
@@ -261,7 +261,7 @@ async function playSong(interaction, song) {
                 await serverdata.songs.unshift(resong);
                 playSong(interaction, serverdata.songs[0]);
             } else {
-                serverdata.songs.shift();
+                await serverdata.songs.shift();
                 playSong(interaction, serverdata.songs[0]);
             }
         } else {
@@ -306,7 +306,7 @@ async function playSong(interaction, song) {
     });
     const embed = new EmbedBuilder()
         .setTitle('Play')
-        .setDescription(`Now playing **${song.title}**\nSong duration: ${song.durationRaw}`)
+        .setDescription(`Now playing [**${song.title}**](${song.url})\nSong duration: ${song.durationRaw}`)
         .setThumbnail(song.thumbnail)
         .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
     await interaction.channel.send({ embeds: [embed] });

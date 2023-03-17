@@ -45,7 +45,7 @@ async function nowplaying(interaction) {
     if (!title) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const songembed = new EmbedBuilder()
         .setTitle('Now Playing')
-        .setDescription(`**${serverdata.songs[0].title}**\nSong duration: \`${serverdata.songs[0].durationRaw}\``)
+        .setDescription(`[**${serverdata.songs[0].title}**](${serverdata.songs[0].url})\nSong duration: \`${serverdata.songs[0].durationRaw}\``)
         .setThumbnail(serverdata.songs[0].thumbnail)
         .setFooter({ text: `Requested by ${serverdata.songs[0].requestedBy.tag}`, iconURL: serverdata.songs[0].requestedBy.avatarURL() });
     await interaction.editReply({ embeds: [songembed] });
