@@ -56,7 +56,7 @@ async function lyrics(interaction) {
         .setDescription('I could not find the lyrics for that song!');
     if (!songlyrics) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const lyricsembed = new EmbedBuilder()
-        .setTitle(`Lyrics for ${songname}`)
+        .setTitle(`Lyrics for **${songname}**`)
         .setDescription(`\`\`\`${songlyrics}\`\`\``);
     await interaction.editReply({ embeds: [lyricsembed] });
 }
