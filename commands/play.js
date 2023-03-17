@@ -188,7 +188,8 @@ async function play(interaction) {
         embed = new EmbedBuilder()
             .setTitle('Play')
             .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!`)
-            .setThumbnail(song.thumbnail);
+            .setThumbnail(song.thumbnail)
+            .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
         interaction.editReply({ embeds: [embed] });
     }
 }
