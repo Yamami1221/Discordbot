@@ -30,6 +30,7 @@ module.exports = {
             .setTitle('Random Cat')
             .setDescription('Here is a random cat image')
             .setImage('attachment://cat.png')
+            .setURL('https://google.com')
             .setTimestamp();
         await interaction.editReply({ embeds: [embed], files: [attachment] });
         if (fs.existsSync('cat.png')) {
