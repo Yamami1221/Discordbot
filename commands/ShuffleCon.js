@@ -50,9 +50,9 @@ async function shuffle(interaction) {
 }
 
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+    const shuffled = array
+        .slice(1)
+        .sort(() => Math.random() - 0.5);
+    const result = [array[0], ...shuffled];
+    return result;
 }
