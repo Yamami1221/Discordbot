@@ -84,22 +84,31 @@ module.exports = {
 
 async function generateVoice(input) {
     try {
-        if (input.length > 200) input = input.substring(0, 200);
         const guess = await language.guess(
             input,
             ['en', 'ru', 'ja', 'ko', 'zh-cn', 'zh-tw', 'th'],
         );
         const lang = guess[0].alpha2;
+        if (input.length < 200) {
         // get base64 audio
-        const data = await googleTTS.getAudioBase64(input, {
-            lang: lang,
-            slow: false,
-            host: 'https://translate.google.com',
-            timeout: 10000,
-        });
-        // get audio file
-        const buffer = Buffer.from(data, 'base64');
-        fs.writeFileSync('temp.mp3', buffer, { encoding: 'base64' });
+            const data = await googleTTS.getAudioBase64(input, {
+                lang: lang,
+            });
+            // get audio file
+            const buffer = Buffer.from(data, 'base64');
+            fs.writeFileSync('temp.mp3', buffer, { encoding: 'base64' });
+        } else {
+            let longbuffer = '';
+            const data = await googleTTS.getAllAudioBase64(input, {
+                lang: lang,
+                timeout: 60000,
+            });
+            data.forEach((item) => {
+                longbuffer += item.base64;
+            });
+            const buffer = Buffer.from(longbuffer, 'base64');
+            fs.writeFileSync('temp.mp3', buffer, { encoding: 'base64' });
+        }
     } catch (err) {
         console.error(err.stack);
     }
