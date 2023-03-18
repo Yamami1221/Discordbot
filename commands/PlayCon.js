@@ -1,6 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, AudioPlayerStatus, StreamType, NoSubscriberBehavior } = require('@discordjs/voice');
-const { video_basic_info, stream, validate, playlist_info, search, setToken } = require('play-dl');
+const { video_basic_info, stream, spotify, soundcloud, validate, playlist_info, search, setToken, is_expired, refreshToken, getFreeClientID, SpotifyTrack, SoundCloudTrack } = require('play-dl');
 const fs = require('fs');
 
 const { globaldata } = require('../data/global');
@@ -29,6 +29,24 @@ async function play(interaction) {
     const msg = await interaction.channel.messages.fetch(interaction.targetId);
     let link = msg.content;
     if (link.startsWith('M!p ')) link = link.slice(4);
+    const SOclientID = await getFreeClientID();
+    await setToken({
+        youtube : {
+            cookie : process.env.YT_COOKIE, // Youtube cookie frow network tab developer tools in browser
+        },
+        spotify : {
+            client_id: process.env.SPOTIFY_CLIENT_ID,
+            client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+            refresh_token: process.env.SPOTIFY_REFRESH_TOKEN,
+            market: 'TH',
+        },
+        soundcloud : {
+            client_id: SOclientID,
+        },
+    });
+    if (is_expired()) {
+        await refreshToken();
+    }
     if (await validate(link) === 'search') {
         link = await mysearch(interaction);
         if (!link) {
@@ -77,11 +95,6 @@ async function play(interaction) {
         videos: [],
     };
     let sendasplaylist = false;
-    await setToken({
-        youtube : {
-            cookie : process.env.YT_COOKIE, // Youtube cookie frow network tab developer tools in browser
-        },
-    });
     if (await validate(link) === 'yt_video') {
         const songinfo = await video_basic_info(link);
         const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
@@ -96,69 +109,105 @@ async function play(interaction) {
         const playlistinfo = await playlist_info(link);
         playlist.title = playlistinfo.title;
         playlist.url = playlistinfo.url;
-        playlist.thumbnail = playlistinfo.thumbnail;
+        playlist.thumbnail = playlistinfo.thumbnail.url;
         playlist.videos = playlistinfo.videos;
+        sendasplaylist = true;
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription(`**${playlist.title}** playlist has been added!`)
+            .setDescription(`Adding **${playlist.title}** playlist`)
             .setThumbnail(playlist.thumbnail)
             .setFooter({ text:`Requested by ${interaction.user.tag}`, iconURL:interaction.user.avatarURL() });
         interaction.editReply({ embeds: [embed] });
-        for (let i = 0; i < playlist.videos.length; i++) {
-            const songinfo = await video_basic_info(playlist.videos[i].url);
-            const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
-            song.title = songinfo.video_details.title;
-            song.url = songinfo.video_details.url;
-            song.durationRaw = songinfo.video_details.durationRaw;
-            song.durationInSeconds = songinfo.video_details.durationInSec;
-            song.thumbnail = thumbnail.url;
-            song.relatedVideos = songinfo.related_videos[0];
-            song.requestedBy = interaction.user;
-            await serverdata.songs.push(song);
-        }
-        sendasplaylist = true;
     } else if (await validate(link) === 'so_track') {
-        embed = new EmbedBuilder()
-            .setTitle('Play')
-            .setDescription('Soundcloud is not supported yet!');
-        return interaction.editReply({ embeds: [embed] });
-        // const songinfo = await soundcloud(link);
-        // song.title = songinfo.title;
-        // song.url = songinfo.url;
-        // song.durationRaw = songinfo.durationRaw;
-        // song.durationInSeconds = songinfo.durationInSeconds;
-        // song.thumbnail = songinfo.thumbnail;
-        // song.requestedBy = interaction.user;
+        const songinfo = await soundcloud(link);
+        if (songinfo.type === 'track') {
+            if (songinfo instanceof SoundCloudTrack) {
+                song.title = songinfo.name;
+                song.url = songinfo.url;
+                song.durationRaw = formatTime(songinfo.durationInSec);
+                song.durationInSeconds = songinfo.durationInSec;
+                song.thumbnail = songinfo.thumbnail;
+                song.requestedBy = interaction.user;
+            } else {
+                embed = new EmbedBuilder()
+                    .setTitle('Play')
+                    .setDescription('This is not a SoundCloud track!');
+                return interaction.editReply({ embeds: [embed] });
+            }
+        } else {
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription('This is not a SoundCloud track!');
+            return interaction.editReply({ embeds: [embed] });
+        }
     } else if (await validate(link) === 'sp_track') {
-        embed = new EmbedBuilder()
-            .setTitle('Play')
-            .setDescription('Spotify is not supported yet!');
-        return interaction.editReply({ embeds: [embed] });
-        // const songinfo = await spotify(link);
-        // song.title = songinfo.title;
-        // song.url = songinfo.url;
-        // song.durationRaw = songinfo.durationRaw;
-        // song.durationInSeconds = songinfo.durationInSeconds;
-        // song.thumbnail = songinfo.thumbnail;
-        // song.requestedBy = interaction.user;
+        const songinfo = await spotify(link);
+        if (songinfo.type === 'track') {
+            if (songinfo instanceof SpotifyTrack) {
+                link = await searchbyname(songinfo.name);
+                if (!link) {
+                    embed = new EmbedBuilder()
+                        .setTitle('Play')
+                        .setDescription('No results found!');
+                    return interaction.editReply({ embeds: [embed] });
+                }
+                const songinfo2 = await video_basic_info(link);
+                const thumbnail = songinfo2.video_details.thumbnails[songinfo2.video_details.thumbnails.length - 1];
+                song.title = songinfo2.video_details.title;
+                song.url = songinfo2.video_details.url;
+                song.durationRaw = songinfo2.video_details.durationRaw;
+                song.durationInSeconds = songinfo2.video_details.durationInSec;
+                song.thumbnail = thumbnail.url;
+                song.relatedVideos = songinfo2.related_videos[0];
+                song.requestedBy = interaction.user;
+            } else {
+                embed = new EmbedBuilder()
+                    .setTitle('Play')
+                    .setDescription('This is not a Spotify track!');
+                return interaction.editReply({ embeds: [embed] });
+            }
+        } else {
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription('This is not a Spotify track!');
+            return interaction.editReply({ embeds: [embed] });
+        }
     } else {
         embed = new EmbedBuilder()
             .setTitle('Play')
-            .setDescription('Invalid link!');
+            .setDescription('Invalid Input or Link is not supported yet!');
         return interaction.editReply({ embeds: [embed] });
     }
     if (!serverdata.songs[0]) {
         if (sendasplaylist) {
-            await playSong(interaction, serverdata.songs[0]);
-            return;
+            for (let i = 0; i < playlist.videos.length; i++) {
+                const songforadd = Object.assign({}, song);
+                const songinfo = await video_basic_info(playlist.videos[i].url);
+                const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+                songforadd.title = songinfo.video_details.title;
+                songforadd.url = songinfo.video_details.url;
+                songforadd.durationRaw = songinfo.video_details.durationRaw;
+                songforadd.durationInSeconds = songinfo.video_details.durationInSec;
+                songforadd.thumbnail = thumbnail.url;
+                songforadd.relatedVideos = songinfo.related_videos[0];
+                songforadd.requestedBy = interaction.user;
+                await serverdata.songs.push(songforadd);
+            }
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription(`**${playlist.title}** playlist has been added!`)
+                .setThumbnail(playlist.thumbnail)
+                .setFooter({ text:`Requested by ${interaction.user.tag}`, iconURL:interaction.user.avatarURL() });
+            interaction.editReply({ embeds: [embed] });
+        } else {
+            await serverdata.songs.push(song);
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!\nSong duration: ${song.durationRaw}`)
+                .setThumbnail(song.thumbnail)
+                .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
+            interaction.editReply({ embeds: [embed] });
         }
-        await serverdata.songs.push(song);
-        embed = new EmbedBuilder()
-            .setTitle('Play')
-            .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!\nSong duration: ${song.durationRaw}`)
-            .setThumbnail(song.thumbnail)
-            .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
-        interaction.editReply({ embeds: [embed] });
         try {
             const connection = joinVoiceChannel({
                 channelId: voicechannel.id,
@@ -181,14 +230,28 @@ async function play(interaction) {
             return interaction.editReply({ embeds: [errorembed], ephemeral: true });
         }
     } else {
-        if (sendasplaylist) return;
-        serverdata.songs.push(song);
-        embed = new EmbedBuilder()
-            .setTitle('Play')
-            .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!`)
-            .setThumbnail(song.thumbnail)
-            .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
-        interaction.editReply({ embeds: [embed] });
+        if (sendasplaylist) {
+            for (let i = 0; i < playlist.videos.length; i++) {
+                const songinfo = await video_basic_info(playlist.videos[i].url);
+                const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+                song.title = songinfo.video_details.title;
+                song.url = songinfo.video_details.url;
+                song.durationRaw = songinfo.video_details.durationRaw;
+                song.durationInSeconds = songinfo.video_details.durationInSec;
+                song.thumbnail = thumbnail.url;
+                song.relatedVideos = songinfo.related_videos[0];
+                song.requestedBy = interaction.user;
+                await serverdata.songs.push(song);
+            }
+        } else {
+            serverdata.songs.push(song);
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription(`[**${song.title}**](${song.url}) has been added to the queue!`)
+                .setThumbnail(song.thumbnail)
+                .setFooter({ text:`Requested by ${song.requestedBy.tag}`, iconURL:song.requestedBy.avatarURL() });
+            interaction.editReply({ embeds: [embed] });
+        }
     }
 }
 
@@ -243,6 +306,11 @@ async function playSong(interaction, song) {
             playSong(interaction, serverdata.songs[0]);
         } else if (serverdata.autoplay) {
             if (serverdata.songs[1]) {
+                await serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
+                return;
+            }
+            if (!serverdata.songs[0].relatedVideos) {
                 await serverdata.songs.shift();
                 playSong(interaction, serverdata.songs[0]);
                 return;
@@ -321,4 +389,17 @@ async function mysearch(interaction) {
     if (!song[0].url) return false;
     const songurl = song[0].url;
     return songurl;
+}
+
+async function searchbyname(input) {
+    const song = await search(input, { limit: 1 });
+    if (!song[0].url) return false;
+    const songurl = song[0].url;
+    return songurl;
+}
+
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secondsLeft = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
 }
