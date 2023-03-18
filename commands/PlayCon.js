@@ -232,16 +232,17 @@ async function play(interaction) {
     } else {
         if (sendasplaylist) {
             for (let i = 0; i < playlist.videos.length; i++) {
+                const songforadd = Object.assign({}, song);
                 const songinfo = await video_basic_info(playlist.videos[i].url);
                 const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
-                song.title = songinfo.video_details.title;
-                song.url = songinfo.video_details.url;
-                song.durationRaw = songinfo.video_details.durationRaw;
-                song.durationInSeconds = songinfo.video_details.durationInSec;
-                song.thumbnail = thumbnail.url;
-                song.relatedVideos = songinfo.related_videos[0];
-                song.requestedBy = interaction.user;
-                await serverdata.songs.push(song);
+                songforadd.title = songinfo.video_details.title;
+                songforadd.url = songinfo.video_details.url;
+                songforadd.durationRaw = songinfo.video_details.durationRaw;
+                songforadd.durationInSeconds = songinfo.video_details.durationInSec;
+                songforadd.thumbnail = thumbnail.url;
+                songforadd.relatedVideos = songinfo.related_videos[0];
+                songforadd.requestedBy = interaction.user;
+                await serverdata.songs.push(songforadd);
             }
         } else {
             serverdata.songs.push(song);
