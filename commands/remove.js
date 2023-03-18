@@ -51,11 +51,15 @@ async function remove(interaction) {
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('You need to provide a valid position!');
-    if (index > serverdata.songs.length) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (index > serverdata.songs.length - 1) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription('You cannot remove the current song!');
-    if (index < 1) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    if (index == 1) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Remove')
+        .setDescription('There is no negative numbers in the queue!');
+    if (index < 0) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
         .setTitle('Remove')
         .setDescription(`Removed the song name: ${serverdata.songs[index].title}!`);
