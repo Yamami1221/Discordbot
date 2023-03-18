@@ -108,10 +108,14 @@ async function play(interaction) {
         song.relatedVideos = songinfo.related_videos[0];
         song.requestedBy = interaction.user;
     } else if (await validate(link) === 'yt_playlist') {
+        if (link.includes('&index=')) {
+            link = link.slice(0, link.indexOf('&index='));
+        }
         const playlistinfo = await playlist_info(link);
         playlist.title = playlistinfo.title;
         playlist.url = playlistinfo.url;
-        playlist.thumbnail = playlistinfo.thumbnail.url;
+        playlist.thumbnail = playlistinfo.thumbnail?.url || 'https://demofree.sirv.com/nope-not-here.jpg';
+        if (!playlist.thumbnail) playlist.thumbnail = 'https://demofree.sirv.com/nope-not-here.jpg';
         playlist.videos = playlistinfo.videos;
         sendasplaylist = true;
         embed = new EmbedBuilder()
