@@ -45,6 +45,8 @@ async function lyrics(interaction) {
         .setDescription('This channel is not enabled for music commands!');
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const songname = globaldata.get(interaction.guild.id).songs[0].title;
+    const songurl = globaldata.get(interaction.guild.id).songs[0].url;
+    const songthumbnail = globaldata.get(interaction.guild.id).songs[0].thumbnail;
     embed = new EmbedBuilder()
         .setTitle('Lyrics')
         .setDescription('There is no song in queue right now');
@@ -56,8 +58,10 @@ async function lyrics(interaction) {
         .setDescription('I could not find the lyrics for that song!');
     if (!songlyrics) return interaction.editReply({ embeds: [embed], ephemeral: true });
     const lyricsembed = new EmbedBuilder()
-        .setTitle(`Lyrics for **${songname}**`)
-        .setDescription(`\`\`\`${songlyrics}\`\`\``);
+        .setTitle(`Lyrics for [**${songname}**](${songurl})`)
+        .setThumbnail(songthumbnail)
+        .setDescription(`\`\`\`${songlyrics}\`\`\``)
+        .setFooter({ text: `Requested by ${interaction.user.tag}`, iconUrl: interaction.user.avatarURL() });
     await interaction.editReply({ embeds: [lyricsembed] });
 }
 
