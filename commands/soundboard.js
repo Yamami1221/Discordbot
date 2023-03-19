@@ -64,7 +64,7 @@ module.exports = {
             { name: 'Screaming Marmot', path:'./resource/sound/ScreamingMarmot.mp3' },
             { name: 'Slap', path:'./resource/sound/Slap.mp3' },
             { name: 'Take On Me', path:'./resource/sound/TakeOnMe.mp3' },
-            { name: 'This Is Sparta', path:'./resource/sound/ThisIsSparta.mp3' },
+            { name: 'This Is Sparta', path:'./resource/sound/ThisIsSpata.mp3' },
             { name: 'Vine Boom Sound', path:'./resource/sound/VineBoomSound.mp3' },
             { name: 'Yeet', path:'./resource/sound/Yeet.mp3' }];
         const row1 = new ActionRowBuilder();
@@ -111,6 +111,7 @@ module.exports = {
         const filter = (i) => i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter });
         collector.on('collect', async (i) => {
+            await i.deferUpdate();
             const myinteraction = interaction;
             const path = data.find((x) => x.name === i.customId).path;
             const connection = joinVoiceChannel({
@@ -147,7 +148,6 @@ module.exports = {
                     collector.stop();
                 }, 5000);
             });
-            await i.deferUpdate();
         });
         collector.on('end', async () => {
             serverdata.playing = false;
