@@ -5,7 +5,12 @@ const { globaldata } = require('../data/global');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('skip')
-        .setDescription('Skips the current song'),
+        .setDescription('Skips the current song')
+        .setDMPermission(false)
+        .addIntegerOption((option) =>
+            option.setName('to')
+                .setDescription('The song to skip to')
+                .setRequired(false)),
     async execute(interaction) {
         skip(interaction);
     },
@@ -42,10 +47,27 @@ async function skip(interaction) {
         .setTitle('Skip')
         .setDescription('There are no songs in the queue!');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
-    const currensong = serverdata.songs[0];
-    embed = new EmbedBuilder()
-        .setTitle('Skip')
-        .setDescription(`Skipped the song **${currensong.title}**!`);
-    serverdata.player.stop();
-    await interaction.editReply({ embeds: [embed] });
+    const skipto = interaction.options.getInteger('to') || false;
+    if (!skipto) {
+        const currensong = serverdata.songs[0];
+        embed = new EmbedBuilder()
+            .setTitle('Skip')
+            .setDescription(`Skipped the song **${currensong.title}**!`);
+        serverdata.player.stop();
+        await interaction.editReply({ embeds: [embed] });
+    } else {
+        if (skipto > serverdata.songs.length - 1) {
+            embed = new EmbedBuilder()
+                .setTitle('Skip')
+                .setDescription('The song you are trying to skip to does not exist!');
+            return interaction.editReply({ embeds: [embed], ephemeral: true });
+        }
+        const skiptosong = serverdata.songs[skipto - 1];
+        serverdata.songs.splice(0, skipto - 1);
+        embed = new EmbedBuilder()
+            .setTitle('Skip')
+            .setDescription(`Skipped to the song **${skiptosong.title}**!`);
+        serverdata.player.stop();
+        await interaction.editReply({ embeds: [embed] });
+    }
 }
