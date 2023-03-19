@@ -111,6 +111,9 @@ async function play(interaction) {
         if (link.includes('&index=')) {
             link = link.slice(0, link.indexOf('&index='));
         }
+        if (link.includes('&playnext=1')) {
+            link = link.slice(0, link.indexOf('&playnext=1'));
+        }
         const playlistinfo = await playlist_info(link);
         playlist.title = playlistinfo.title;
         playlist.url = playlistinfo.url;
