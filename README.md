@@ -34,7 +34,7 @@ TOKEN='Your_DISCORD_TOKEN'
 CSE_ID='YOUR_GOOGLE_CDE_ID' //to use image search
 GOOGLE_API_KEY='YOUR_GOOGLE_CUSTOM_SEARCH_API'
 ```
-For data.json and horodata.js
+For data.json and horodata.json
 ```bash
 {}
 ```
