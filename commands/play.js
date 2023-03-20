@@ -14,12 +14,12 @@ module.exports = {
                 .setDescription('The link or search query')
                 .setRequired(true)),
     async execute(interaction) {
+        await interaction.deferReply();
         play(interaction);
     },
 };
 
 async function play(interaction) {
-    await interaction.deferReply();
     const serverData = globaldata.get(interaction.guildId) || undefined;
     if (serverData?.veriChannel) {
         if (interaction.channel.id === serverData.veriChannel.id) {

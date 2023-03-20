@@ -10,12 +10,12 @@ module.exports = {
         .setName('Play')
         .setType(ApplicationCommandType.Message),
     async execute(interaction) {
+        await interaction.deferReply();
         play(interaction);
     },
 };
 
 async function play(interaction) {
-    await interaction.deferReply();
     const serverData = globaldata.get(interaction.guildId) || undefined;
     if (serverData?.veriChannel) {
         if (interaction.channel.id === serverData.veriChannel.id) {
