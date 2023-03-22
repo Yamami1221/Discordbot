@@ -9,6 +9,10 @@ module.exports = {
         .addStringOption(option =>
             option.setName('query')
                 .setDescription('Phrase to search for')
+                .setAutocomplete(true))
+        .addStringOption(option =>
+            option.setName('version')
+                .setDescription('Version of the guide to search')
                 .setAutocomplete(true)),
     async autocomplete(interaction) {
         const serverData = globaldata.get(interaction.guildId) || undefined;
