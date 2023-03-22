@@ -19,7 +19,7 @@ module.exports = {
         }
         // Create the modal
         const modal = new ModalBuilder()
-            .setCustomId('TestModal')
+            .setCustomId('modaltest')
             .setTitle('Test Modal');
 
         // Add components to modal

@@ -70,28 +70,26 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isModalSubmit()) {
-            if (interaction.customId === 'TestModal') {
-                const command = interaction.client.commands.get('modaltest');
+            const command = interaction.client.commands.get(interaction.customId);
 
-                if (!command) {
-                    const embed = new EmbedBuilder()
-                        .setTitle('Error')
-                        .setDescription('No command matching modaltest was found.');
-                    await interaction.reply({ embeds: [embed], ephemeral: true });
-                    console.error('No command matching modaltest was found.');
-                    return;
-                }
+            if (!command) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Error')
+                    .setDescription(`No command matching ${interaction.customId} was found.`);
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                console.error(`No command matching ${interaction.customId} was found.`);
+                return;
+            }
 
-                try {
-                    await command.modal(interaction);
-                } catch (error) {
-                    const embed = new EmbedBuilder()
-                        .setTitle('Error')
-                        .setDescription('There was an error while executing this command!');
-                    console.error('Error executing modaltest');
-                    console.error(error);
-                    interaction.channel.send({ content: 'Error executing modaltest', embeds: [embed], ephemeral: true });
-                }
+            try {
+                await command.modal(interaction);
+            } catch (error) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Error')
+                    .setDescription('There was an error while executing this command!');
+                console.error('Error executing modaltest');
+                console.error(error);
+                interaction.channel.send({ content: 'Error executing modaltest', embeds: [embed], ephemeral: true });
             }
         } else if (interaction.isButton()) {
             return;
