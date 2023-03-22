@@ -70,7 +70,29 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isModalSubmit()) {
-            return;
+            if (interaction.customId === 'myModal') {
+                const command = interaction.client.commands.get('modaltest');
+
+                if (!command) {
+                    const embed = new EmbedBuilder()
+                        .setTitle('Error')
+                        .setDescription('No command matching modaltest was found.');
+                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                    console.error('No command matching modaltest was found.');
+                    return;
+                }
+
+                try {
+                    await command.modal(interaction);
+                } catch (error) {
+                    const embed = new EmbedBuilder()
+                        .setTitle('Error')
+                        .setDescription('There was an error while executing this command!');
+                    console.error('Error executing modaltest');
+                    console.error(error);
+                    interaction.channel.send({ content: 'Error executing modaltest', embeds: [embed], ephemeral: true });
+                }
+            }
         } else if (interaction.isButton()) {
             return;
         } else if (!interaction.isCommand()) {
