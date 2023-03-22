@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { SlashCommandBuilder, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder } = require('discord.js');
 
 // const { globaldata } = require('../data/global');
 
@@ -38,5 +38,19 @@ module.exports = {
 
         // Show the modal to the user
         await interaction.showModal(modal);
+    },
+    async modal(interaction) {
+        // Get the values of the inputs
+        const favoriteColor = interaction.fields.fields.get('favoriteColorInput').value;
+        const hobbies = interaction.fields.fields.get('hobbiesInput').value;
+
+        // Create an embed to show the user their input
+        const embed = new EmbedBuilder()
+            .setTitle('Your Input')
+            .setDescription(`Your favorite color is ${favoriteColor} and your favorite hobbies are ${hobbies}.`);
+
+        // Send the embed to the user
+        await interaction.channel.send({ embeds: [embed] });
+        interaction.deferUpdate();
     },
 };
