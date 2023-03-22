@@ -70,7 +70,7 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isModalSubmit()) {
-            if (interaction.customId === 'myModal') {
+            if (interaction.customId === 'TestModal') {
                 const command = interaction.client.commands.get('modaltest');
 
                 if (!command) {

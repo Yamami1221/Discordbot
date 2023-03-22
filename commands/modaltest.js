@@ -1,16 +1,26 @@
 const { SlashCommandBuilder, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder } = require('discord.js');
 
-// const { globaldata } = require('../data/global');
+const { globaldata } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('modaltest')
         .setDescription('Tests modals.'),
     async execute(interaction) {
+        const serverData = globaldata.get(interaction.guildId);
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         // Create the modal
         const modal = new ModalBuilder()
-            .setCustomId('myModal')
-            .setTitle('My Modal');
+            .setCustomId('TestModal')
+            .setTitle('Test Modal');
 
         // Add components to modal
 
@@ -50,7 +60,7 @@ module.exports = {
             .setDescription(`Your favorite color is ${favoriteColor} and your favorite hobbies are ${hobbies}.`);
 
         // Send the embed to the user
-        await interaction.channel.send({ embeds: [embed] });
+        await interaction.channel.send({ embeds: [embed], ephemeral: true });
         interaction.deferUpdate();
     },
 };
