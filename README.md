@@ -30,9 +30,13 @@ git clone https://github.com/Yamami1221/Discordbot
 
 For .env
 ```bash
-TOKEN='Your_DISCORD_TOKEN'
-CSE_ID='YOUR_GOOGLE_CDE_ID' //to use image search
-GOOGLE_API_KEY='YOUR_GOOGLE_CUSTOM_SEARCH_API'
+TOKEN="YOUR_DISCORD_TOKEN"
+SPOTIFY_CLIENT_ID=""
+SPOTIFY_CLIENT_SECRET=""
+SPOTIFY_REFRESH_TOKEN=""
+GOOGLE_API_KEY="YOUR_GOOGLE_CUSTOM_SEARCH_API" ;to use image search
+CSE_ID="YOUR_GOOGLE_CDE_ID" ;to use image search
+YT_COOKIE="" ;Youtube cookie frow network tab developer tools in browser
 ```
 
 4. Install Node.js v18.13.0 or higher by selecting the **Current** tab, and then **"OS Name" Installer**. [Click here](https://nodejs.org/en/download/current/) for the download page.
