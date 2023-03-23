@@ -5,7 +5,7 @@ module.exports = {
         .setName('button')
         .setDescription('button test'),
     async execute(interaction) {
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -13,7 +13,7 @@ module.exports = {
                     .setLabel('Click me!')
                     .setStyle(ButtonStyle.Primary),
             );
-        await interaction.editReply({ content: 'I think you should,', components: [button] });
+        await interaction.editReply({ content: 'I think you should,', components: [button], ephemeral: true });
         const filter = i => i.customId === 'primary';
 
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
@@ -26,12 +26,12 @@ module.exports = {
                         .setLabel('Click me!')
                         .setStyle(ButtonStyle.Link),
                 );
-            await i.update({ content: 'Hmmm you should click me again', components: [link] });
+            await i.update({ content: 'Hmmm you should click me again', components: [link], ephemeral: true });
         });
 
         collector.on('end', async collected => {
             console.log(`Collected ${collected.size} items`);
-            await interaction.editReply({ content: 'You did not click me in time', components: [] });
+            await interaction.editReply({ content: 'You did not click me in time', components: [], ephemeral: true });
         });
     },
 };
