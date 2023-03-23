@@ -51,8 +51,8 @@ module.exports = {
     },
     async modal(interaction) {
         // Get the values of the inputs
-        const favoriteColor = interaction.fields.fields.get('favoriteColorInput').value;
-        const hobbies = interaction.fields.fields.get('hobbiesInput').value;
+        const favoriteColor = interaction.fields.getTextInputValue('favoriteColorInput');
+        const hobbies = interaction.fields.getTextInputValue('hobbiesInput');
 
         // Create an embed to show the user their input
         const embed = new EmbedBuilder()
