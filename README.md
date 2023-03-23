@@ -26,17 +26,13 @@ git clone https://github.com/Yamami1221/Discordbot
 
 ![bot create](https://i.imgur.com/luHPTGL.png "Step 2")
 
-3. Create `.env` in main folder and `horodata.json`,`data.json` in data folder and fill the required values. **Do not show anyone these!**
+3. Create `.env` in main folder and fill the required values. **Do not show anyone these!**
 
 For .env
 ```bash
 TOKEN='Your_DISCORD_TOKEN'
 CSE_ID='YOUR_GOOGLE_CDE_ID' //to use image search
 GOOGLE_API_KEY='YOUR_GOOGLE_CUSTOM_SEARCH_API'
-```
-For data.json and horodata.json
-```bash
-{}
 ```
 
 4. Install Node.js v18.13.0 or higher by selecting the **Current** tab, and then **"OS Name" Installer**. [Click here](https://nodejs.org/en/download/current/) for the download page.
