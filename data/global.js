@@ -1,5 +1,15 @@
 const fs = require('fs');
 
+if (!fs.existsSync('./data')) {
+    fs.mkdirSync('./data');
+}
+if (!fs.existsSync('./data/data.json')) {
+    fs.writeFileSync('./data/data.json', '{}', 'utf8');
+}
+if (!fs.existsSync('./data/horodata.json')) {
+    fs.writeFileSync('./data/horodata.json', '{}', 'utf8');
+}
+
 const data = fs.readFileSync('./data/data.json');
 const holodata = fs.readFileSync('./data/horodata.json');
 
