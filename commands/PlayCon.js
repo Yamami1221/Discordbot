@@ -351,7 +351,43 @@ async function playSong(interaction, song) {
         clearTimeout(serverdata.timervar);
         serverdata.playing = true;
     });
-    serverdata.player.on(AudioPlayerStatus.AutoPaused, () => {
+    serverdata.player.on(AudioPlayerStatus.AutoPaused, async () => {
+        if (serverdata.loop) {
+            playSong(interaction, serverdata.songs[0]);
+        } else if (serverdata.autoplay) {
+            if (serverdata.songs[1]) {
+                await serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
+                return;
+            }
+            if (!serverdata.songs[0].relatedVideos) {
+                await serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
+                return;
+            }
+            if (await validate(serverdata.songs[0].relatedVideos) === 'yt_video') {
+                const relatedsong = await video_basic_info(serverdata.songs[0].relatedVideos);
+                const relatedsongthumbnail = relatedsong.video_details.thumbnails[relatedsong.video_details.thumbnails.length - 1];
+                const resong = {
+                    title: relatedsong.video_details.title,
+                    url: relatedsong.video_details.url,
+                    durationRaw: relatedsong.video_details.durationRaw,
+                    durationInSeconds: relatedsong.video_details.durationInSec,
+                    thumbnail: relatedsongthumbnail.url,
+                    relatedVideos: relatedsong.related_videos[0],
+                    requestedBy: interaction.user,
+                };
+                await serverdata.songs.shift();
+                await serverdata.songs.unshift(resong);
+                playSong(interaction, serverdata.songs[0]);
+            } else {
+                await serverdata.songs.shift();
+                playSong(interaction, serverdata.songs[0]);
+            }
+        } else {
+            await serverdata.songs.shift();
+            playSong(interaction, serverdata.songs[0]);
+        }
         serverdata.timervar = setTimeout(() => {
             serverdata.connection.destroy();
             serverdata.connection = null;
