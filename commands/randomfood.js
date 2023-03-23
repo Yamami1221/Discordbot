@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
 
+const fooddata = require('./../resource/foodstorage.js');
 const { globaldata } = require('../data/global');
 
 module.exports = {
@@ -19,9 +19,7 @@ module.exports = {
                 return;
             }
         }
-        const foodarrayraw = fs.readFileSync('./data/fooddata.json');
-        const foodarray = JSON.parse(foodarrayraw);
-        const randomfood = foodarray[Math.floor(Math.random() * foodarray.length)];
+        const randomfood = fooddata.data[Math.floor(Math.random() * fooddata.data.length)];
         const embed = new EmbedBuilder()
             .setTitle('Random Food Generator')
             .setDescription(`You should eat ${randomfood}`);
