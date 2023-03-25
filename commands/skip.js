@@ -63,7 +63,7 @@ async function skip(interaction) {
             return interaction.editReply({ embeds: [embed], ephemeral: true });
         }
         const skiptosong = serverdata.songs[skipto - 1];
-        serverdata.songs.splice(0, skipto - 1);
+        await serverdata.songs.splice(0, skipto - 1);
         embed = new EmbedBuilder()
             .setTitle('Skip')
             .setDescription(`Skipped to the song **${skiptosong.title}**!`);
