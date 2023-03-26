@@ -18,7 +18,10 @@ try {
     const parsedHoloData = JSON.parse(holodata);
     const globaldata = new Map(Object.entries(parsedData));
     const horomap = new Map(Object.entries(parsedHoloData));
-    module.exports = { globaldata, horomap };
+    const datapath = './data/data.json';
+    const horopath = './data/horodata.json';
+    const nlppath = './data/model.nlp';
+    module.exports = { globaldata, horomap, datapath, horopath, nlppath };
 } catch (err) {
     console.error(err);
 }
