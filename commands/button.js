@@ -9,12 +9,12 @@ module.exports = {
         const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('primary')
+                    .setCustomId('rr_primary')
                     .setLabel('Click me!')
                     .setStyle(ButtonStyle.Primary),
             );
         await interaction.editReply({ content: 'I think you should,', components: [button], ephemeral: true });
-        const filter = i => i.customId === 'primary';
+        const filter = i => i.customId === 'rr_primary';
 
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
@@ -29,8 +29,7 @@ module.exports = {
             await i.update({ content: 'Hmmm you should click me again', components: [link], ephemeral: true });
         });
 
-        collector.on('end', async collected => {
-            console.log(`Collected ${collected.size} items`);
+        collector.on('end', async () => {
             await interaction.editReply({ content: 'You did not click me in time', components: [], ephemeral: true });
         });
     },

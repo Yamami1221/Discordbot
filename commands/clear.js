@@ -30,7 +30,7 @@ module.exports = {
         } catch (error) {
             const embed = new EmbedBuilder()
                 .setTitle('Clear')
-                .setDescription('You can not delete messages that over 14 days old.');
+                .setDescription('You can not delete messages that over 14 days old.\nor\nAn error occurred while deleting messages');
             await interaction.channel.send({ embeds: [embed] });
         }
     },

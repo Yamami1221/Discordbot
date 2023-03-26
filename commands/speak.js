@@ -66,6 +66,7 @@ module.exports = {
         serverdata.player.play(serverdata.resource);
         serverdata.connection.subscribe(serverdata.player);
         serverdata.player.on(AudioPlayerStatus.Idle, () => {
+            serverdata.playing = false;
             serverdata.timervar = setTimeout(() => {
                 serverdata.connection.destroy();
                 serverdata.resource = null;

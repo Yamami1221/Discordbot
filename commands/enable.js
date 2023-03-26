@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
-const { globaldata } = require('../data/global');
+const { globaldata, datapath } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,7 +54,8 @@ module.exports = {
                     .setTitle('Enable')
                     .setDescription(`Added <#${interaction.channel.id}> for music commands enabled list`);
                 await interaction.followUp({ embeds: [embed] });
-                const mapToWrite = new Map([...globaldata]);
+                const premapToWrite = new Map([...globaldata]);
+                const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
                 mapToWrite.forEach((value) => {
                     value.songs = [];
                     value.connection = null;
@@ -63,8 +64,8 @@ module.exports = {
                     value.timervar = null;
                 });
                 const objToWrite = Object.fromEntries(mapToWrite);
-                const jsonToWrite = JSON.stringify(objToWrite);
-                fs.writeFile('./data/data.json', jsonToWrite, err => {
+                const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+                fs.writeFile(datapath, jsonToWrite, err => {
                     if (err) {
                         console.log('There has been an error saving your configuration data.');
                         console.log(err.message);
@@ -85,7 +86,8 @@ module.exports = {
                         .setTitle('Enable')
                         .setDescription(`Added <#${textchannelforshow}> for music commands enabled list`);
                     await interaction.editReply({ embeds: [embed] });
-                    const mapToWrite = new Map([...globaldata]);
+                    const premapToWrite = new Map([...globaldata]);
+                    const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
                     mapToWrite.forEach((value) => {
                         value.songs = [];
                         value.connection = null;
@@ -94,8 +96,8 @@ module.exports = {
                         value.timervar = null;
                     });
                     const objToWrite = Object.fromEntries(mapToWrite);
-                    const jsonToWrite = JSON.stringify(objToWrite);
-                    fs.writeFile('./data/data.json', jsonToWrite, err => {
+                    const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+                    fs.writeFile(datapath, jsonToWrite, err => {
                         if (err) {
                             console.log('There has been an error saving your configuration data.');
                             console.log(err.message);

@@ -3,7 +3,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectio
 const { video_basic_info, stream, spotify, soundcloud, validate, playlist_info, search, setToken, is_expired, refreshToken, getFreeClientID, SpotifyTrack, SoundCloudTrack } = require('play-dl');
 const fs = require('fs');
 
-const { globaldata } = require('../data/global');
+const { globaldata, datapath } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -285,8 +285,8 @@ async function playSong(interaction, song) {
                 value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
-            const jsonToWrite = JSON.stringify(objToWrite);
-            fs.writeFile('./data/data.json', jsonToWrite, err => {
+            const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+            fs.writeFile(datapath, jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
@@ -370,8 +370,8 @@ async function playSong(interaction, song) {
                 value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
-            const jsonToWrite = JSON.stringify(objToWrite);
-            fs.writeFile('./data/data.json', jsonToWrite, err => {
+            const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+            fs.writeFile(datapath, jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);

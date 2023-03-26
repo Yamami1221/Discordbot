@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
 const fs = require('fs');
 
 
-const { globaldata } = require('../data/global');
+const { globaldata, datapath } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -71,7 +71,7 @@ module.exports = {
         for (let i = 0; i < 5; i++) {
             const button = new ButtonBuilder()
                 .setLabel(data[i].name)
-                .setStyle('Primary')
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId(data[i].name);
             row1.addComponents(button);
         }
@@ -79,7 +79,7 @@ module.exports = {
         for (let i = 5; i < 10; i++) {
             const button = new ButtonBuilder()
                 .setLabel(data[i].name)
-                .setStyle('Primary')
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId(data[i].name);
             row2.addComponents(button);
         }
@@ -87,7 +87,7 @@ module.exports = {
         for (let i = 10; i < 15; i++) {
             const button = new ButtonBuilder()
                 .setLabel(data[i].name)
-                .setStyle('Primary')
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId(data[i].name);
             row3.addComponents(button);
         }
@@ -95,7 +95,7 @@ module.exports = {
         for (let i = 15; i < 20; i++) {
             const button = new ButtonBuilder()
                 .setLabel(data[i].name)
-                .setStyle('Primary')
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId(data[i].name);
             row4.addComponents(button);
         }
@@ -103,7 +103,7 @@ module.exports = {
         for (let i = 20; i < 25; i++) {
             const button = new ButtonBuilder()
                 .setLabel(data[i].name)
-                .setStyle('Primary')
+                .setStyle(ButtonStyle.Primary)
                 .setCustomId(data[i].name);
             row5.addComponents(button);
         }
@@ -164,8 +164,8 @@ module.exports = {
                 value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
-            const jsonToWrite = JSON.stringify(objToWrite);
-            fs.writeFile('./data/data.json', jsonToWrite, err => {
+            const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+            fs.writeFile(datapath, jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);

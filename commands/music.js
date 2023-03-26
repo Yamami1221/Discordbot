@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
-const { globaldata } = require('../data/global');
+const { globaldata, datapath } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +16,6 @@ module.exports = {
             subcommand.setName('disable')
                 .setDescription('disable text channel for music commands')),
     async execute(interaction) {
-        await interaction.deferReply();
         const serverData = globaldata.get(interaction.guildId) ?? undefined;
         if (serverData?.veriChannel) {
             if (interaction.channel.id === serverData.veriChannel.id) {
@@ -43,6 +42,7 @@ module.exports = {
 };
 
 async function enable(interaction) {
+    await interaction.deferReply();
     const serverdata = globaldata?.get(interaction.guild.id);
     if (!serverdata) {
         const queueconstruct = {
@@ -85,8 +85,8 @@ async function enable(interaction) {
             value.timervar = null;
         });
         const objToWrite = Object.fromEntries(mapToWrite);
-        const jsonToWrite = JSON.stringify(objToWrite);
-        fs.writeFile('./data/data.json', jsonToWrite, err => {
+        const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+        fs.writeFile(datapath, jsonToWrite, err => {
             if (err) {
                 console.log('There has been an error saving your configuration data.');
                 console.log(err.message);
@@ -114,10 +114,11 @@ async function enable(interaction) {
                 value.connection = null;
                 value.player = null;
                 value.resource = null;
+                value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
-            const jsonToWrite = JSON.stringify(objToWrite);
-            fs.writeFile('./data/data.json', jsonToWrite, err => {
+            const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+            fs.writeFile(datapath, jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);
@@ -138,6 +139,7 @@ async function enable(interaction) {
 }
 
 async function disable(interaction) {
+    await interaction.deferReply();
     const serverdata = globaldata?.get(interaction.guild.id);
     if (!serverdata) {
         const embed = new EmbedBuilder()
@@ -168,8 +170,8 @@ async function disable(interaction) {
                 value.timervar = null;
             });
             const objToWrite = Object.fromEntries(mapToWrite);
-            const jsonToWrite = JSON.stringify(objToWrite);
-            fs.writeFile('./data/data.json', jsonToWrite, err => {
+            const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+            fs.writeFile(datapath, jsonToWrite, err => {
                 if (err) {
                     console.log('There has been an error saving your configuration data.');
                     console.log(err.message);

@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Language, NlpManager } = require('node-nlp');
 const fs = require('fs');
 
-const { globaldata } = require('../data/global');
+const { globaldata, datapath, nlppath } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -90,14 +90,14 @@ async function enableChatBot(interaction) {
     if (enabled) {
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')
-            .setDescription('Chat bot is already enabled in this channel');
+            .setDescription(`Chat bot is already enabled in <#${interaction.channel.id}>`);
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     serverdata.chatbotChannel.push(interaction.channel);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
-        .setDescription('Successfully enabled the chat bot in this channel');
+        .setDescription(`Chat bot is now enabled in <#${interaction.channel.id}>`);
     await interaction.editReply({ embeds: [embed] });
     const premapToWrite = new Map([...globaldata]);
     const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
@@ -109,8 +109,8 @@ async function enableChatBot(interaction) {
         value.timervar = null;
     });
     const objToWrite = Object.fromEntries(mapToWrite);
-    const jsonToWrite = JSON.stringify(objToWrite);
-    fs.writeFile('./data/data.json', jsonToWrite, err => {
+    const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+    fs.writeFile(datapath, jsonToWrite, err => {
         if (err) {
             console.log('There has been an error saving your configuration data.');
             console.log(err.message);
@@ -161,7 +161,7 @@ async function disableChatBot(interaction) {
     if (!enabled) {
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')
-            .setDescription('Chat bot is not enabled in this channel');
+            .setDescription(`Chat bot is not enabled in <#${interaction.channel.id}>`);
         await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
@@ -169,7 +169,7 @@ async function disableChatBot(interaction) {
     serverdata.chatbotChannel.splice(index, 1);
     const embed = new EmbedBuilder()
         .setTitle('Chat Bot')
-        .setDescription('Successfully disabled the chat bot in this channel');
+        .setDescription(`Chat bot is now disabled in <#${interaction.channel.id}>`);
     await interaction.editReply({ embeds: [embed] });
     const premapToWrite = new Map([...globaldata]);
     const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
@@ -181,8 +181,8 @@ async function disableChatBot(interaction) {
         value.timervar = null;
     });
     const objToWrite = Object.fromEntries(mapToWrite);
-    const jsonToWrite = JSON.stringify(objToWrite);
-    fs.writeFile('./data/data.json', jsonToWrite, err => {
+    const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+    fs.writeFile(datapath, jsonToWrite, err => {
         if (err) {
             console.log('There has been an error saving your configuration data.');
             console.log(err.message);
@@ -204,11 +204,11 @@ async function teachChatBot(interaction) {
         const langraw = await language.guess(text, [ 'en', 'th' ]);
         const lang = langraw[0].alpha2;
         const manager = new NlpManager({ languages: [lang], nlu: { log: false }, forceNER: true, autosave: false, autoSave: false });
-        manager.load('./data/model.nlp');
+        manager.load(nlppath);
         manager.addDocument(lang, text, text);
         manager.addAnswer(lang, text, response);
         await manager.train();
-        manager.save('./data/model.nlp');
+        manager.save(nlppath);
         const embed = new EmbedBuilder()
             .setTitle('Chat Bot')
             .setDescription('Successfully taught the chat bot');
