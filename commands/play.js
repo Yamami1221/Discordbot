@@ -114,6 +114,12 @@ async function play(interaction) {
         if (link.includes('&playnext=1')) {
             link = link.slice(0, link.indexOf('&playnext=1'));
         }
+        if (link.includes('&start_radio=1')) {
+            link = link.slice(0, link.indexOf('&start_radio=1'));
+        }
+        if (link.includes('&rv=')) {
+            link = link.slice(0, link.indexOf('&rv='));
+        }
         const playlistinfo = await playlist_info(link);
         playlist.title = playlistinfo.title;
         playlist.url = playlistinfo.url;
