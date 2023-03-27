@@ -24,13 +24,11 @@ module.exports = {
         const catToWrite = await catGenerator.getImage();
         const bufferToWrite = Buffer.from(catToWrite.toBuffer());
         fs.writeFileSync('cat.png', bufferToWrite);
-        const file = fs.readFileSync('cat.png');
-        const attachment = new AttachmentBuilder(file, 'cat.png');
+        const attachment = new AttachmentBuilder('cat.png');
         const embed = new EmbedBuilder()
             .setTitle('Random Cat')
             .setDescription('Here is a random cat image')
             .setImage('attachment://cat.png')
-            .setURL('https://google.com')
             .setTimestamp();
         await interaction.editReply({ embeds: [embed], files: [attachment] });
         if (fs.existsSync('cat.png')) {
