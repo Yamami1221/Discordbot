@@ -44,6 +44,10 @@ async function pauses(interaction) {
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
         .setTitle('Pause')
+        .setDescription('There is no music playing right now');
+    if (!serverdata.player) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
+        .setTitle('Pause')
         .setDescription('The music is already paused!');
     if (serverdata.player.state.status === 'paused') return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.player.pause();
