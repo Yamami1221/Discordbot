@@ -43,6 +43,10 @@ async function resume(interaction) {
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
     embed = new EmbedBuilder()
+        .setTitle('Pause')
+        .setDescription('There is no music playing right now');
+    if (!serverdata.player) return interaction.editReply({ embeds: [embed], ephemeral: true });
+    embed = new EmbedBuilder()
         .setTitle('Resume')
         .setDescription('The music is already playing!');
     if (serverdata.player.state.status === 'playing') return interaction.editReply({ embeds: [embed], ephemeral: true });
