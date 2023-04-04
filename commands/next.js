@@ -104,91 +104,135 @@ async function next(interaction) {
         videos: [],
     };
     let sendasplaylist = false;
-    if (await validate(link) === 'yt_video') {
-        const songinfo = await video_basic_info(link);
-        const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
-        song.title = songinfo.video_details.title;
-        song.url = songinfo.video_details.url;
-        song.durationRaw = songinfo.video_details.durationRaw;
-        song.durationInSeconds = songinfo.video_details.durationInSec;
-        song.thumbnail = thumbnail.url;
-        song.relatedVideos = songinfo.related_videos[0];
-        song.requestedBy = interaction.user;
-    } else if (await validate(link) === 'yt_playlist') {
-        if (link.includes('&index=')) {
-            link = link.slice(0, link.indexOf('&index='));
-        }
-        const playlistinfo = await playlist_info(link);
-        playlist.title = playlistinfo.title;
-        playlist.url = playlistinfo.url;
-        playlist.thumbnail = playlistinfo.thumbnail?.url || 'https://demofree.sirv.com/nope-not-here.jpg';
-        if (!playlist.thumbnail) playlist.thumbnail = 'https://demofree.sirv.com/nope-not-here.jpg';
-        playlist.videos = playlistinfo.videos;
-        sendasplaylist = true;
-    } else if (await validate(link) === 'so_track') {
-        const songinfo = await soundcloud(link);
-        if (songinfo.type === 'track') {
-            if (songinfo instanceof SoundCloudTrack) {
-                song.title = songinfo.name;
-                song.url = songinfo.url;
-                song.durationRaw = formatTime(songinfo.durationInSec);
-                song.durationInSeconds = songinfo.durationInSec;
-                song.thumbnail = songinfo.thumbnail;
-                song.requestedBy = interaction.user;
+    try {
+        if (await validate(link) === 'yt_video') {
+            const songinfo = await video_basic_info(link);
+            const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+            song.title = songinfo.video_details.title;
+            song.url = songinfo.video_details.url;
+            song.durationRaw = songinfo.video_details.durationRaw;
+            song.durationInSeconds = songinfo.video_details.durationInSec;
+            song.thumbnail = thumbnail.url;
+            song.relatedVideos = songinfo.related_videos[0];
+            song.requestedBy = interaction.user;
+        } else if (await validate(link) === 'yt_playlist') {
+            if (link.includes('&index=')) {
+                link = link.slice(0, link.indexOf('&index='));
+            }
+            if (link.includes('&playnext=1')) {
+                link = link.slice(0, link.indexOf('&playnext=1'));
+            }
+            if (link.includes('&start_radio=1')) {
+                link = link.slice(0, link.indexOf('&start_radio=1'));
+            }
+            if (link.includes('&rv=')) {
+                link = link.slice(0, link.indexOf('&rv='));
+            }
+            const playlistinfo = await playlist_info(link);
+            playlist.title = playlistinfo.title;
+            playlist.url = playlistinfo.url;
+            playlist.thumbnail = playlistinfo.thumbnail?.url || 'https://demofree.sirv.com/nope-not-here.jpg';
+            if (!playlist.thumbnail) playlist.thumbnail = 'https://demofree.sirv.com/nope-not-here.jpg';
+            playlist.videos = playlistinfo.videos;
+            sendasplaylist = true;
+            embed = new EmbedBuilder()
+                .setTitle('Play')
+                .setDescription(`Adding **${playlist.title}** playlist`)
+                .setThumbnail(playlist.thumbnail)
+                .setFooter({ text:`Requested by ${interaction.user.tag}`, iconURL:interaction.user.avatarURL() });
+            interaction.editReply({ embeds: [embed] });
+        } else if (await validate(link) === 'so_track') {
+            const songinfo = await soundcloud(link);
+            if (songinfo.type === 'track') {
+                if (songinfo instanceof SoundCloudTrack) {
+                    song.title = songinfo.name;
+                    song.url = songinfo.url;
+                    song.durationRaw = formatTime(songinfo.durationInSec);
+                    song.durationInSeconds = songinfo.durationInSec;
+                    song.thumbnail = songinfo.thumbnail;
+                    song.requestedBy = interaction.user;
+                } else {
+                    embed = new EmbedBuilder()
+                        .setTitle('Play')
+                        .setDescription('This is not a SoundCloud track!');
+                    return interaction.editReply({ embeds: [embed] });
+                }
             } else {
                 embed = new EmbedBuilder()
-                    .setTitle('Next')
+                    .setTitle('Play')
                     .setDescription('This is not a SoundCloud track!');
                 return interaction.editReply({ embeds: [embed] });
             }
-        } else {
+        } else if (await validate(link) === 'so_playlist') {
             embed = new EmbedBuilder()
-                .setTitle('Next')
-                .setDescription('This is not a SoundCloud track!');
+                .setTitle('Play')
+                .setDescription('SoundCloud playlists are not supported!');
             return interaction.editReply({ embeds: [embed] });
-        }
-    } else if (await validate(link) === 'sp_track') {
-        const songinfo = await spotify(link);
-        if (songinfo.type === 'track') {
-            if (songinfo instanceof SpotifyTrack) {
-                link = await searchbyname(songinfo.name);
-                if (!link) {
+        } else if (await validate(link) === 'sp_track') {
+            const songinfo = await spotify(link);
+            if (songinfo.type === 'track') {
+                if (songinfo instanceof SpotifyTrack) {
+                    link = await searchbyname(songinfo.name);
+                    if (!link) {
+                        embed = new EmbedBuilder()
+                            .setTitle('Play')
+                            .setDescription('No results found!');
+                        return interaction.editReply({ embeds: [embed] });
+                    }
+                    const songinfo2 = await video_basic_info(link);
+                    const thumbnail = songinfo2.video_details.thumbnails[songinfo2.video_details.thumbnails.length - 1];
+                    song.title = songinfo2.video_details.title;
+                    song.url = songinfo2.video_details.url;
+                    song.durationRaw = songinfo2.video_details.durationRaw;
+                    song.durationInSeconds = songinfo2.video_details.durationInSec;
+                    song.thumbnail = thumbnail.url;
+                    song.relatedVideos = songinfo2.related_videos[0];
+                    song.requestedBy = interaction.user;
+                } else {
                     embed = new EmbedBuilder()
-                        .setTitle('Next')
-                        .setDescription('No results found!');
+                        .setTitle('Play')
+                        .setDescription('This is not a Spotify track!');
                     return interaction.editReply({ embeds: [embed] });
                 }
-                const songinfo2 = await video_basic_info(link);
-                const thumbnail = songinfo2.video_details.thumbnails[songinfo2.video_details.thumbnails.length - 1];
-                song.title = songinfo2.video_details.title;
-                song.url = songinfo2.video_details.url;
-                song.durationRaw = songinfo2.video_details.durationRaw;
-                song.durationInSeconds = songinfo2.video_details.durationInSec;
-                song.thumbnail = thumbnail.url;
-                song.relatedVideos = songinfo2.related_videos[0];
-                song.requestedBy = interaction.user;
             } else {
                 embed = new EmbedBuilder()
-                    .setTitle('Next')
+                    .setTitle('Play')
                     .setDescription('This is not a Spotify track!');
                 return interaction.editReply({ embeds: [embed] });
             }
         } else {
             embed = new EmbedBuilder()
-                .setTitle('Next')
-                .setDescription('This is not a Spotify track!');
+                .setTitle('Play')
+                .setDescription('Invalid Input or Link is not supported yet!');
             return interaction.editReply({ embeds: [embed] });
         }
-    } else {
+    } catch (err) {
         embed = new EmbedBuilder()
-            .setTitle('Next')
-            .setDescription('Invalid Input or Link is not supported yet!');
+            .setTitle('Play')
+            .setDescription('Error while getting the song info!');
         return interaction.editReply({ embeds: [embed] });
     }
-    embed = new EmbedBuilder()
-        .setTitle('Next')
-        .setDescription('You Can\'t add playlist to queue');
-    if (sendasplaylist) return interaction.editReply({ embeds: [embed] });
+    if (sendasplaylist) {
+        for (let i = 0; i < playlist.videos.length; i++) {
+            const song2 = {};
+            const songinfo = video_basic_info(playlist.videos[i].url);
+            const thumbnail = songinfo.video_details.thumbnails[songinfo.video_details.thumbnails.length - 1];
+            song2.title = songinfo.video_details.title;
+            song2.url = songinfo.video_details.url;
+            song2.durationRaw = songinfo.video_details.durationRaw;
+            song2.durationInSeconds = songinfo.video_details.durationInSec;
+            song2.thumbnail = thumbnail.url;
+            song2.relatedVideos = songinfo.related_videos[0];
+            song2.requestedBy = interaction.user;
+            serverdata.songs.splice(1, 0, song2);
+        }
+        embed = new EmbedBuilder()
+            .setTitle('Play')
+            .setDescription(`Added [**${playlist.title}**](${playlist.url}) playlist to the queue\nSongs: ${playlist.videos.length}`)
+            .setThumbnail(playlist.thumbnail)
+            .setFooter({ text: `Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL() });
+        return interaction.editReply({ embeds: [embed] });
+    }
     serverdata.songs.splice(1, 0, song);
     embed = new EmbedBuilder()
         .setTitle('Next')
