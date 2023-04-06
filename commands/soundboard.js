@@ -176,7 +176,12 @@ module.exports = {
                     return;
                 }
             });
-
         });
+        serverdata.timervar = setTimeout(() => {
+            if (serverdata.connection) serverdata.connection.destroy();
+            serverdata.playing = false;
+            interaction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
+            collector.stop();
+        }, 5000);
     },
 };
