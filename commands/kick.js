@@ -30,6 +30,7 @@ module.exports = {
             }
         }
         const target = interaction.options.getUser('target');
+        const realtarget = interaction.options.getMember(target.username);
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
 
         if (interaction.member.permissions.has('KICK_MEMBERS') === false) {
@@ -39,6 +40,6 @@ module.exports = {
             return interaction.reply('You cannot kick yourself.');
         }
         await interaction.reply(`Kicking ${target.username} for reason: ${reason}`);
-        await interaction.guild.members.kick(target);
+        await realtarget.kick();
     },
 };
