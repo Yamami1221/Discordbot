@@ -78,19 +78,17 @@ module.exports = {
                         {
                             name: '👤 Account Info',
                             value: stripIndents`
-                    **ID:** ${member.user.id}
-                    **Bot:** ${member.user.bot ? 'Yes' : 'No'}
-                    **Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:d>
-                    `,
+                            **ID:** ${member.user.id}
+                            **Bot:** ${member.user.bot ? 'Yes' : 'No'}
+                            **Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:d>`,
                             inline: true,
                         },
                         {
                             name: '📋 Member Info',
                             value: stripIndents`
-                    **Joined Server:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>
-                    **Nickname:** ${member.nickname || 'None'}
-                    **Hoist Role:** ${member.roles.hoist ? member.roles.hoist.name : 'None'}
-                    `,
+                            **Joined Server:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>
+                            **Nickname:** ${member.nickname || 'None'}
+                            **Hoist Role:** ${member.roles.hoist ? member.roles.hoist.name : 'None'}`,
                             inline: true,
                         },
                         {
@@ -110,14 +108,27 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('Info')
                 .setDescription('Info about the server')
-                .addFields({ name:'Server name', value:interaction.guild.name })
-                .addFields({ name:'Server ID', value:interaction.guild.id })
-                .addFields({ name:'Server owner', value:`${interaction.guild.members.cache.get(interaction.guild.ownerId).user.username}#${interaction.guild.members.cache.get(interaction.guild.ownerId).user.discriminator}` })
-                .addFields({ name:'Total members', value:`${interaction.guild.memberCount}` })
-                .addFields({ name:'Members online', value:`${totalOnline.size}` })
-                .addFields({ name:'Build on', value:servertimedata[0] })
-                .addFields({ name:'Server time zone', value:servertimedata[1] })
-                .addFields({ name:'Created', value:servertimedata[2] })
+                .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 2048 }))
+                .addFields(
+                    {
+                        name: 'Server Info', value: stripIndents`
+                        **Server name:** ${interaction.guild.name}
+                        **Server ID:** ${interaction.guild.id}
+                        **Server owner:** ${interaction.guild.members.cache.get(interaction.guild.ownerId).user.username}#${interaction.guild.members.cache.get(interaction.guild.ownerId).user.discriminator}
+                        **Total members:** ${interaction.guild.memberCount}`,
+                        inline: true,
+                    },
+                )
+                .addFields(
+                    {
+                        name: 'Server Info', value: stripIndents`
+                        **Members online:** ${totalOnline.size}
+                        **Build on:** ${servertimedata[0]}
+                        **Server time zone:** ${servertimedata[1]}
+                        **Created:** ${servertimedata[2]}`,
+                        inline: true,
+                    },
+                )
                 .setFooter({ text:`Requested by ${interaction.user.username}#${interaction.user.discriminator}`, iconURL:interaction.user.displayAvatarURL({ dynamic: true, size: 2048 }) })
                 .setTimestamp();
             await interaction.editReply({ embeds: [embed], ephemeral: true });
