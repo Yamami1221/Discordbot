@@ -15,8 +15,8 @@ module.exports = {
             option
                 .setName('time')
                 .setDescription('The time to timeout(in minutes)')
-                .min_value(1)
-                .max_value(43200)
+                .setMinValue(1)
+                .setMaxValue(43200)
                 .setRequired(true))
         .addStringOption(option =>
             option
