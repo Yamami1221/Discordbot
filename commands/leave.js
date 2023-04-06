@@ -44,8 +44,8 @@ async function leave(interaction) {
     if (!serverdata.connection) return interaction.editReply({ embeds: [embed], ephemeral: true });
     serverdata.songs = [];
     if (serverdata.player) {
-        serverdata.player = null;
         await serverdata.player.stop();
+        serverdata.player = null;
     }
     if (serverdata.connection) {
         await serverdata.connection.destroy();
