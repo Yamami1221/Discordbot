@@ -29,7 +29,7 @@ async function next(interaction) {
             return;
         }
     }
-    embed = new EmbedBuilder()
+    let embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription('There is no song in queue right now');
     if (!serverdata.songs[0]) return interaction.editReply({ embeds: [embed], ephemeral: true });
@@ -55,14 +55,14 @@ async function next(interaction) {
     if (await validate(link) === 'search') {
         link = await mysearch(interaction);
         if (!link) {
-            const embed = new EmbedBuilder()
+            embed = new EmbedBuilder()
                 .setTitle('Next')
                 .setDescription('No results found!');
             return interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     }
     const voicechannel = interaction.member.voice.channel;
-    let embed = new EmbedBuilder()
+    embed = new EmbedBuilder()
         .setTitle('Next')
         .setDescription('You need to be in a voice channel to use this command!');
     if (!voicechannel) return interaction.editReply({ embeds: [embed] });
