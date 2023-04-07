@@ -52,5 +52,6 @@ async function leave(interaction) {
         serverdata.playing = false;
         clearTimeout(serverdata.timervar);
     }
+    clearTimeout(serverdata.timervar);
     await interaction.deleteReply();
 }
