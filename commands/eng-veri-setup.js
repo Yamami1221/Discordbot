@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
-const { globaldata, role66map, roles66path } = require('../data/global');
+const { globaldata, datapath, role66map, roles66path } = require('../data/global');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -159,7 +159,42 @@ module.exports = {
             IGE: IGE,
             IEL: IEL,
         };
+        const premapToWrite = new Map([...globaldata]);
+        const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
+        mapToWrite.forEach((value) => {
+            value.songs = [];
+            value.connection = null;
+            value.player = null;
+            value.resource = null;
+            value.timervar = null;
+        });
+        const objToWrite = Object.fromEntries(mapToWrite);
+        const jsonToWrite = JSON.stringify(objToWrite, null, 4);
+        fs.writeFile(datapath, jsonToWrite, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const errembed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                interaction.editReply({ embeds: [errembed] });
+                return;
+            }
+        });
         role66map.set(interaction.guildId, data);
-        fs.writeFileSync(roles66path, JSON.stringify([...globaldata]));
+        const premapToWrite2 = new Map([...role66map]);
+        const mapToWrite2 = new Map([...premapToWrite2].map(([key, value]) => [key, Object.assign({}, value)]));
+        const objToWrite2 = Object.fromEntries(mapToWrite2);
+        const jsonToWrite2 = JSON.stringify(objToWrite2, null, 4);
+        fs.writeFileSync(roles66path, jsonToWrite2, err => {
+            if (err) {
+                console.log('There has been an error saving your configuration data.');
+                console.log(err.message);
+                const errembed = new EmbedBuilder()
+                    .setTitle('Enable')
+                    .setDescription('There has been an error saving your configuration data.');
+                return interaction.editReply({ embeds: [errembed] });
+            }
+        });
     },
 };
