@@ -22,7 +22,7 @@ module.exports = {
             .setTitle('Help')
             .setDescription('This is the help command')
             .setDescription('work in progress')
-            .setFooter('[More Info](https://youtu.be/dQw4w9WgXcQ)')
+            .setFooter({ text:'[More Info](https://youtu.be/dQw4w9WgXcQ)' })
             .setTimestamp();
         await interaction.editReply({ embeds: [embed] });
     },
