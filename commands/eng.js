@@ -11,7 +11,6 @@ module.exports = {
             subcommand
                 .setName('setup')
                 .setDescription('Setup the verification system')
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
                 .addChannelOption(option =>
                     option.setName('channel')
                         .setDescription('The channel to use for verification')
@@ -83,8 +82,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('clear')
-                .setDescription('Clear the verification system')
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles))
+                .setDescription('Clear the verification system'))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('verify')
@@ -135,6 +133,13 @@ module.exports = {
 
 async function setup(interaction) {
     await interaction.deferReply();
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verification')
+            .setDescription('You do not have permission to use this command');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
     const serverData = globaldata.get(interaction.guildId) || undefined;
     if (serverData?.veriChannel) {
         if (interaction.channel.id === serverData.veriChannel.id) {
@@ -256,6 +261,14 @@ async function setup(interaction) {
 }
 
 async function clear(interaction) {
+    await interaction.deferReply();
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        const embed = new EmbedBuilder()
+            .setTitle('Verification')
+            .setDescription('You do not have permission to use this command');
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
     const serverData = globaldata.get(interaction.guildId) || undefined;
     if (serverData?.veriChannel) {
         if (interaction.channel.id === serverData.veriChannel.id) {
