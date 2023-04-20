@@ -15,16 +15,6 @@ module.exports = {
                 .setDescription('Version of the guide to search')
                 .setAutocomplete(true)),
     async autocomplete(interaction) {
-        const serverData = globaldata.get(interaction.guildId) || undefined;
-        if (serverData?.veriChannel) {
-            if (interaction.channel.id === serverData.veriChannel.id) {
-                const embed = new EmbedBuilder()
-                    .setTitle('Verification')
-                    .setDescription('You cannot use this command in the verification channel');
-                await interaction.reply({ embeds: [embed], ephemeral: true });
-                return;
-            }
-        }
         const focusedOption = interaction.options.getFocused(true);
         let choices;
 
@@ -42,6 +32,16 @@ module.exports = {
         );
     },
     async execute(interaction) {
+        const serverData = globaldata.get(interaction.guildId) || undefined;
+        if (serverData?.veriChannel) {
+            if (interaction.channel.id === serverData.veriChannel.id) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You cannot use this command in the verification channel');
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                return;
+            }
+        }
         await interaction.reply({ content: 'This command is not available(dev don\'t even know why we have this.)', ephemeral: true });
     },
 };
