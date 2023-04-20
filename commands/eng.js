@@ -36,47 +36,47 @@ module.exports = {
                         .setDescription('The role of the Ent62')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('IE')
+                    option.setName('ie')
                         .setDescription('The role of IE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('ME')
+                    option.setName('me')
                         .setDescription('The role of ME')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('CE')
+                    option.setName('ce')
                         .setDescription('The role of CE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('CPE')
+                    option.setName('cpe')
                         .setDescription('The role of CPE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('EE')
+                    option.setName('ee')
                         .setDescription('The role of EE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('ENVI')
+                    option.setName('envi')
                         .setDescription('The role of ENVI')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('REAI')
+                    option.setName('reai')
                         .setDescription('The role of REAI')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('MNE')
+                    option.setName('mne')
                         .setDescription('The role of MNE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('ISNE')
+                    option.setName('isne')
                         .setDescription('The role of ISNE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('IGE')
+                    option.setName('ige')
                         .setDescription('The role of IGE')
                         .setRequired(true))
                 .addRoleOption(option =>
-                    option.setName('IEL')
+                    option.setName('iel')
                         .setDescription('The role of IEL')
                         .setRequired(true)))
         .addSubcommand(subcommand =>
@@ -92,7 +92,7 @@ module.exports = {
                         .setDescription('Your nickname')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('ent year')
+                    option.setName('ent-year')
                         .setDescription('Your Ent year')
                         .setAutocomplete(true)
                         .setRequired(true))
@@ -106,11 +106,11 @@ module.exports = {
 
         let choices;
 
-        if (focusedOption.name === 'ent year') {
+        if (focusedOption.name === 'ent-year') {
             choices = ['Ent66', 'Ent65', 'Ent64', 'Ent63', 'Ent62'];
         }
 
-        if (focusedOption.name === 'Major') {
+        if (focusedOption.name === 'major') {
             choices = ['IE', 'ME', 'CE', 'CPE', 'EE', 'ENVI', 'REAI', 'MNE', 'ISNE', 'IGE', 'IEL'];
         }
 
@@ -186,17 +186,17 @@ async function setup(interaction) {
     const ent64 = interaction.options.getRole('ent64');
     const ent63 = interaction.options.getRole('ent63');
     const ent62 = interaction.options.getRole('ent62');
-    const IE = interaction.options.getRole('IE');
-    const ME = interaction.options.getRole('ME');
-    const CE = interaction.options.getRole('CE');
-    const CPE = interaction.options.getRole('CPE');
-    const EE = interaction.options.getRole('EE');
-    const ENVI = interaction.options.getRole('ENVI');
-    const REAI = interaction.options.getRole('REAI');
-    const MNE = interaction.options.getRole('MNE');
-    const ISNE = interaction.options.getRole('ISNE');
-    const IGE = interaction.options.getRole('IGE');
-    const IEL = interaction.options.getRole('IEL');
+    const IE = interaction.options.getRole('ie');
+    const ME = interaction.options.getRole('me');
+    const CE = interaction.options.getRole('ce');
+    const CPE = interaction.options.getRole('cpe');
+    const EE = interaction.options.getRole('ee');
+    const ENVI = interaction.options.getRole('envi');
+    const REAI = interaction.options.getRole('reai');
+    const MNE = interaction.options.getRole('mne');
+    const ISNE = interaction.options.getRole('isne');
+    const IGE = interaction.options.getRole('ige');
+    const IEL = interaction.options.getRole('iel');
     const embed = new EmbedBuilder()
         .setTitle('Verification')
         .setDescription('Verification system has been setup');
@@ -370,52 +370,60 @@ async function verify(interaction) {
     const engrolemap = role66map.get(interaction.guildId);
     if (engrolemap) {
         const nickname = interaction.options.getString('nickname');
-        const entrole = interaction.options.getString('ent year');
+        const entrole = interaction.options.getString('ent-year');
         const majorrole = interaction.options.getString('major');
         nickname66map.set(interaction.user.id, nickname);
-        if (entrole === 'Ent66') {
-            interaction.member.roles.add(engrolemap.ent66.id);
-        } else if (entrole === 'Ent65') {
-            interaction.member.roles.add(engrolemap.ent65.id);
-        } else if (entrole === 'Ent64') {
-            interaction.member.roles.add(engrolemap.ent64.id);
-        } else if (entrole === 'Ent63') {
-            interaction.member.roles.add(engrolemap.ent63.id);
-        } else if (entrole === 'Ent62') {
-            interaction.member.roles.add(engrolemap.ent62.id);
-        } else {
-            const embed = new EmbedBuilder()
+        try {
+            if (entrole === 'Ent66') {
+                interaction.member.roles.add(engrolemap.ent66.id);
+            } else if (entrole === 'Ent65') {
+                interaction.member.roles.add(engrolemap.ent65.id);
+            } else if (entrole === 'Ent64') {
+                interaction.member.roles.add(engrolemap.ent64.id);
+            } else if (entrole === 'Ent63') {
+                interaction.member.roles.add(engrolemap.ent63.id);
+            } else if (entrole === 'Ent62') {
+                interaction.member.roles.add(engrolemap.ent62.id);
+            } else {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You must select an ENT year');
+                return interaction.reply({ embeds: [embed], ephemeral: true });
+            }
+            if (majorrole === 'IE') {
+                interaction.member.roles.add(engrolemap.IE.id);
+            } else if (majorrole === 'ME') {
+                interaction.member.roles.add(engrolemap.ME.id);
+            } else if (majorrole === 'CE') {
+                interaction.member.roles.add(engrolemap.CE.id);
+            } else if (majorrole === 'CPE') {
+                interaction.member.roles.add(engrolemap.CPE.id);
+            } else if (majorrole === 'EE') {
+                interaction.member.roles.add(engrolemap.EE.id);
+            } else if (majorrole === 'ENVI') {
+                interaction.member.roles.add(engrolemap.ENVI.id);
+            } else if (majorrole === 'REAI') {
+                interaction.member.roles.add(engrolemap.REAI.id);
+            } else if (majorrole === 'MNE') {
+                interaction.member.roles.add(engrolemap.MNE.id);
+            } else if (majorrole === 'ISNE') {
+                interaction.member.roles.add(engrolemap.ISNE.id);
+            } else if (majorrole === 'IGE') {
+                interaction.member.roles.add(engrolemap.IGE.id);
+            } else if (majorrole === 'IEL') {
+                interaction.member.roles.add(engrolemap.IEL.id);
+            } else {
+                const embed = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('You must select a major');
+                return interaction.reply({ embeds: [embed], ephemeral: true });
+            }
+        } catch (err) {
+            console.log(err);
+            const errembed = new EmbedBuilder()
                 .setTitle('Verification')
-                .setDescription('You must select an ENT year');
-            return interaction.reply({ embeds: [embed], ephemeral: true });
-        }
-        if (majorrole === 'IE') {
-            interaction.member.roles.add(engrolemap.IE.id);
-        } else if (majorrole === 'ME') {
-            interaction.member.roles.add(engrolemap.ME.id);
-        } else if (majorrole === 'CE') {
-            interaction.member.roles.add(engrolemap.CE.id);
-        } else if (majorrole === 'CPE') {
-            interaction.member.roles.add(engrolemap.CPE.id);
-        } else if (majorrole === 'EE') {
-            interaction.member.roles.add(engrolemap.EE.id);
-        } else if (majorrole === 'ENVI') {
-            interaction.member.roles.add(engrolemap.ENVI.id);
-        } else if (majorrole === 'REAI') {
-            interaction.member.roles.add(engrolemap.REAI.id);
-        } else if (majorrole === 'MNE') {
-            interaction.member.roles.add(engrolemap.MNE.id);
-        } else if (majorrole === 'ISNE') {
-            interaction.member.roles.add(engrolemap.ISNE.id);
-        } else if (majorrole === 'IGE') {
-            interaction.member.roles.add(engrolemap.IGE.id);
-        } else if (majorrole === 'IEL') {
-            interaction.member.roles.add(engrolemap.IEL.id);
-        } else {
-            const embed = new EmbedBuilder()
-                .setTitle('Verification')
-                .setDescription('You must select a major');
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+                .setDescription('There has been an error verifying you');
+            return interaction.reply({ embeds: [errembed], ephemeral: true });
         }
         const embed = new EmbedBuilder()
             .setTitle('Verification')
