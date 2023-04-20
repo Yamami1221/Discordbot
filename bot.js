@@ -13,6 +13,7 @@ const client = new Client({
     ],
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildModeration,
         GatewayIntentBits.GuildBans,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildIntegrations,
