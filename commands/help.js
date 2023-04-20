@@ -21,8 +21,8 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Help')
             .setDescription('This is the help command')
-            .setDescription('work in progress')
-            .setFooter({ text:'[More Info](https://youtu.be/dQw4w9WgXcQ)' })
+            .addFields({ name:'Work in progress', value:'This command is still under development' })
+            .addFields({ name:'For more information', value:'[More Info](https://youtu.be/dQw4w9WgXcQ)' })
             .setTimestamp();
         await interaction.editReply({ embeds: [embed] });
     },
