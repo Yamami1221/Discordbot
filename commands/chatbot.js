@@ -197,6 +197,39 @@ async function disableChatBot(interaction) {
 
 async function teachChatBot(interaction) {
     await interaction.deferReply({ ephemeral: true });
+    const serverData = globaldata.get(interaction.guildId);
+    if (!serverData) {
+        const queueconstruct = {
+            textchannel: [],
+            voicechannel: null,
+            connection: null,
+            songs: [],
+            volume: 50,
+            player: null,
+            resource: null,
+            playing: false,
+            loop: false,
+            shuffle: false,
+            autoplay: false,
+            sound8d: false,
+            bassboost: false,
+            nightcore: false,
+            veriRole: null,
+            veriChannel: null,
+            chatbotChannel: [],
+            timervar: null,
+        };
+        globaldata.set(interaction.guild.id, queueconstruct);
+    }
+    const serverdata = globaldata.get(interaction.guildId);
+    const enabled = serverdata.chatbotChannel.find((channel) => channel.id === interaction.channel.id);
+    if (!enabled) {
+        const embed = new EmbedBuilder()
+            .setTitle('Chat Bot')
+            .setDescription(`Chat bot is not enabled in <#${interaction.channel.id}>`);
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+    }
     const text = interaction.options.getString('text');
     const response = interaction.options.getString('response');
     try {
