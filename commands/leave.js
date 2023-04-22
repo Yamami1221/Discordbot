@@ -46,6 +46,7 @@ async function leave(interaction) {
     if (serverdata.player) {
         await serverdata.player.stop();
         serverdata.player = null;
+        clearTimeout(serverdata.timervar);
     }
     if (serverdata.connection) {
         await serverdata.connection.destroy();

@@ -43,6 +43,7 @@ async function stop(interaction) {
     if (serverdata.player) serverdata.player.stop();
     serverdata.playing = false;
     serverdata.player = null;
+    clearTimeout(serverdata.timervar);
     embed = new EmbedBuilder()
         .setTitle('Stop')
         .setDescription('Stopped the music!');
