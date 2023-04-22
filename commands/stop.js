@@ -40,7 +40,7 @@ async function stop(interaction) {
     if (!enabled) return interaction.editReply({ embeds: [embed], ephemeral: true });
     clearTimeout(serverdata.timervar);
     serverdata.songs = [];
-    serverdata.player.stop();
+    if (serverdata.player) serverdata.player.stop();
     serverdata.playing = false;
     serverdata.player = null;
     embed = new EmbedBuilder()
