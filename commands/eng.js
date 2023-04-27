@@ -115,9 +115,15 @@ module.exports = {
         }
 
         const filtered = choices.filter(choice => choice.startsWith(focusedOption.value));
-        await interaction.respond(
-            filtered.map(choice => ({ name: choice, value: choice })),
-        );
+        try {
+            await interaction.respond(
+                filtered.map(choice => ({ name: choice, value: choice })),
+            );
+        } catch (error) {
+            await interaction.respond(
+                filtered.map(choice => ({ name: choice, value: choice })),
+            );
+        }
     },
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
