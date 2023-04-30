@@ -1,6 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { CatWithTextGenerator } = require('cats-generator');
-const fs = require('fs');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const randomCat = require('random-cat-img');
 
 const { globaldata } = require('../data/global');
 
@@ -20,19 +19,13 @@ module.exports = {
                 return;
             }
         }
-        const catGenerator = new CatWithTextGenerator();
-        const catToWrite = await catGenerator.getImage();
-        const bufferToWrite = Buffer.from(catToWrite.toBuffer());
-        fs.writeFileSync('cat.png', bufferToWrite);
-        const attachment = new AttachmentBuilder('cat.png');
+        const resdata = await randomCat();
+        const imglink = resdata.data.message;
         const embed = new EmbedBuilder()
             .setTitle('Random Cat')
             .setDescription('Here is a random cat image')
-            .setImage('attachment://cat.png')
+            .setImage(imglink)
             .setTimestamp();
-        await interaction.editReply({ embeds: [embed], files: [attachment] });
-        if (fs.existsSync('cat.png')) {
-            fs.unlinkSync('cat.png');
-        }
+        await interaction.editReply({ embeds: [embed] });
     },
 };
