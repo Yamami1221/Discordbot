@@ -34,6 +34,13 @@ module.exports = {
                     const response = await manager.process(lang, message.content);
                     if (response.answer) {
                         message.channel.send(response.answer);
+                    } else {
+                        const embed = new EmbedBuilder()
+                            .setTitle('ตอนนี้ผมยังไม่ค่อยรู้เรื่องเท่าไหร่ ขอโทษด้วยนะครับ')
+                            .setDescription('ผมเรียนรู้จากการสนทนาของคุณ ถ้าคุณอยากให้ผมเรียนรู้เรื่องอะไร ให้พิมพ์ `/chatbot teach` แล้วตามด้วยข้อความที่คุณอยากให้ผมเรียนรู้')
+                            .addFields({ name: 'วิธีสอน', value: 'พิมพ์ `/chatbot teach` text:[คำถามจากเรา] respond:[คำตอบจากบอท]' })
+                            .addFields({ name: 'ตัวอย่าง', value: '`/chatbot teach text:สวัสดี respond:สวัสดีเช่นกันจ้า`\n`/chatbot teach text:กินอะไรดี respond:ข้าว`' });
+                        message.channel.send({ embeds: [embed] });
                     }
                 } catch (error) {
                     console.error(error);
