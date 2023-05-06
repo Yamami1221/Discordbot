@@ -299,8 +299,8 @@ async function playSong(interaction, song) {
     const serverdata = globaldata.get(interaction.guild.id);
     serverdata.playing = true;
     if (!song) {
-        serverdata.timervar = setTimeout(() => {
-            serverdata.connection.destroy();
+        serverdata.timervar = setTimeout(async () => {
+            await serverdata.connection.destroy();
             serverdata.connection = null;
             serverdata.resource = null;
             serverdata.player = null;
