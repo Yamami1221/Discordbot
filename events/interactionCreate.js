@@ -18,9 +18,14 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (error) {
-                const deffered = await interaction.fetchReply();
-                if (!deffered) {
-                    interaction.defferReply({ ephemeral: true });
+                try {
+                    const deffered = await interaction.fetchReply();
+                    if (!deffered) {
+                        interaction.defferReply({ ephemeral: true });
+                    }
+                } catch (error1) {
+                    console.error(error1);
+                    console.error(interaction.commandName);
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
@@ -58,9 +63,14 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (error) {
-                const deffered = await interaction.fetchReply();
-                if (!deffered) {
-                    interaction.defferReply({ ephemeral: true });
+                try {
+                    const deffered = await interaction.fetchReply();
+                    if (!deffered) {
+                        interaction.defferReply({ ephemeral: true });
+                    }
+                } catch (error1) {
+                    console.error(error1);
+                    console.error(interaction.commandName);
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
