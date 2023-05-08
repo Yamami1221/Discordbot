@@ -130,7 +130,7 @@ module.exports = {
             serverdata.player.unpause();
             serverdata.player.on(AudioPlayerStatus.Idle, () => {
                 serverdata.timervar = setTimeout(() => {
-                    if (serverdata.connection) serverdata.connection.destroy();
+                    if (serverdata.connection.state.status != 'destroyed') serverdata.connection.destroy();
                     serverdata.playing = false;
                     myinteraction.editReply({ content: 'Select a sound to play(Time Out)', components: [] });
                     collector.stop();

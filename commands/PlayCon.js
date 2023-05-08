@@ -385,7 +385,9 @@ async function playSong(interaction, song) {
     });
     serverdata.player.on(AudioPlayerStatus.AutoPaused, async () => {
         serverdata.timervar = setTimeout(async () => {
-            if (serverdata.connection) await serverdata.connection.destroy();
+            console.log(serverdata.connection);
+            if (serverdata.connection.state.status != 'destroyed') await serverdata.connection.destroy();
+            console.log(serverdata.connection);
             serverdata.connection = null;
             serverdata.resource = null;
             serverdata.player = null;
