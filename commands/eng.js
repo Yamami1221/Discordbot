@@ -102,7 +102,7 @@ module.exports = {
                         .setAutocomplete(true)
                         .setRequired(true))),
     async autocomplete(interaction) {
-        const focusedOption = interaction.options.getFocused(true);
+        const focusedOption = await interaction.options.getFocused(true);
 
         let choices;
 
