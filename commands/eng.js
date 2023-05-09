@@ -383,13 +383,29 @@ async function verify(interaction) {
             if (entrole === 'Ent66') {
                 interaction.member.roles.add(engrolemap.ent66.id);
             } else if (entrole === 'Ent65') {
-                interaction.member.roles.add(engrolemap.ent65.id);
+                // interaction.member.roles.add(engrolemap.ent65.id);
+                const ent65rolecancellation = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('Ent65 has been cancelled');
+                return interaction.reply({ embeds: [ent65rolecancellation], ephemeral: true });
             } else if (entrole === 'Ent64') {
-                interaction.member.roles.add(engrolemap.ent64.id);
+                // interaction.member.roles.add(engrolemap.ent64.id);
+                const ent64rolecancellation = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('Ent64 has been cancelled');
+                return interaction.reply({ embeds: [ent64rolecancellation], ephemeral: true });
             } else if (entrole === 'Ent63') {
-                interaction.member.roles.add(engrolemap.ent63.id);
+                // interaction.member.roles.add(engrolemap.ent63.id);
+                const ent63rolecancellation = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('Ent63 has been cancelled');
+                return interaction.reply({ embeds: [ent63rolecancellation], ephemeral: true });
             } else if (entrole === 'Ent62') {
-                interaction.member.roles.add(engrolemap.ent62.id);
+                // interaction.member.roles.add(engrolemap.ent62.id);
+                const ent62rolecancellation = new EmbedBuilder()
+                    .setTitle('Verification')
+                    .setDescription('Ent62 has been cancelled');
+                return interaction.reply({ embeds: [ent62rolecancellation], ephemeral: true });
             } else {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
