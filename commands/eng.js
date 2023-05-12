@@ -410,7 +410,8 @@ async function verify(interaction) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You must select an ENT year');
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+                await interaction.reply({ embeds: [embed], ephemeral: true });
+                return;
             }
             if (majorrole === 'IE') {
                 interaction.member.roles.add(engrolemap.IE.id);
@@ -438,7 +439,8 @@ async function verify(interaction) {
                 const embed = new EmbedBuilder()
                     .setTitle('Verification')
                     .setDescription('You must select a major');
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+                await interaction.followUp({ embeds: [embed], ephemeral: true });
+                return;
             }
         } catch (err) {
             console.log(err);
