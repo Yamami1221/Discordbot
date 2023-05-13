@@ -70,7 +70,7 @@ module.exports = {
                     }
                 } catch (error1) {
                     console.error(error1);
-                    console.error(interaction.commandName);
+                    return console.error(interaction.commandName);
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
