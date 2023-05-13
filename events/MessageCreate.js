@@ -33,7 +33,12 @@ module.exports = {
                     manager.load('./data/model.nlp');
                     const response = await manager.process(lang, message.content);
                     if (response.answer) {
-                        message.channel.send(response.answer);
+                        if (response.answer.length <= 2000) {
+                            message.channel.send(response.answer);
+                        } else {
+                            response.answer = await response.answer.slice(0, 2000);
+                            message.channel.send(response.answer);
+                        }
                     } else {
                         const embed = new EmbedBuilder()
                             .setTitle('ตอนนี้ผมยังไม่ค่อยรู้เรื่องเท่าไหร่ ขอโทษด้วยนะครับ')
