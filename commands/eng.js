@@ -115,6 +115,10 @@ module.exports = {
         }
 
         const filtered = choices.filter(choice => choice.startsWith(focusedOption.value));
+
+        if (!filtered.length) {
+            return;
+        }
         try {
             await interaction.respond(
                 filtered.map(choice => ({ name: choice, value: choice })),
@@ -447,14 +451,22 @@ async function verify(interaction) {
             const errembed = new EmbedBuilder()
                 .setTitle('Verification')
                 .setDescription('There has been an error verifying you');
-            return interaction.reply({ embeds: [errembed], ephemeral: true });
+            if (await interaction.fetchReply()) {
+                return interaction.editReply({ embeds: [errembed], ephemeral: true });
+            } else {
+                return interaction.reply({ embeds: [errembed], ephemeral: true });
+            }
         }
         const embed = new EmbedBuilder()
             .setTitle('Verification')
             .setDescription(`Welcome to the server, ${nickname}!`)
             .addFields({ name: 'ENT Year', value: entrole, inline: true }, { name: 'Major', value: majorrole, inline: true })
             .setFooter({ text: interaction.user.tag, iconUrl: interaction.user.avatarURL() });
-        await interaction.reply({ embeds: [embed] });
+        if (await interaction.fetchReply()) {
+            await interaction.editReply({ embeds: [embed] });
+        } else {
+            await interaction.reply({ embeds: [embed] });
+        }
         const premapToWrite = new Map([...nickname66map]);
         const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
         const objToWrite = Object.fromEntries(mapToWrite);
