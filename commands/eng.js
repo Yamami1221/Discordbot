@@ -462,11 +462,7 @@ async function verify(interaction) {
             .setDescription(`Welcome to the server, ${nickname}!`)
             .addFields({ name: 'ENT Year', value: entrole, inline: true }, { name: 'Major', value: majorrole, inline: true })
             .setFooter({ text: interaction.user.tag, iconUrl: interaction.user.avatarURL() });
-        if (await interaction.fetchReply()) {
-            await interaction.editReply({ embeds: [embed] });
-        } else {
-            await interaction.reply({ embeds: [embed] });
-        }
+        await interaction.reply({ embeds: [embed] });
         const premapToWrite = new Map([...nickname66map]);
         const mapToWrite = new Map([...premapToWrite].map(([key, value]) => [key, Object.assign({}, value)]));
         const objToWrite = Object.fromEntries(mapToWrite);
