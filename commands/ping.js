@@ -1,16 +1,18 @@
-const { SlashCommandBuilder, EmbedBuilder, Client, GatewayIntentBits } = require('discord.js');
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with Pong!'),
-    async execute(interaction) {
-        const sent = await interaction.reply({ content: '**Pinging...**', fetchReply: true });
+    async execute(interaction, client) {
+        await interaction.deferReply();
+        const messagesent = await interaction.channel.send('Pinging...');
+        const roundTripLatency = messagesent.createdTimestamp - interaction.createdTimestamp;
+        await messagesent.delete();
+        const apiLatency = client.shard.client.ws.ping;
         const embed = new EmbedBuilder()
             .setTitle('🏓Pong!')
-            .setDescription(`Roundtrip latency: **${sent.createdTimestamp - interaction.createdTimestamp}ms**\n API latency: **${client.shard.client.ws.ping}ms**`);
-        interaction.editReply({ embeds: [embed], empheral: true });
+            .setDescription(`Roundtrip latency: **${roundTripLatency}ms**\n API latency: **${apiLatency}ms**`);
+        interaction.editReply({ embeds: [embed] });
     },
 };

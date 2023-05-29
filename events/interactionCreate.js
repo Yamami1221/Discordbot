@@ -16,16 +16,10 @@ module.exports = {
             }
 
             try {
-                await command.execute(interaction);
+                await command.execute(interaction, interaction.client);
             } catch (error) {
-                try {
-                    const deffered = await interaction.fetchReply();
-                    if (!deffered) {
-                        interaction.defferReply({ ephemeral: true });
-                    }
-                } catch (error1) {
-                    console.error(error1);
-                    console.error(interaction.commandName);
+                if (!interaction.deferred) {
+                    await interaction.deferReply({ ephemeral: true });
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
@@ -51,7 +45,6 @@ module.exports = {
             const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) {
-                console.log(interaction.client);
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
                     .setDescription(`No context menu matching ${interaction.commandName} was found.`);
@@ -63,14 +56,8 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (error) {
-                try {
-                    const deffered = await interaction.fetchReply();
-                    if (!deffered) {
-                        interaction.defferReply({ ephemeral: true });
-                    }
-                } catch (error1) {
-                    console.error(error1);
-                    return console.error(interaction.commandName);
+                if (!interaction.deferred) {
+                    await interaction.deferReply({ ephemeral: true });
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
@@ -97,9 +84,9 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle('Error')
                     .setDescription('There was an error while executing this command!');
-                console.error('Error executing modaltest');
+                console.error(`Error executing ${interaction.customId}`);
                 console.error(error);
-                interaction.channel.send({ content: 'Error executing modaltest', embeds: [embed], ephemeral: true });
+                interaction.channel.send({ embeds: [embed], ephemeral: true });
             }
         } else if (interaction.isButton()) {
             return;
